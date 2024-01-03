@@ -1,0 +1,17 @@
+on: push
+name: 🚀 Deploy website on push
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v3
+    
+    - name: 📂 Sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: 51.178.44.177
+        username: root
+        password: 7"KKh=f4X$~(46="&BHGFFgd{LSX
+        server-dir: /var/www/html/
