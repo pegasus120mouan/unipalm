@@ -1,17 +1,22 @@
-on: push
-name: 🚀 Deploy website on push
+name: CI
+
+on: [push]
+
 jobs:
-  web-deploy:
-    name: 🎉 Deploy
+  build:
     runs-on: ubuntu-latest
+
     steps:
- #   - name: 🚚 Get latest code
- #     uses: actions/checkout@v3
+      # Load the pre-build project files:
+      # - uses: actions/download-artifact@v3
+      #   with:
+      #     name: build-artifact
+      #     path: /tmp/github-actions
     
-    - name: 📂 Sync files
-      uses: actions/checkout@v3
-      with:
-        server: 51.178.44.177
-        username: root
-        password: 7"KKh=f4X$~(46="&BHGFFgd{LSX
-        server-dir: /var/www/html/
+      # Then deploy to your server of choice
+      - uses: php-actions/deploy
+        with:
+          hostname: 51.178.44.177
+          user: root
+          path: /var/www/html/
+          ssh_key: {{ secrets.deploy_ssh_key }}
