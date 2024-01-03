@@ -1,22 +1,17 @@
-name: CI
-
-on: [push]
-
+name: CI -> Deploy to My website
+on:
+  push:
+    branches: [ main, development ]
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      # Load the pre-build project files:
-      # - uses: actions/download-artifact@v3
-      #   with:
-      #     name: build-artifact
-      #     path: /tmp/github-actions
-    
-      # Then deploy to your server of choice
-      - uses: php-actions/deploy
+      - uses: actions/checkout@v4
+      # Here is the deployment action
+      - name: Upload from public_html via FTP
+        uses: airvzxf/ftp-deployment-action@latest
         with:
-          hostname: 51.178.44.177
+          server: 51.178.44.177
           user: root
-          path: /var/www/html/
-          ssh_key: {{ secrets.deploy_ssh_key }}
+          password: 7"KKh=f4X$~(46="&BHGFFgd{LSX
+          remote_dir: "/var//www/html/ovl-delivery/"
