@@ -33,10 +33,12 @@ $statistiques_clients = $stmt->fetchAll();
 
 ?>
 
-
-
-
 <!-- Main row -->
+
+
+<a href="statistiques_clients_depots.php" class="btn btn-secondary" role="button">Statistiques des clients</a>
+
+
 <div class="row">
   <table id="example1" class="table table-bordered table-striped">
   <thead>
