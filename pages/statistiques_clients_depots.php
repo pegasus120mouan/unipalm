@@ -4,10 +4,11 @@ require_once '../inc/functions/requete/requetes_selection_boutique.php';
 include('header.php');
 
 $aujourdhui = date("d-m-Y");
+$nomDuMois = date("F", strtotime($aujourdhui));
 
 ?>
 
-<h2>Impression des points des clients pour le mois de: <?php echo $aujourdhui; ?></h2>
+<h2>Impression des points des clients pour le mois de: <?php echo $nomDuMois; ?></h2>
 <div class="col-lg-3 col-6">
   <!-- small box -->
 
