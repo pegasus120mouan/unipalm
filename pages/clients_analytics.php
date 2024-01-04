@@ -40,7 +40,7 @@ $statistiques_clients = $stmt->fetchAll();
 
 
 <div class="row">
-<a href="statistiques_clients_depots.php" class="btn btn-secondary" role="button">Statistiques des clients</a>
+<a href="statistiques_clients_depots.php" class="btn btn-secondary" role="button">Statistiques des clients 1</a>
   <table id="example1" class="table table-bordered table-striped">
   <thead>
       <tr>
