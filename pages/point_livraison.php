@@ -36,7 +36,7 @@ $livreurs_selection = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS nom_
 <table id="example1" class="table table-bordered table-striped">
   <thead>
     <tr>
-      <th>Id</th>
+    <!--  <th>Id</th> -->
       <th>Livreur</th>
       <th>recettes</th>
       <th>Depenses</th>
@@ -48,7 +48,7 @@ $livreurs_selection = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS nom_
   <tbody>
     <?php foreach ($point_livreurs as $point_livreur) : ?>
     <tr>
-      <td><?= $point_livreur['point_livreur_id'] ?></td>
+    <!--  <td><?= $point_livreur['point_livreur_id'] ?></td> -->
       <td><?= $point_livreur['livreur_nom'] ?></td>
       <td><?= $point_livreur['recette'] ?></td>
       <td><?= $point_livreur['depense'] ?></td>

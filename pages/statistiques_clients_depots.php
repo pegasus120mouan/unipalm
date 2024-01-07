@@ -3,9 +3,9 @@ require_once '../inc/functions/connexion.php';
 require_once '../inc/functions/requete/requetes_selection_boutique.php';
 include('header.php');
 
+date_default_timezone_set('Europe/Paris'); // Change 'Europe/Paris' to your preferred timezone
 $aujourdhui = date("d-m-Y");
 $nomDuMois = date("F", strtotime($aujourdhui));
-
 ?>
 
 <h2>Impression des points des clients pour le mois de: <?php echo $nomDuMois; ?></h2>
