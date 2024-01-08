@@ -14,6 +14,10 @@ $totalCout_livraison = array_sum(array_column($pointParclients, 'total_cout_livr
 
 $pointParlivreurs= $getPoints_a_donners->fetchAll(PDO::FETCH_ASSOC);
 
+
+$pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
+
+
 ?>
  
 <!DOCTYPE html>
@@ -193,7 +197,7 @@ $pointParlivreurs= $getPoints_a_donners->fetchAll(PDO::FETCH_ASSOC);
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
           <div class="image">
-            <img src="dossier_avatars/<?php echo $_SESSION['avatar']; ?>" class="img-circle elevation-2" alt="Logo">
+            <img src="../dossiers_images/<?php echo $_SESSION['avatar']; ?>" class="img-circle elevation-2" alt="Logo">
             <!-- <img src="../../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">-->
           </div>
           <div class="info">
@@ -555,7 +559,11 @@ $pointParlivreurs= $getPoints_a_donners->fetchAll(PDO::FETCH_ASSOC);
                     <?php foreach ($pointParclients as $pointParclient) : ?>
                       <tr>
                         <td>
-                          <?= $pointParclient['boutique_nom'] ?>
+                        
+                       <a href="colis_livres_clients.php?id=<?= $pointParclient['utilisateur_id'] ?>">                 
+                        <?= $pointParclient['boutique_nom'] ?>
+                        </a> 
+                  
                         </td>
                         <td><?= $pointParclient['total_amount'] ?></td>
                         <td><?= $pointParclient['total_cout_livraison'] ?></td>
@@ -655,7 +663,7 @@ $pointParlivreurs= $getPoints_a_donners->fetchAll(PDO::FETCH_ASSOC);
         <!-- TABLE: LATEST ORDERS -->
         <div class="card">
           <div class="card-header border-transparent">
-            <h3 class="card-title">Latest Orders</h3>
+            <h3 class="card-title">Point livreur</h3>
 
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -672,79 +680,34 @@ $pointParlivreurs= $getPoints_a_donners->fetchAll(PDO::FETCH_ASSOC);
               <table class="table m-0">
                 <thead>
                   <tr>
-                    <th>Order ID</th>
-                    <th>Item</th>
-                    <th>Status</th>
-                    <th>Popularity</th>
+                    <th>Livreur</th>
+                    <th>Recette</th>
+                    <th>Dépense</th>
+                    <th>Gain</th>
                   </tr>
                 </thead>
                 <tbody>
+                <?php foreach ($pointParlivreur_gains as $pointParlivreur_gain) : ?>
                   <tr>
-                    <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                    <td>Call of Duty IV</td>
-                    <td><span class="badge badge-success">Shipped</span></td>
+                    <td>              
+                        <?= $pointParlivreur_gain['nom_livreur'] ?>
+                  </td>
                     <td>
-                      <div class="sparkbar" data-color="#00a65a" data-height="20">90,80,90,-70,61,-83,63</div>
+                    <?= $pointParlivreur_gain['somme_cout_livraison'] ?>
+                    </td>
+                    <td><span class="badge badge-success"><?= $pointParlivreur_gain['somme_depenses'] ?></span></td>
+                    <td>
+                      <div class="sparkbar" data-color="#00a65a" data-height="20"><?= $pointParlivreur_gain['gain_par_livreur'] ?></div>
                     </td>
                   </tr>
-                  <tr>
-                    <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                    <td>Samsung Smart TV</td>
-                    <td><span class="badge badge-warning">Pending</span></td>
-                    <td>
-                      <div class="sparkbar" data-color="#f39c12" data-height="20">90,80,-90,70,61,-83,68</div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                    <td>iPhone 6 Plus</td>
-                    <td><span class="badge badge-danger">Delivered</span></td>
-                    <td>
-                      <div class="sparkbar" data-color="#f56954" data-height="20">90,-80,90,70,-61,83,63</div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                    <td>Samsung Smart TV</td>
-                    <td><span class="badge badge-info">Processing</span></td>
-                    <td>
-                      <div class="sparkbar" data-color="#00c0ef" data-height="20">90,80,-90,70,-61,83,63</div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                    <td>Samsung Smart TV</td>
-                    <td><span class="badge badge-warning">Pending</span></td>
-                    <td>
-                      <div class="sparkbar" data-color="#f39c12" data-height="20">90,80,-90,70,61,-83,68</div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                    <td>iPhone 6 Plus</td>
-                    <td><span class="badge badge-danger">Delivered</span></td>
-                    <td>
-                      <div class="sparkbar" data-color="#f56954" data-height="20">90,-80,90,70,-61,83,63</div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                    <td>Call of Duty IV</td>
-                    <td><span class="badge badge-success">Shipped</span></td>
-                    <td>
-                      <div class="sparkbar" data-color="#00a65a" data-height="20">90,80,90,-70,61,-83,63</div>
-                    </td>
-                  </tr>
+
+                  <?php endforeach; ?>
                 </tbody>
               </table>
             </div>
             <!-- /.table-responsive -->
           </div>
           <!-- /.card-body -->
-          <div class="card-footer clearfix">
-            <a href="javascript:void(0)" class="btn btn-sm btn-info float-left">Place New Order</a>
-            <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Orders</a>
-          </div>
           <!-- /.card-footer -->
         </div>
         <!-- /.card -->
@@ -766,13 +729,6 @@ $pointParlivreurs= $getPoints_a_donners->fetchAll(PDO::FETCH_ASSOC);
   <!-- /.control-sidebar -->
 
   <!-- Main Footer -->
-  <footer class="main-footer">
-    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong>
-    All rights reserved.
-    <div class="float-right d-none d-sm-inline-block">
-      <b>Version</b> 3.2.0
-    </div>
-  </footer>
   </div>
   <!-- ./wrapper -->
 

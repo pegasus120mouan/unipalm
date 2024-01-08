@@ -338,12 +338,6 @@ if (!isset($_SESSION['user_id'])) {
                     <p>Particulier</p>
                   </a>
                 </li>
-                <li class="nav-item">
-                  <a href="pages/UI/icons.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Boutique</p>
-                  </a>
-                </li>
               </ul>
             </li>
             <li class="nav-item">

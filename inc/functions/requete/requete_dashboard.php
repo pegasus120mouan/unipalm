@@ -67,6 +67,38 @@ u.id, b.nom";
 $getPoints_clients= $conn->prepare($sqlpoints);
 $getPoints_clients->execute();
 
+// requete statistiques livreurs
+$sqlpoints_somme="SELECT 
+CONCAT(livreur.nom, ' ', livreur.prenoms) AS nom_livreur,
+SUM(commandes.cout_livraison) AS somme_cout_livraison,
+MAX(points_livreurs.depense) AS somme_depenses,
+SUM(commandes.cout_livraison) - MAX(points_livreurs.depense) AS gain_par_livreur
+FROM commandes
+JOIN utilisateurs AS livreur ON commandes.livreur_id = livreur.id
+LEFT JOIN points_livreurs ON livreur.id = points_livreurs.utilisateur_id AND DATE(points_livreurs.date_commande) = CURDATE()
+WHERE DATE(commandes.date_commande) = CURDATE() AND commandes.statut = 'livré'
+GROUP BY livreur.nom, livreur.prenoms";
+
+
+
+$getPoints_Livreurs= $conn->prepare($sqlpoints_somme);
+$getPoints_Livreurs->execute();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
