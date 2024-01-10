@@ -84,28 +84,9 @@ GROUP BY livreur.nom, livreur.prenoms";
 $getPoints_Livreurs= $conn->prepare($sqlpoints_somme);
 $getPoints_Livreurs->execute();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 $sql_a_donner="SELECT
 b.nom AS nom_boutique,
-concat(u.nom,'  ', u.prenoms) as fullname,
+CONCAT(u.nom, ' ', u.prenoms) AS fullname,
 COALESCE(SUM(c.cout_global), 0) AS cout_global,
 COALESCE(SUM(pl.depense), 0) AS depense,
 COALESCE(SUM(c.cout_global) - SUM(pl.depense), 0) AS montant_a_remettre
@@ -121,6 +102,7 @@ FROM
     commandes
 WHERE
     DATE(date_commande) = CURRENT_DATE
+    AND statut = 'Livré'
 GROUP BY
     livreur_id
 ) c ON u.id = c.livreur_id
