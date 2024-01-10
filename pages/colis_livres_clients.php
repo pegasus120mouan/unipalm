@@ -2,7 +2,7 @@
 //require_once '../inc/functions/connexion.php';
 
 include('header.php');
-require_once '../inc/functions/requete/clients/requete_commandes_clients.php';
+//require_once '../inc/functions/requete/clients/requete_commandes_clients.php';
 
 
 

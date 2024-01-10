@@ -616,7 +616,14 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
                     <tbody>
                     <?php foreach ($pointParlivreurs as $pointParlivreur) : ?>
                       <tr>
-                      <td style="color: black;"><?= $pointParlivreur['fullname'] ?></td>
+                        
+                      <td style="color: black;">
+                        
+                        <a href="colis_livres_clients_livreurs.php?id=<?= $pointParlivreur['livreur_id'] ?>">                 
+                         <?= $pointParlivreur['fullname'] ?>
+                         </a> 
+                   
+                         </td>
                       <td style="color: black;"><?= $pointParlivreur['cout_global'] ?></td>
                       <td style="color: black;"><?= $pointParlivreur['depense'] ?></td>
                       <td style="color: black;"><?= $pointParlivreur['montant_a_remettre'] ?></td>

@@ -85,7 +85,7 @@ $getPoints_Livreurs= $conn->prepare($sqlpoints_somme);
 $getPoints_Livreurs->execute();
 
 $sql_a_donner="SELECT
-b.nom AS nom_boutique,
+u.id AS livreur_id,
 CONCAT(u.nom, ' ', u.prenoms) AS fullname,
 COALESCE(SUM(c.cout_global), 0) AS cout_global,
 COALESCE(SUM(pl.depense), 0) AS depense,
@@ -120,7 +120,7 @@ GROUP BY
 WHERE
 c.livreur_id IS NOT NULL OR pl.utilisateur_id IS NOT NULL
 GROUP BY
-b.nom, u.id, u.nom, u.prenoms";
+b.nom, u.id, u.nom, u.prenoms;";
 $getPoints_a_donners= $conn->prepare($sql_a_donner);
 $getPoints_a_donners->execute();
 
