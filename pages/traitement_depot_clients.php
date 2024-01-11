@@ -50,8 +50,8 @@ if (isset($_POST['client']) && isset($_POST['date_debut']) && isset($_POST['date
     $pdf->SetFont('Helvetica','',12);
     $pdf->Cell(50,7,"$client",0,1);
     $pdf->SetFont('Helvetica','',12);
-    $pdf->Cell(50,7,"$date_debut",0,1);
-    $pdf->Cell(50,7,"$date_fin",0,1);
+    $pdf->Cell(50,7,"Du: $date_debut",0,1);
+    $pdf->Cell(50,7,"Au: $date_fin",0,1);
     $pdf->Ln(7);
 
     // Ajoutez les données dans le PDF

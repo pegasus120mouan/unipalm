@@ -404,7 +404,7 @@ if (!isset($_SESSION['user_id'])) {
               </a>
              </li>
             <li class="nav-item">
-              <a href="analytics/commandes_test.php" class="nav-link">
+              <a href="analytics/vue_gestion_caisse.php" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>
                   Caisse
