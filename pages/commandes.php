@@ -12,9 +12,11 @@ $livreurs = $getStatut->fetchAll(PDO::FETCH_ASSOC);
 //$users = $stmt->fetchAll();
 //foreach($users as $user)
 $limit = $_GET['limit'] ?? 15;
-$commande_set = array_chunk($commandes, $limit );
-$commandes_list = $commande_set[$_GET['page'] ?? 0] ;
+$commande_pages = array_chunk($commandes, $limit );
+$commandes_list = $commande_pages[$_GET['page'] ?? 0] ;
 //var_dump($commandes_list);
+
+
 ?>
 
 
@@ -69,6 +71,19 @@ label {
   </button>
 
   <a class="btn btn-outline-secondary" href="commandes_print.php"><i class="fa fa-print" style="font-size:24px;color:green"></i></a>
+
+
+    <!-- Utilisation du formulaire Bootstrap avec ms-auto pour aligner à droite -->
+    <form action="page_recherche.php" method="GET" class="d-flex ml-auto">
+    <input class="form-control me-2" type="search" name="recherche" style="width: 400px;" placeholder="Recherche..." aria-label="Search">
+    <button class="btn btn-outline-primary" type="submit">Rechercher</button>
+</form>
+
+
+
+
+
+
   <table style="max-height: 90vh !important; overflow-y: scroll !important" id="example1" class="table table-bordered table-striped">
     <thead>
       <tr>
@@ -192,10 +207,18 @@ label {
       <?php endforeach; ?>
     </tbody>
   </table>
-  <div class="pagination-container">
-    <?php for ($i = 0; $i < count($commande_set); $i++): ?>
-        <a class="pagination-link" href="?page=<?= $i ?>"><?= $i + 1 ?></a>
-    <?php endfor; ?>
+  <div class="pagination-container bg-secondary d-flex justify-content-center w-100 text-white p-3">
+
+    <?php if($_GET['page'] > 1 ): ?>
+    <a href="?page=<?= (int) $_GET['page'] - 1 ?>" class="btn btn-primary"><</a>
+    <?php endif; ?>
+      
+    <span><?= $_GET['page'] .'/'. count($commande_pages) ?></span>
+    <span class="mx-2"><?php if($_GET['page'] < count($commande_pages) ): ?></span>
+    
+    <a href="?page=<?= (int) $_GET['page'] + 1 ?>" class="btn btn-primary">></a>
+    <?php endif; ?>
+
 
     <form action="" method="get" class="items-per-page-form">
         <label for="limit">Afficher :</label>
