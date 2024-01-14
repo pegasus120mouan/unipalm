@@ -122,9 +122,6 @@ $commandes_non_livrees = $requete_non_colis->fetchAll();
 
 
 
-
-
-
 $getLivreursQuery = "SELECT id, CONCAT(nom, ' ', prenoms) AS client_name 
                    FROM utilisateurs 
                    WHERE role NOT IN ('admin', 'livreur')";
@@ -162,9 +159,9 @@ $getLivreursQueryStmt = $conn->query($getLivreursQuery);
 $cout_livraison = $conn->query("SELECT cout_livraison FROM cout_livraison"); 
 
 
-//$getLivreurs = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS livreur_name 
-//FROM utilisateurs  where role like 'livreur' ");
+$getLivreurs = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS livreur_name 
+FROM utilisateurs  where role like 'livreur' ");
 
-//$getStatut = $conn->query("SELECT statut FROM statut_livraison");
+$getStatut = $conn->query("SELECT statut FROM statut_livraison");
 
 ?>

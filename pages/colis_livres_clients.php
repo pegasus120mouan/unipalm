@@ -9,7 +9,12 @@ require_once '../inc/functions/requete/clients/requete_commandes_clients.php';
 $id_boutique=$_GET['id'];
 //$login_user=$_SESSION['user_login'];
 
-$getStatut = $conn->query("SELECT statut FROM statut_livraison");
+//$getStatut = $conn->query("SELECT statut FROM statut_livraison");
+//$livreurs = $getStatut->fetchAll(PDO::FETCH_ASSOC);
+
+
+$rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
+
 $livreurs = $getStatut->fetchAll(PDO::FETCH_ASSOC);
 
 

@@ -19,7 +19,14 @@ $point_livreurs = $stmt->fetchAll();
 $livreurs_selection = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS nom_prenoms FROM livreurs");
 
 
+$limit = $_GET['limit'] ?? 15;
+//$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 15; // Set a default value for $limit
 
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+$points_pages = array_chunk($point_livreurs, $limit );
+//$commandes_list = $commande_pages[$_GET['page'] ?? ] ;
+$points_list = $points_pages[$page - 1] ?? [];
 
 ?>
 <!-- Main row -->
@@ -46,7 +53,7 @@ $livreurs_selection = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS nom_
     </tr>
   </thead>
   <tbody>
-    <?php foreach ($point_livreurs as $point_livreur) : ?>
+    <?php foreach ($points_list as $point_livreur) : ?>
     <tr>
     <!--  <td><?= $point_livreur['point_livreur_id'] ?></td> -->
       <td><?= $point_livreur['livreur_nom'] ?></td>
@@ -64,6 +71,36 @@ $livreurs_selection = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS nom_
     <?php endforeach; ?>
   </tbody>
 </table>
+
+<div class="pagination-container bg-secondary d-flex justify-content-center w-100 text-white p-3">
+    <?php if($page > 1 ): ?>
+        <a href="?page=<?= $page - 1 ?>" class="btn btn-primary"><</a>
+    <?php endif; ?>
+
+    <span><?= $page . '/' . count($points_pages) ?></span>
+
+    <?php if($page < count($points_pages)): ?>
+        <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">></a>
+    <?php endif; ?>
+
+    <form action="" method="get" class="items-per-page-form">
+        <label for="limit">Afficher :</label>
+        <select name="limit" id="limit" class="items-per-page-select">
+            <option value="5" <?php if ($limit == 5) { echo 'selected'; } ?> >5</option>
+            <option value="10" <?php if ($limit == 10) { echo 'selected'; } ?>>10</option>
+            <option value="15" <?php if ($limit == 15) { echo 'selected'; } ?>>15</option>
+        </select>
+        <button type="submit" class="submit-button">Valider</button>
+    </form>
+</div>
+
+
+
+
+
+
+
+
 <div class="modal fade" id="add-point">
   <div class="modal-dialog">
     <div class="modal-content">

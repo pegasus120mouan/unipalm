@@ -11,9 +11,14 @@ $livreurs = $getStatut->fetchAll(PDO::FETCH_ASSOC);
 //$stmt->execute();
 //$users = $stmt->fetchAll();
 //foreach($users as $user)
+
 $limit = $_GET['limit'] ?? 15;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
 $commande_pages = array_chunk($commandes, $limit );
-$commandes_list = $commande_pages[$_GET['page'] ?? 0] ;
+//$commandes_list = $commande_pages[$_GET['page'] ?? ] ;
+$commandes_list = $commande_pages[$page - 1] ?? [];
+
 //var_dump($commandes_list);
 
 
@@ -208,17 +213,15 @@ label {
     </tbody>
   </table>
   <div class="pagination-container bg-secondary d-flex justify-content-center w-100 text-white p-3">
-
-    <?php if($_GET['page'] > 1 ): ?>
-    <a href="?page=<?= (int) $_GET['page'] - 1 ?>" class="btn btn-primary"><</a>
-    <?php endif; ?>
-      
-    <span><?= $_GET['page'] .'/'. count($commande_pages) ?></span>
-    <span class="mx-2"><?php if($_GET['page'] < count($commande_pages) ): ?></span>
-    
-    <a href="?page=<?= (int) $_GET['page'] + 1 ?>" class="btn btn-primary">></a>
+    <?php if($page > 1 ): ?>
+        <a href="?page=<?= $page - 1 ?>" class="btn btn-primary"><</a>
     <?php endif; ?>
 
+    <span><?= $page . '/' . count($commande_pages) ?></span>
+
+    <?php if($page < count($commande_pages)): ?>
+        <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">></a>
+    <?php endif; ?>
 
     <form action="" method="get" class="items-per-page-form">
         <label for="limit">Afficher :</label>
