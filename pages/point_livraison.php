@@ -28,7 +28,50 @@ $points_pages = array_chunk($point_livreurs, $limit );
 //$commandes_list = $commande_pages[$_GET['page'] ?? ] ;
 $points_list = $points_pages[$page - 1] ?? [];
 
+
+
+
 ?>
+<style>
+  .pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination-link {
+    padding: 8px;
+    text-decoration: none;
+    color: white;
+    background-color: #007bff; /* Bleu */
+    border: 1px solid #007bff;
+    border-radius: 4px; /* Ajout de la bordure arrondie */
+    margin-right: 4px;
+}
+
+.items-per-page-form {
+    margin-left: 20px;
+}
+
+label {
+    margin-right: 5px;
+}
+
+.items-per-page-select {
+    padding: 6px;
+    border-radius: 4px; /* Ajout de la bordure arrondie */
+}
+
+.submit-button {
+    padding: 6px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px; /* Ajout de la bordure arrondie */
+    cursor: pointer;
+}
+</style>
 <!-- Main row -->
 <div class="row">
   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-point">
@@ -93,13 +136,6 @@ $points_list = $points_pages[$page - 1] ?? [];
         <button type="submit" class="submit-button">Valider</button>
     </form>
 </div>
-
-
-
-
-
-
-
 
 <div class="modal fade" id="add-point">
   <div class="modal-dialog">
