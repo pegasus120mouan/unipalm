@@ -1,0 +1,17 @@
+{
+    "name": "souleymane/ovl-delivery",
+    "autoload": {
+        "psr-4": {
+            "Souleymane\\OvlDelivery\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "pegasus120mouan",
+            "email": "coulibaly.fisher@yahoo.com"
+        }
+    ],
+    "require": {
+        "twilio/sdk": "^7.13"
+    }
+}
