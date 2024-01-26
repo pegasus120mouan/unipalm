@@ -382,7 +382,7 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
             </li>
             <li class="nav-header">CAISSE</li>
             <li class="nav-item">
-              <a href="pages/calendar.html" class="nav-link">
+              <a href="analytics/vuegenerale_soldes.php" class="nav-link">
                 <i class="nav-icon far fa-calendar-alt"></i>
                 <p>
                   Soldes
@@ -399,7 +399,7 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
               </a>
             </li>
             <li class="nav-item">
-              <a href="pages/kanban.html" class="nav-link">
+              <a href="imprevus.php" class="nav-link">
                 <i class="nav-icon fas fa-columns"></i>
                 <p>
                   Depenses
