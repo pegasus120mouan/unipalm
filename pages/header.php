@@ -460,7 +460,7 @@ if (!isset($_SESSION['user_id'])) {
               <i class="fa fa-arrow-right"></i>
 
                 <p>
-                  Déconnexion
+                  Déconnexion1
                 </p>
               </a>
            </li>
