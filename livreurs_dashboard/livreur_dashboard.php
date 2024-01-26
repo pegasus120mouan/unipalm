@@ -48,12 +48,63 @@ $livreurs = $getStatut->fetchAll(PDO::FETCH_ASSOC);
 //$users = $stmt->fetchAll();
 //foreach($users as $user)
 
+$limit = $_GET['limit'] ?? 15;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+$commande_livreurs_pages = array_chunk($commande_livreurs, $limit );
+//$commandes_list = $commande_pages[$_GET['page'] ?? ] ;
+$commandes_livreurs_list = $commande_livreurs_pages[$page - 1] ?? [];
+
+//var_dump($commandes_list);
+
 ?>
 
 
 
 
 <!-- Main row -->
+<style>
+  .pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination-link {
+    padding: 8px;
+    text-decoration: none;
+    color: white;
+    background-color: #007bff; /* Bleu */
+    border: 1px solid #007bff;
+    border-radius: 4px; /* Ajout de la bordure arrondie */
+    margin-right: 4px;
+}
+
+.items-per-page-form {
+    margin-left: 20px;
+}
+
+label {
+    margin-right: 5px;
+}
+
+.items-per-page-select {
+    padding: 6px;
+    border-radius: 4px; /* Ajout de la bordure arrondie */
+}
+
+.submit-button {
+    padding: 6px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px; /* Ajout de la bordure arrondie */
+    cursor: pointer;
+}
+</style>
+
+
 <div class="row">
   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-commande">
     Enregistrer une commande
@@ -81,7 +132,7 @@ $livreurs = $getStatut->fetchAll(PDO::FETCH_ASSOC);
       </tr>
     </thead>
     <tbody>
-      <?php foreach ($commande_livreurs as $commande_livreur) : ?>
+      <?php foreach ($commandes_livreurs_list as $commande_livreur) : ?>
       <tr>
      <!--   <td><?= $commande_livreur['commande_id'] ?></td>-->
         <td><?= $commande_livreur['commande_communes'] ?></td>
@@ -226,6 +277,38 @@ $livreurs = $getStatut->fetchAll(PDO::FETCH_ASSOC);
       <?php endforeach; ?>
     </tbody>
   </table>
+
+  <div class="pagination-container bg-secondary d-flex justify-content-center w-100 text-white p-3">
+    <?php if($page > 1 ): ?>
+        <a href="?page=<?= $page - 1 ?>" class="btn btn-primary"><</a>
+    <?php endif; ?>
+
+    <span><?= $page . '/' . count($commande_livreurs_pages) ?></span>
+
+    <?php if($page < count($commande_livreurs_pages)): ?>
+        <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">></a>
+    <?php endif; ?>
+
+    <form action="" method="get" class="items-per-page-form">
+        <label for="limit">Afficher :</label>
+        <select name="limit" id="limit" class="items-per-page-select">
+            <option value="5" <?php if ($limit == 5) { echo 'selected'; } ?> >5</option>
+            <option value="10" <?php if ($limit == 10) { echo 'selected'; } ?>>10</option>
+            <option value="15" <?php if ($limit == 15) { echo 'selected'; } ?>>15</option>
+        </select>
+        <button type="submit" class="submit-button">Valider</button>
+    </form>
+</div>
+
+
+
+
+
+
+
+
+
+
   <div class="modal fade" id="add-commande">
     <div class="modal-dialog">
       <div class="modal-content">
