@@ -66,7 +66,7 @@ $livreurs = $getStatut->fetchAll(PDO::FETCH_ASSOC);
   <table id="example1" class="table table-bordered table-striped">
     <thead>
       <tr>
-        <th>ID</th>
+       <!-- <th>ID</th>-->
         <th>Communes</th>
         <th>Coût Global</th>
         <th>Livraison</th>
@@ -83,7 +83,7 @@ $livreurs = $getStatut->fetchAll(PDO::FETCH_ASSOC);
     <tbody>
       <?php foreach ($commande_livreurs as $commande_livreur) : ?>
       <tr>
-        <td><?= $commande_livreur['commande_id'] ?></td>
+     <!--   <td><?= $commande_livreur['commande_id'] ?></td>-->
         <td><?= $commande_livreur['commande_communes'] ?></td>
         <td><?= $commande_livreur['commande_cout_global'] ?></td>
         <td><?= $commande_livreur['commande_cout_livraison'] ?></td>
