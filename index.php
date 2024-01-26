@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- /.login-logo -->
     <div class="card card-outline card-primary">
       <div class="card-header text-center">
-        <a href="../../index2.html" class="h1"><b>
+        <a href="index.php" class="h1"><b>
             <img src="../../dist/img/logo.png" alt="User Avatar" class="img-size-80 mr-3 img-circle">
         </a>
       </div>

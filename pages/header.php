@@ -457,7 +457,8 @@ if (!isset($_SESSION['user_id'])) {
 
             <li class="nav-item">
               <a href="../logout.php" class="nav-link">
-              <i class="fa fa-external-link"></i>
+              <i class="fa fa-arrow-right"></i>
+
                 <p>
                   Déconnexion
                 </p>
