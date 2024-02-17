@@ -625,7 +625,7 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
                          <?= $pointParlivreur['fullname'] ?>
                          </a> 
                    
-                         </td>
+                      </td>
                       <td style="color: black;"><?= $pointParlivreur['cout_global'] ?></td>
                       <td style="color: black;"><?= $pointParlivreur['depense'] ?></td>
                       <td style="color: black;"><?= $pointParlivreur['montant_a_remettre'] ?></td>

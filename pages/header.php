@@ -396,6 +396,19 @@ if (!isset($_SESSION['user_id'])) {
 
               </ul>
             </li>
+             <li class="nav-item">
+              <a href="cout_livraison.php" class="nav-link">
+                <i class="nav-icon far fa-calendar-alt"></i>
+                <p>
+                  Coût Livraison
+                </p>
+              </a>
+             </li>
+
+
+
+
+
           <li class="nav-header">CAISSE</li>
              <li class="nav-item">
               <a href="analytics/vuegenerale_soldes.php" class="nav-link">

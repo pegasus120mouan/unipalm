@@ -1,45 +1,22 @@
 <?php
 
-//$nombreParPage = 10;
-//$pageCourante = isset($_GET['page']) ? $_GET['page'] : 1;
-//$offset = ($pageCourante - 1) * $nombreParPage;
 
-//$stmt = $conn->prepare("SELECT * FROM commandes ORDER BY date DESC limit $offset,$pageCourante ");
-//$stmt = $conn->prepare("SELECT * FROM commandes");
+$sql_zones="SELECT zone_id, nom_zone
+FROM Zones";
 
-//$stmt->execute();
-//$commandes = $stmt->fetchAll();
+$getZones= $conn->prepare($sql_zones);
+$getZones->execute();
 
-//
+
 // Toutes les commandes
 $stmt = $conn->prepare(
-    "SELECT 
-    commandes.id AS commande_id, 
-    commandes.communes AS commande_communes, 
-    commandes.cout_global AS commande_cout_global, 
-    commandes.cout_livraison AS commande_cout_livraison, 
-    commandes.cout_reel AS commande_cout_reel, 
-    commandes.statut AS commande_statut, 
-
-    commandes.date_commande, 
-    
-    utilisateurs.nom AS nom_utilisateur, 
-    utilisateurs.prenoms AS prenoms_utilisateur,
-    boutiques.nom AS nom_boutique, 
-    livreur.nom AS nom_livreur, 
-    livreur.prenoms AS prenoms_livreur, 
-    concat(livreur.nom, ' ',livreur.prenoms) AS fullname,
-    utilisateurs.role
-FROM commandes
-JOIN utilisateurs ON commandes.utilisateur_id = utilisateurs.id
-JOIN boutiques ON utilisateurs.boutique_id = boutiques.id
-LEFT JOIN utilisateurs AS livreur ON commandes.livreur_id = livreur.id ORDER BY commandes.date_commande DESC "
-
-
+    "SELECT Communes.nom_commune, Communes.prix, Zones.nom_zone
+    FROM Communes
+    JOIN Zones ON Communes.zone_id = Zones.zone_id;"
 );
 //$stmt->bindParam(':user_id', $user_id);
 $stmt->execute();
-$commandes = $stmt->fetchAll();
+$cout_livraisons = $stmt->fetchAll();
 
 
 // Commandes livrees
@@ -153,6 +130,8 @@ $getClientsStmt = $conn->query($getClientsQuery);
 //$livreurs_selection = $conn->query("SELECT prenom_livreur FROM livreurs"); 
 
 $cout_livraison = $conn->query("SELECT cout_livraison FROM cout_livraison");
+
+$liste_commune = $conn->query("SELECT commune_id,nom_commune from communes");
 
 
 $getLivreurs = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS livreur_name 

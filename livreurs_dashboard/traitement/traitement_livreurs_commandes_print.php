@@ -100,7 +100,7 @@ if (isset($_POST['client']) && isset($_POST['date'])) {
             $total = $total + $row['cout_global'];
             $pdf->Cell(50, 5, $row['communes'], 1);
             $pdf->Cell(50, 5, $row['cout_global'], 1);
-            $pdf->Cell(50, 5, $row['statut'], 1);
+            $pdf->Cell(50, 5, utf8_decode($row['statut']), 1);
             $pdf->Cell(30, 5, $row['boutique_nom'], 1);
             $pdf->Ln();
         }
