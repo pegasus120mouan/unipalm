@@ -86,7 +86,7 @@ join boutiques on clients.boutique_id=boutiques.id having boutique_nom=:client a
             $total = $total + $row['cout_reel'];
             $pdf->Cell(50, 10, $row['communes'], 1);
             $pdf->Cell(50, 10, $row['cout_reel'], 1);
-            $pdf->Cell(50, 10, $row['statut'], 1);
+            $pdf->Cell(50, 10, utf8_decode($row['statut']), 1);
             $pdf->Ln();
         }
 
