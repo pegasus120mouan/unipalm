@@ -2,8 +2,10 @@
 require('../fpdf/fpdf.php'); 
 require_once '../inc/functions/connexion.php';   
 
-if (isset($_POST['communes'])) {
-    $id_communes = $_POST['communes'];
+//if (isset($_POST['communes'])) {
+   // $id_communes = $_POST['communes'];
+
+   $id_communes = $_GET['id'];
 
     try {
         // Étape 2 : Exécuter la requête SQL pour récupérer les données des communes et des prix correspondants
@@ -30,11 +32,20 @@ if (isset($_POST['communes'])) {
 
         $pdf->Ln(); // Passer à la ligne suivante
 
+        $pdf->SetFont('Arial', '', 12); // Définit la police et la taille de la police
+$pdf->SetFillColor(192, 192, 192); // Gris clair
+$pdf->MultiCell(0, 8, utf8_decode("Type de Livraisons : Programmées"), 0, 'C', true); // La bordure est définie sur 0 pour supprimer les bordures
+$pdf->Ln(); // Saut de ligne après le titre
+ 
         $pdf-> SetFont('Arial', 'I', 14, 'UTF-8');
         // En-têtes des colonnes
-        $pdf->Cell(70,10,utf8_decode("Commune de récuperation"),1,0,'C');
-        $pdf->Cell(70,10,"Commune de destination",1,0,'C');
-        $pdf->Cell(50,10,utf8_decode("Coût de livraison"),1,1,'C');
+    
+        $pdf->SetFillColor(192, 192, 192); // Gris clair
+$pdf->Cell(70, 10, utf8_decode("Commune de récuperation"), 1, 0, 'C', true); // Le dernier paramètre true indique de remplir la cellule avec la couleur définie
+$pdf->SetFillColor(192, 192, 192); // Gris clair
+$pdf->Cell(70, 10, "Commune de destination", 1, 0, 'C', true);
+$pdf->SetFillColor(192, 192, 192); // Gris clair
+$pdf->Cell(50, 10, utf8_decode("Coût de livraison"), 1, 1, 'C', true);
 
         // Affichage des données
         foreach ($resultat as $row) {
@@ -53,7 +64,7 @@ if (isset($_POST['communes'])) {
     // Étape 5 : Fermer la connexion à la base de données
     $conn = null;
   
-} else {
-    echo "Veuillez sélectionner une commune.";
-}
+//} else {
+ //   echo "Veuillez sélectionner une commune.";
+//}
 ?>

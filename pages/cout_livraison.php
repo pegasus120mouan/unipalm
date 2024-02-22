@@ -128,6 +128,10 @@ $coutlivraison_list = $coutlivraison_pages[$page - 1] ?? [];
     <button class="button2">
         <a href="zone_delete.php?id=<?= $cout_livraison['zone_id'] ?>" class="trash"><i class="fas fa-trash fa-xs"></i></a>
     </button>
+
+   <button class="button2">
+        <a href="traitement_coutlivraison_print.php?id=<?= $cout_livraison['zone_id'] ?>" class="trash"><i class="fas fa-print fa-xs"></i></a>
+    </button>
 </td>
         </tr>
       <?php endforeach; ?>

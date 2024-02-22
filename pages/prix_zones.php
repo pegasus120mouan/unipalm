@@ -55,7 +55,7 @@ $coutlivraison_list = $coutlivraison_pages[$page - 1] ?? [];
     Enregistrer un prix
   </button>
 
-  <a class="btn btn-outline-secondary" href="commandes_print.php"><i class="fa fa-print" style="font-size:24px;color:green"></i></a>
+  <a class="btn btn-outline-secondary" href="coutlivraison_print.php"><i class="fa fa-print" style="font-size:24px;color:green"></i></a>
 
 
     <!-- Utilisation du formulaire Bootstrap avec ms-auto pour aligner à droite -->
