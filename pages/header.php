@@ -400,7 +400,7 @@ if (!isset($_SESSION['user_id'])) {
               <a href="cout_livraison.php" class="nav-link">
                 <i class="nav-icon far fa-calendar-alt"></i>
                 <p>
-                  Coût Livraison1
+                  Coût Livraison122222222222
                 </p>
               </a>
              </li>
