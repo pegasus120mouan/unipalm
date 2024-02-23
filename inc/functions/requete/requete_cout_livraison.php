@@ -2,7 +2,7 @@
 
 
 $sql_zones="SELECT zone_id, nom_zone
-FROM Zones";
+FROM zones";
 
 $getZones= $conn->prepare($sql_zones);
 $getZones->execute();
@@ -10,9 +10,9 @@ $getZones->execute();
 
 // Toutes les commandes
 $stmt = $conn->prepare(
-    "SELECT Communes.nom_commune, Communes.prix, Zones.nom_zone
-    FROM Communes
-    JOIN Zones ON Communes.zone_id = Zones.zone_id;"
+    "SELECT communes.nom_commune, communes.prix, zones.nom_zone
+    FROM communes
+    JOIN zones ON communes.zone_id = zones.zone_id;"
 );
 //$stmt->bindParam(':user_id', $user_id);
 $stmt->execute();
