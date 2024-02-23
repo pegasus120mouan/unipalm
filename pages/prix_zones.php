@@ -18,15 +18,15 @@ $id_zones= $_GET['id'];
 
 
 $requete = $conn->prepare("SELECT 
-Communes.commune_id AS commune_id,
-Communes.nom_commune AS nom_commune, 
-Prix.montant AS prix_livraison, 
-Zones.nom_zone AS nom_zone
-FROM Communes
-JOIN Communes_Zones ON Communes.commune_id = Communes_Zones.commune_id
-JOIN Prix ON Communes.commune_id = Prix.commune_id AND Communes_Zones.zone_id = Prix.zone_id
-JOIN Zones ON Communes_Zones.zone_id = Zones.zone_id
-WHERE Communes_Zones.zone_id = :id_zones");
+communes.commune_id AS commune_id,
+communes.nom_commune AS nom_commune, 
+prix.montant AS prix_livraison, 
+zones.nom_zone AS nom_zone
+FROM communes
+JOIN communes_zones ON communes.commune_id = communes_zones.commune_id
+JOIN prix ON communes.commune_id = prix.commune_id AND communes_zones.zone_id = prix.zone_id
+JOIN zones ON communes_zones.zone_id = zones.zone_id
+WHERE communes_zones.zone_id = :id_zones");
 
 $requete->bindParam(':id_zones', $id_zones, PDO::PARAM_INT);
 $requete->execute();
