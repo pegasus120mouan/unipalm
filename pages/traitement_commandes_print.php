@@ -42,18 +42,16 @@ if (isset($_POST['client']) && isset($_POST['date'])) {
    $pdf->Cell(0, 10, "Partenaire: " . $client, 0, 1, 'L'); // Regular text
     
 
-
     $pdf->SetFont('Arial', '', 12);
     $pdf->Cell(0, 10, "Date: $formatted_date", 0, 1, 'L');
 
   // Table headers
-    // Table headers
     $pdf->SetFont('Arial', 'B', 12);
-    $pdf->SetFillColor(192); // Gray color for background
-    $pdf->Cell(60, 10, 'Communes', 1, 0, 'C', true); // true indicates fill
-    $pdf->Cell(60, 10, 'Montant', 1, 0, 'C', true); // true indicates fill
-    $pdf->Cell(60, 10, 'Statut', 1, 1, 'C', true); // true indicates fill
-    $pdf->SetFillColor(255); // Reset fill color
+    $pdf->SetFillColor(192); 
+    $pdf->Cell(60, 10, 'Communes', 1, 0, 'C', true); 
+    $pdf->Cell(60, 10, 'Montant', 1, 0, 'C', true); 
+    $pdf->Cell(60, 10, 'Statut', 1, 1, 'C', true); 
+    $pdf->SetFillColor(255);
 
     // Data
     $pdf->SetFont('Arial', '', 12);
@@ -67,10 +65,10 @@ if (isset($_POST['client']) && isset($_POST['date'])) {
 
     // Total
     $pdf->SetFont('Arial', 'B', 20);
-    $pdf->SetFillColor(0); // Black background
-    $pdf->SetTextColor(255); // White text
-    $pdf->Cell(120, 10, 'Total', 1, 0, 'R', true); // true for filling cell
-    $pdf->Cell(60, 10, $total, 1, 1, 'C', true); // true for filling cell
+    $pdf->SetFillColor(0);
+    $pdf->SetTextColor(255);
+    $pdf->Cell(120, 10, 'Total', 1, 0, 'R', true);
+    $pdf->Cell(60, 10, $total, 1, 1, 'C', true);
 
     // Output PDF
     $pdf->Output();
