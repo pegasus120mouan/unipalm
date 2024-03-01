@@ -46,7 +46,7 @@ if (isset($_POST['client']) && isset($_POST['date'])) {
     $pdf->SetFont('Arial', '', 12);
     $pdf->Cell(0, 10, "Date: $formatted_date", 0, 1, 'L');
 
-
+  // Table headers
     // Table headers
     $pdf->SetFont('Arial', 'B', 12);
     $pdf->SetFillColor(192); // Gray color for background
