@@ -46,7 +46,7 @@ if (isset($_POST['client']) && isset($_POST['date_debut']) && isset($_POST['date
     $pdf->SetY(55);
     $pdf->SetX(10);
     $pdf->SetFont('Helvetica','B',12);
-    $pdf->Cell(50,10,"Point des depot effectué ",0,1);
+    $pdf->Cell(50,10,utf8_decode("Point des dépots effectués"),0,1);
     $pdf->SetFont('Helvetica','',12);
     $pdf->Cell(50,7,"$client",0,1);
     $pdf->SetFont('Helvetica','',12);
