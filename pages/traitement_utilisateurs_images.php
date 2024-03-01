@@ -8,6 +8,7 @@ try {
     
     // Établissez une connexion à la base de données MySQL en utilisant PDO
     // Établissez une connexion à la base de données MySQL en utilisant PDO
+     // Établissez une connexion à la base de données MySQL en utilisant PDO
     $pdo = new PDO("mysql:host=$serveur;dbname=$nomBaseDeDonnees", $nomUtilisateur, $motDePasse);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
