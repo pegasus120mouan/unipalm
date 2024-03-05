@@ -272,8 +272,7 @@ $totalAVerser = (int) $somme_global['sum_cout_global'] -  $somme_depense['somme_
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
           <div class="image">
-          <img src="dossier_photos/<?php echo $_SESSION['avatar']; ?> "  class="img-circle elevation-2"  alt="Logo">
-            <!-- <img src="../../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">-->
+          <img src="../dossiers_images/<?php echo $_SESSION['avatar']; ?> "  class="img-circle elevation-2"  alt="Logo">            <!-- <img src="../../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">-->
           </div>
           <div class="info">
             <a href="#" class="d-block"><?php echo $_SESSION['nom']; ?> <?php echo $_SESSION['prenoms']; ?></a>
