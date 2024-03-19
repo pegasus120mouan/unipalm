@@ -355,31 +355,33 @@ function AddPage($orientation='', $size='', $rotation=0)
 
 function Header()
 {
-	// Police Arial gras 15
-    // Logo
-    $this->Image('../../dist/img/logo.png',10,6,30);
+	$this->Image('../../dist/img/logo.png', 10, 6, 50);
+    
+    // Title
+	//$this->Image('../dist/img/logo.png', 10, 6, 30);
+    
+    // Title
+    $this->SetFont('Helvetica', 'B', 18);
+    $this->Cell(0, 8, 'OVL DELIVERY SERVICES', 0, 1, 'C');
+    
+    // Company information
 	
-    // Police Arial gras 15
-    $this->SetFont('Helvetica','B',23);
-    // Décalage à droite
-    $this->Cell(50);
-	//$this->Write("Je soussigné, Directeur de l'établissement CLEVER SCHOOL 2 PRIVEE EL ATTAOUIA Certifie que : \n");
-    // Titre
-	//$this->RotatedText(35,190,'W a t e r m a r k   d e m o',45);
-    $this->Cell(0, 20, 'OVL DELIVERY SERVICES', 0, 2, 'C');
-	//$this->Cell(0, 20, 'OVL DELIVERY SERVICES', 0, 1, 'C');
-	$this->SetFont('Helvetica','',8);
-      $this->Cell(130,10,'Sarl au Capital de 1 000 000 CFA','',0,'C');
-	  $this->Ln(3);
-	  $this->Cell(220,10,"Cocody Riviera Golf en face de l'Ambassade des USA",'',0,'C');
-	  $this->Ln(3);
-	  $this->Cell(220,10,"Tel: +225 0787703000 - +2250584828385",'',0,'C');
-	  $this->Ln(3);
-	  $this->Cell(230,10,"Email: finance@ovl-delivery.online",'',0,'C');
-	  $this->Ln(3);
-	  $this->Cell(230,10,"ovl-delivery.online",'',0,'C');
-    // Saut de ligne
-    $this->Ln(10);
+    $this->SetFont('Helvetica', '', 8);
+
+    $this->Cell(0, 4, 'Sarl au Capital de 1 000 000 CFA', 0, 1, 'C');
+	$this->Image('../../dist/img/home_icon.png', 67, $this->GetY() + 0, 3);
+    $this->Cell(0, 4, "Cocody Riviera Golf en face de l'Ambassade des USA", 0, 1, 'C');
+	$this->Image('../../dist/img/telephone_icon.png', 74, $this->GetY() + 0, 3);
+    $this->Cell(0, 4, 'Tel: +225 0787703000 - +2250584828385', 0, 1, 'C');
+	$this->Image('../../dist/img/email_icon.png', 78, $this->GetY() + 0, 4);
+    $this->Cell(0, 4, 'Email: finance@ovl-delivery.online', 0, 1, 'C');
+	$this->Image('../../dist/img/website_icon.png', 88, $this->GetY() + 0, 4);
+    $this->Cell(0, 4, 'ovl-delivery.online', 0, 1, 'C');
+	$this->Image('../../dist/img/whatsapp_icon.png', 88, $this->GetY() + 0, 4);
+    $this->Cell(0, 4, '+2250584828385', 0, 1, 'C');
+    
+    // Line break
+    $this->Ln(6);
 }
 
 
@@ -391,7 +393,7 @@ function Footer()
 	 $this->SetFont('Arial', 'I', 8);
 	 //$this->Ln(10);
 	 // Numéro de page centré
-	 $this->Cell(0, 10, 'Sarl au Capital de 1 000 000 CFA', 0, 0, 'C');
+	 $this->Cell(0, 10, 'Sarl au Capital de 1 000 000 CFA // Tel: +225 0787703000 - +2250584828385 // whatsapp: +2250584828385 ', 0, 1, 'C');
 	 $this->Ln(5);
 }
 
