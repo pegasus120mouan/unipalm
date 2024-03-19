@@ -427,6 +427,15 @@ if (!isset($_SESSION['user_id'])) {
                 </p>
               </a>
             </li>
+
+            <li class="nav-item">
+              <a href="dettes.php" class="nav-link">
+                <i class="nav-icon far fa-image"></i>
+                <p>
+                  Dettes
+                </p>
+              </a>
+            </li>
             <li class="nav-item">
               <a href="imprevus.php" class="nav-link">
                 <i class="far fa-money-bill-alt"></i>
