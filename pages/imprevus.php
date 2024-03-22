@@ -1,37 +1,39 @@
 <?php
 require_once '../inc/functions/connexion.php';
-//require_once '../inc/functions/requete/requete_commandes.php'; 
+require_once '../inc/functions/requete/requete_imprevus.php';
 include('header.php');
 
-//$stmt = $conn->prepare("SELECT * FROM points_livreurs ORDER BY date DESC");
+$rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
+
+$getSommeImprevuQuery = "SELECT SUM(montant) AS somme_totale_imprevus
+FROM imprevu";
+$getSommeImprevuQueryStmt = $conn->query($getSommeImprevuQuery);
+$somme_imprevu = $getSommeImprevuQueryStmt->fetch(PDO::FETCH_ASSOC);
+
+
+//$livreurs = $getStatut->fetchAll(PDO::FETCH_ASSOC);
+
+////$stmt = $conn->prepare("SELECT * FROM users");
 //$stmt->execute();
-//$point_livreurs = $stmt->fetchAll();
-
-$stmt = $conn->prepare("SELECT points_livreurs.id AS point_livreur_id, 
-recette, depense, gain_jour, date_commande,utilisateurs.id AS livreur_id, CONCAT(utilisateurs.nom, ' ', utilisateurs.prenoms) AS livreur_nom, 
-utilisateurs.contact AS livreur_contact, utilisateurs.login AS livreur_login, utilisateurs.avatar AS livreur_avatar, 
-utilisateurs.role AS livreur_role, utilisateurs.boutique_id AS livreur_boutique_id FROM points_livreurs 
-JOIN utilisateurs ON points_livreurs.utilisateur_id = utilisateurs.id AND utilisateurs.role = 'livreur' ORDER BY date_commande DESC");
-$stmt->execute();
-$point_livreurs = $stmt->fetchAll();
-
-
-$livreurs_selection = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS nom_prenoms FROM livreurs");
-
+//$users = $stmt->fetchAll();
+//foreach($users as $user)
 
 $limit = $_GET['limit'] ?? 15;
-//$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 15; // Set a default value for $limit
-
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
-$points_pages = array_chunk($point_livreurs, $limit );
+$imprevu_pages = array_chunk($imprevus, $limit );
 //$commandes_list = $commande_pages[$_GET['page'] ?? ] ;
-$points_list = $points_pages[$page - 1] ?? [];
+$imprevus_list = $imprevu_pages[$page - 1] ?? [];
 
-
+//var_dump($commandes_list);
 
 
 ?>
+
+
+
+
+<!-- Main row -->
 <style>
   .pagination-container {
     display: flex;
@@ -72,57 +74,82 @@ label {
     cursor: pointer;
 }
 </style>
-<!-- Main row -->
+
+  <div class="row">
+          <div class="col-md-12 col-sm-6 col-12">
+            <div class="info-box bg-dark">
+            <span class="info-box-icon" style="font-size: 48px;">
+                <i class="fas fa-hand-holding-usd">
+                </i></span>
+              
+              <div class="info-box-content">
+                <span style="text-align: center; font-size: 20px;" class="info-box-text">Total imprevu</span>
+
+                <div class="progress">
+                  <div class="progress-bar" style="width: 100%"></div>
+                </div>
+                <span class="progress-description">
+                <h1 style="text-align: center; font-size: 70px;"><strong><?php echo $somme_imprevu['somme_totale_imprevus']; ?></strong></h1>
+                </span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+  </div>
 <div class="row">
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-point">
-    Enregistrer un point
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-imprevu">
+    Enregistrer un imprevu
   </button>
-  <!--  <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-success">
-                  Launch Success Modal
-                </button>-->
-</div>
+    <!-- Utilisation du formulaire Bootstrap avec ms-auto pour aligner à droite -->
+    <form action="page_recherche.php" method="GET" class="d-flex ml-auto">
+    <input class="form-control me-2" type="search" name="recherche" style="width: 400px;" placeholder="Recherche..." aria-label="Search">
+    <button class="btn btn-outline-primary" type="submit">Rechercher</button>
+</form>
+  <table style="max-height: 90vh !important; overflow-y: scroll !important" id="example1" class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Montant</th>
+        <th>Motifs</th>
+        <th>Générer par</th>
+        <th>Date contraction</th>
+        <th>Actions</th>
+      <!--  <th>Effectuer un paiement</th>-->
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($imprevus_list as $imprevu) : ?>
+        <tr>
+          
+          <td><?= $imprevu['montant'] ?></td>
+          <td><?= $imprevu['motif'] ?></td>
+          <td><?= $imprevu['nom_livreur'] ?></td>
+          <td><?= $imprevu['date_contraction'] ?></td>
+
+          <td class="actions">
+            <a href="imprevus_update.php?id=<?= $imprevu['id'] ?>" class="edit"><i class="fas fa-pen fa-xs" style="font-size:24px;color:blue"></i></a>
+            <a href="delete_imprevus.php?id=<?= $imprevu['id'] ?>" class="trash"><i class="fas fa-trash fa-xs" style="font-size:24px;color:red"></i></a>
+          </td>
 
 
-<table id="example1" class="table table-bordered table-striped">
-  <thead>
-    <tr>
-    <!--  <th>Id</th> -->
-      <th>Livreur</th>
-      <th>recettes</th>
-      <th>Depenses</th>
-      <th>Gain</th>
-      <th>Date</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <?php foreach ($points_list as $point_livreur) : ?>
-    <tr>
-    <!--  <td><?= $point_livreur['point_livreur_id'] ?></td> -->
-      <td><?= $point_livreur['livreur_nom'] ?></td>
-      <td><?= $point_livreur['recette'] ?></td>
-      <td><?= $point_livreur['depense'] ?></td>
-      <td><?= $point_livreur['gain_jour'] ?></td>
-      <td><?= $point_livreur['date_commande'] ?></td>
-      <td class="actions">
-        <a href="point_livraison_update.php?id=<?= $point_livreur['point_livreur_id'] ?>" class="edit"><i
-            class="fas fa-pen fa-xs" style="font-size:24px;color:blue"></i></a>
-        <a href="point_livraison_delete.php?id=<?= $point_livreur['point_livreur_id'] ?>" class="trash"><i
-            class="fas fa-trash fa-xs" style="font-size:24px;color:red"></i></a>
-      </td>
-    </tr>
-    <?php endforeach; ?>
-  </tbody>
-</table>
-
-<div class="pagination-container bg-secondary d-flex justify-content-center w-100 text-white p-3">
+         <td>
+         <a href="versement_detaille.php?id=<?= $dette['dette_id'] ?>">
+          <button type="button" class="btn btn-warning">
+              Détails
+          </button>
+         </a>          
+         </td>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+  <div class="pagination-container bg-secondary d-flex justify-content-center w-100 text-white p-3">
     <?php if($page > 1 ): ?>
         <a href="?page=<?= $page - 1 ?>" class="btn btn-primary"><</a>
     <?php endif; ?>
 
-    <span><?= $page . '/' . count($points_pages) ?></span>
+    <span><?= $page . '/' . count($imprevu_pages) ?></span>
 
-    <?php if($page < count($points_pages)): ?>
+    <?php if($page < count($imprevu_pages)): ?>
         <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">></a>
     <?php endif; ?>
 
@@ -137,57 +164,52 @@ label {
     </form>
 </div>
 
-<div class="modal fade" id="add-point">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Enregistrer une commande</h4>
+
+
+  <div class="modal fade" id="add-imprevu">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Enregistrer un imprévu</h4>
+        </div>
+        <div class="modal-body">
+          <form class="forms-sample" method="post" action="save_imprevu.php">
+            <div class="card-body">
+              <div class="form-group">
+                <label for="exampleInputEmail1">Montant</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Montant" name="montant">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputEmail1">Motif</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Motifs" name="motif">
+              </div>
+              <div class="form-group">
+                    <label>Générer par</label>
+                    <select name="livreur_id" class="form-control">
+                      <?php
+                      foreach ($rows as $row) {
+                        echo '<option value="' . $row['id'] . '">' . $row['livreur_name'] . '</option>';
+                      }
+                      ?></select>
+
+                  </div>
+              <button type="submit" class="btn btn-primary mr-2" name="saveCommande">Enregister</button>
+              <button class="btn btn-light">Annuler</button>
+            </div>
+          </form>
+        </div>
       </div>
-      <div class="modal-body">
-        <form class="forms-sample" method="post" action="save_pointlivraison.php">
-          <div class="form-group">
-            <label>Prenom Livreur</label>
-            <?php
-            echo  '<select id="select" name="livreur_id" class="form-control">';
-            while ($rowLivreur = $livreurs_selection->fetch(PDO::FETCH_ASSOC)) {
-              echo '<option value="' . $rowLivreur['id'] . '">' . $rowLivreur['nom_prenoms'] . '</option>';
-            }
-            echo '</select>'
-            ?>
-          </div>
-
-
-
-
-          <div class="form-group">
-            <label for="exampleInputPassword1">Recettes du jour</label>
-            <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Recette" name="recette">
-          </div>
-
-
-          <div class="form-group">
-            <label for="exampleInputPassword1">Dépenses du jour</label>
-            <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Dépenses du jour"
-              name="depenses">
-          </div>
-
-
-          <button type="submit" class="btn btn-primary mr-2" name="savePLivraison">Enregister</button>
-          <button class="btn btn-light">Annuler</button>
-      </div>
-      </form>
+      <!-- /.modal-content -->
     </div>
+
+
+    <!-- /.modal-dialog -->
   </div>
-  <!-- /.modal-content -->
-</div>
-<!-- /.modal-dialog -->
-</div>
 
 </div>
 
 <!-- /.row (main row) -->
 </div><!-- /.container-fluid -->
-
 <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
@@ -216,6 +238,7 @@ label {
   $.widget.bridge('uibutton', $.ui.button)
 </script>-->
 <!-- Bootstrap 4 -->
+<script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
 
 <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- ChartJS -->
@@ -238,30 +261,60 @@ label {
 <script src="../../plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 <!-- AdminLTE App -->
 <script src="../../dist/js/adminlte.js"></script>
-
 <?php
 
 if (isset($_SESSION['popup']) && $_SESSION['popup'] ==  true) {
-?>
-<script>
-var Toast = Swal.mixin({
-  toast: true,
-  position: 'top-end',
-  showConfirmButton: false,
-  timer: 3000
-});
+  ?>
+    <script>
+      var audio = new Audio("../inc/sons/notification.mp3");
+      audio.volume = 1.0; // Assurez-vous que le volume n'est pas à zéro
+      audio.play().then(() => {
+        // Lecture réussie
+        var Toast = Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000
+        });
+  
+        Toast.fire({
+          icon: 'success',
+          title: 'Action effectuée avec succès.'
+        });
+      }).catch((error) => {
+        console.error('Erreur de lecture audio :', error);
+      });
+    </script>
+  <?php
+    $_SESSION['popup'] = false;
+  }
+  ?>
 
-Toast.fire({
-  icon: 'success',
-  title: 'Action effectuée avec succès.'
-})
-</script>
+
+
+<!------- Delete Pop--->
+<?php
+
+if (isset($_SESSION['delete_pop']) && $_SESSION['delete_pop'] ==  true) {
+?>
+  <script>
+    var Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000
+    });
+
+    Toast.fire({
+      icon: 'error',
+      title: 'Action échouée.'
+    })
+  </script>
 
 <?php
-  $_SESSION['popup'] = false;
+  $_SESSION['delete_pop'] = false;
 }
 ?>
-
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <!--<script src="dist/js/pages/dashboard.js"></script>-->
 </body>

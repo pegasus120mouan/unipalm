@@ -430,7 +430,7 @@ if (!isset($_SESSION['user_id'])) {
 
             <li class="nav-item">
               <a href="dettes.php" class="nav-link">
-                <i class="nav-icon far fa-image"></i>
+                <i class='fas fa-coins'></i>
                 <p>
                   Dettes
                 </p>
@@ -438,9 +438,9 @@ if (!isset($_SESSION['user_id'])) {
             </li>
             <li class="nav-item">
               <a href="imprevus.php" class="nav-link">
-                <i class="far fa-money-bill-alt"></i>
+                <i class='fas fa-question-circle'></i>
                 <p>
-                  Dépenses
+                  Imprevus
                 </p>
               </a>
            </li>

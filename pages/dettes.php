@@ -3,6 +3,10 @@ require_once '../inc/functions/connexion.php';
 require_once '../inc/functions/requete/requete_dettes.php';
 include('header.php');
 
+$getSommeDetteQuery = "SELECT SUM(reste) AS somme_dettes
+FROM dette";
+$getSommeDetteQueryStmt = $conn->query($getSommeDetteQuery);
+$somme_dette = $getSommeDetteQueryStmt->fetch(PDO::FETCH_ASSOC);
 //$rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
 
 //$livreurs = $getStatut->fetchAll(PDO::FETCH_ASSOC);
@@ -68,6 +72,31 @@ label {
     cursor: pointer;
 }
 </style>
+
+
+
+<div class="row">
+          <div class="col-md-12 col-sm-6 col-12">
+            <div class="info-box bg-dark">
+            <span class="info-box-icon" style="font-size: 48px;">
+                <i class="fas fa-hand-holding-usd">
+                </i></span>
+              
+              <div class="info-box-content">
+                <span style="text-align: center; font-size: 20px;" class="info-box-text">Total dette</span>
+
+                <div class="progress">
+                  <div class="progress-bar" style="width: 100%"></div>
+                </div>
+                <span class="progress-description">
+                <h1 style="text-align: center; font-size: 70px;"><strong><?php echo $somme_dette['somme_dettes']; ?></strong></h1>
+                </span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+  </div>
 
 
 <div class="row">
@@ -153,7 +182,7 @@ label {
             <div class="card-body">
               <div class="form-group">
                 <label for="exampleInputEmail1">Montant</label>
-                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Commune destination" name="montant">
+                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Montant" name="montant">
               </div>
               <div class="form-group">
                 <label for="exampleInputEmail1">Motifs</label>
