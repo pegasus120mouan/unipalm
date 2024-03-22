@@ -3,10 +3,20 @@ require_once '../inc/functions/connexion.php';
 require_once '../inc/functions/requete/requete_dettes.php';
 include('header.php');
 
-$getSommeDetteQuery = "SELECT SUM(reste) AS somme_dettes
-FROM dette";
+
+$getSommeDetteQuery = "SELECT SUM(montant_actuel) AS somme_montant_actuel FROM dette";
 $getSommeDetteQueryStmt = $conn->query($getSommeDetteQuery);
 $somme_dette = $getSommeDetteQueryStmt->fetch(PDO::FETCH_ASSOC);
+
+$getSommePayesQuery = "SELECT SUM(montants_payes) AS somme_montants_payes FROM dette";
+$getSommePayesQueryStmt = $conn->query($getSommePayesQuery);
+$somme_payes = $getSommePayesQueryStmt->fetch(PDO::FETCH_ASSOC);
+
+$montant_restant = $somme_dette['somme_montant_actuel'] - $somme_payes['somme_montants_payes'];
+
+
+
+
 //$rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
 
 //$livreurs = $getStatut->fetchAll(PDO::FETCH_ASSOC);
@@ -83,13 +93,13 @@ label {
                 </i></span>
               
               <div class="info-box-content">
-                <span style="text-align: center; font-size: 20px;" class="info-box-text">Total dette</span>
+                <span style="text-align: center; font-size: 20px;" class="info-box-text">Montant restant</span>
 
                 <div class="progress">
                   <div class="progress-bar" style="width: 100%"></div>
                 </div>
                 <span class="progress-description">
-                <h1 style="text-align: center; font-size: 70px;"><strong><?php echo $somme_dette['somme_dettes']; ?></strong></h1>
+                <h1 style="text-align: center; font-size: 70px;"><strong><?php echo $montant_restant; ?></strong></h1>
                 </span>
               </div>
               <!-- /.info-box-content -->
