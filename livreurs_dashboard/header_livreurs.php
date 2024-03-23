@@ -109,9 +109,6 @@ if (!isset($_SESSION['user_id'])) {
         <li class="nav-item d-none d-sm-inline-block">
           <a href="livreur_dashboard.php" class="nav-link">Mes commandes</a>
         </li>
-        <li class="nav-item d-none d-sm-inline-block">
-          <a href="../logout.php" class="nav-link">Déconnexion</a>
-        </li>
       </ul>
 
       <!-- Right navbar links -->
@@ -351,10 +348,19 @@ if (!isset($_SESSION['user_id'])) {
             <a href="livreurs_points.php" class="nav-link">
               <i class="nav-icon fas fa-columns"></i>
               <p>
-                Depenses
+                Dépenses
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="../logout.php" class="nav-link">
+              <i class="fa fa-arrow-right"></i>
+              <p>
+                Déconnexion
+              </p>
+            </a>
+          </li>
+        </li>
         </ul>
       </nav>
         <!-- /.sidebar-menu -->
