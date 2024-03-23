@@ -2,6 +2,12 @@
 require_once '../../inc/functions/connexion.php';
 
 
+setlocale(LC_TIME, 'fr_FR.UTF-8'); // Définit la locale en français
+
+// Récupérer le mois actuel en français
+$mois_actuel = strftime("%B");
+
+
 if (!isset($_SESSION['user_id'])) {
   // Redirigez vers la page de connexion si l'utilisateur n'est pas connecté
   header("Location: ../index.php");
@@ -487,7 +493,7 @@ if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <h1>Tableau de bord</h1>
+              <h1>Point Caisse</h1>
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-right">
@@ -502,7 +508,7 @@ if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
       <!-- Main content -->
       <section class="content">
         <div class="container-fluid">
-          <h5 class="mb-2">Bilan Caisse</h5>
+          <h5 class="mb-2">Mois: <?php echo $mois_actuel?></h5>
           <div class="row">
             <div class="col-md-3 col-sm-6 col-12">
               <div class="info-box">
@@ -530,7 +536,7 @@ if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
                 <span class="info-box-icon bg-success"><i class="fas fa-money-bill-wave"></i></span>
 
                 <div class="info-box-content">
-                  <span class="info-box-text"><i>Somme dépenses</i></span>
+                  <span class="info-box-text"><i>Dépenses</i></span>
                   <span class="info-box-number" style="font-size: 24px;">
                     <?= $somme_depenses['total_depenses']; ?>
                   </span>
@@ -545,7 +551,7 @@ if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
                 <span class="info-box-icon bg-primary"><i class="fas fa-receipt"></i></span>
 
                 <div class="info-box-content">
-                  <span class="info-box-text"><i>Somme Dette</i></span>
+                  <span class="info-box-text"><i>Dette</i></span>
                   <span class="info-box-number" style="font-size: 24px;">
                     <?php if ($somme_dettes == 0) {
                       echo "0";
@@ -560,7 +566,7 @@ if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
               <!-- /.info-box -->
             </div>
             <!-- /.col -->
-            <div class="col-md-2 col-sm-6 col-12">
+            <div class="col-md-3 col-sm-6 col-12">
               <div class="info-box">
                 <span class="info-box-icon bg-danger"><i class="far fa-copy"></i></span>
 
@@ -579,12 +585,12 @@ if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
               <!-- /.info-box -->
             </div>
 
-            <div class="col-md-3 col-sm-6 col-12">
+            <div class="col-md-2 col-sm-6 col-12">
               <div class="info-box">
                 <span class="info-box-icon bg-warning"><i class="fas fa-wallet"></i></span>
 
                 <div class="info-box-content">
-                  <span class="info-box-text"><i>Total Imprevus</i></span>
+                  <span class="info-box-text"><i>Total Imprévus</i></span>
                   <span class="info-box-number" style="font-size: 24px;">
                     <?php if ($somme_imprevus == 0) {
                       echo "0";
