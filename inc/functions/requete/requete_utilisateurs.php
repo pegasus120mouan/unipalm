@@ -1,6 +1,16 @@
 <?php
      
 $liste_livreur = $conn->query("SELECT *  FROM utilisateurs WHERE role='livreur'"); 
+$getStatut_compte = $conn->query("SELECT * FROM compte_statut");
+
+
+
+$liste_utilisateurs = $conn->query("SELECT utilisateurs.*, 
+boutiques.nom AS nom_boutique,
+boutiques.type_articles AS type_articles,
+boutiques.logo AS logo_boutique
+FROM utilisateurs
+LEFT JOIN boutiques ON utilisateurs.boutique_id = boutiques.id"); 
 //$nombreParPage = 10;
 //$pageCourante = isset($_GET['page']) ? $_GET['page'] : 1;
 //$offset = ($pageCourante - 1) * $nombreParPage;

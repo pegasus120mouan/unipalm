@@ -5,8 +5,7 @@ include('header.php');
 
 $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
 
-$statuts_livraisons = $getStatut->fetchAll(PDO::FETCH_ASSOC);
-
+$livreurs = $getStatut->fetchAll(PDO::FETCH_ASSOC);
 
 ////$stmt = $conn->prepare("SELECT * FROM users");
 //$stmt->execute();
@@ -70,26 +69,6 @@ label {
 }
 </style>
 
-  <style>
-        @media only screen and (max-width: 767px) {
-            /* Styles spécifiques pour les écrans de taille de téléphone */
-            th {
-                display: none; /* Cacher les en-têtes de colonnes sur les petits écrans */
-            }
-            tbody tr {
-                display: block;
-                margin-bottom: 20px;
-                border: 1px solid #ccc;
-                padding: 10px;
-            }
-            tbody tr td::before {
-                /* Ajouter un pseudo-élément ::before pour afficher le titre de chaque colonne */
-                font-weight: bold;
-                margin-right: 5px;
-            }
-        }
-    </style>
-
 
 <div class="row">
   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-commande">
@@ -109,10 +88,8 @@ label {
 
 
 
-<div class="table-responsive">
-    <table id="example1" class="table table-bordered table-striped">
 
- <!-- <table style="max-height: 90vh !important; overflow-y: scroll !important" id="example1" class="table table-bordered table-striped">-->
+  <table style="max-height: 90vh !important; overflow-y: scroll !important" id="example1" class="table table-bordered table-striped">
     <thead>
       <tr>
         <th>Communes</th>
@@ -157,7 +134,7 @@ label {
     <?php else: ?>
         <span class="badge badge-success badge-lg">Pas de point</span>
     <?php endif; ?>
-       </td>
+</td>
 
           <td><?= $commande['date_commande'] ?></td>
 
@@ -219,8 +196,8 @@ label {
                     <label>Changer le statut de la commande</label>
                     <select name="statut" class="form-control">
                       <?php
-                      foreach ($statuts_livraisons as $statuts_livraison) {
-                        echo '<option value="' . $statuts_livraison['statut'] . '">' . $statuts_livraison['statut'] . '</option>';
+                      foreach ($livreurs as $livreur) {
+                        echo '<option value="' . $livreur['statut'] . '">' . $livreur['statut'] . '</option>';
                       }
                       ?></select>
 
@@ -235,9 +212,6 @@ label {
       <?php endforeach; ?>
     </tbody>
   </table>
-
-</div>
-
   <div class="pagination-container bg-secondary d-flex justify-content-center w-100 text-white p-3">
     <?php if($page > 1 ): ?>
         <a href="?page=<?= $page - 1 ?>" class="btn btn-primary"><</a>

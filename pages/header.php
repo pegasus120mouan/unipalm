@@ -9,10 +9,10 @@ require_once '../inc/functions/connexion.php';
 $sql_cg = "SELECT SUM(cout_global) AS total_cout_global
         FROM commandes
         WHERE statut = 'Livré' AND date_commande >= DATE_FORMAT(NOW(), '%Y-%m-01')";
-
 $requAdmin = $conn->prepare($sql_cg);
 $requAdmin->execute();
 $header_calcul = $requAdmin->fetch(PDO::FETCH_ASSOC);
+
 
 // Coût réel livraisons
 $sql_cr = "SELECT SUM(cout_reel) AS total_cout_reel
@@ -114,6 +114,8 @@ if (!isset($_SESSION['user_id'])) {
   <link rel="stylesheet" href="../../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
 </head>
 
@@ -390,6 +392,13 @@ if (!isset($_SESSION['user_id'])) {
                   <a href="liste_admins.php" class="nav-link">
                   <i class="fas fa-user-tie"></i>
                     <p>Listes des admins</p>
+                  </a>
+                </li>
+
+                 <li class="nav-item">
+                  <a href="gestion_access.php" class="nav-link">
+                  <i class="fas fa-lock"></i>
+                    <p>Gestion des acccès</p>
                   </a>
                 </li>
 

@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit(0);
         }else {
 
-          $stmt = $conn->prepare("SELECT * FROM utilisateurs WHERE login = :login AND password = :password");
+          $stmt = $conn->prepare("SELECT * FROM utilisateurs WHERE login = :login AND password = :password AND statut_compte=1");
           $stmt->bindParam(':login', $login, PDO::PARAM_STR);
           
           $stmt->bindParam(':password', $hasedpassword, PDO::PARAM_STR);
