@@ -2,6 +2,11 @@
 require_once '../inc/functions/connexion.php';
 include('header.php');
 
+$recherche=$_GET['recherche'];
+
+
+
+
 $stmt = $conn->prepare("SELECT utilisateurs.id as utilisateur_id,
        utilisateurs.nom as utilisateur_nom,
        utilisateurs.prenoms as utilisateur_prenoms,
@@ -12,27 +17,44 @@ $stmt = $conn->prepare("SELECT utilisateurs.id as utilisateur_id,
        boutiques.nom as boutique_nom
 FROM utilisateurs
 JOIN boutiques ON utilisateurs.boutique_id = boutiques.id
-WHERE utilisateurs.role = 'clients'");
+WHERE utilisateurs.nom LIKE :clients");
+
+$rechercheAvecPourcentage = '%' . $recherche . '%';
+$stmt->bindParam(':clients', $rechercheAvecPourcentage, PDO::PARAM_STR);
 $stmt->execute();
 $clients = $stmt->fetchAll();
-//foreach($users as $user)
-?>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+?>
 
 
 <!-- Main row -->
 <div class="row">
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-client">
-    Enregistrer un client
-  </button>
-
- <form action="page_recherche_client.php" method="GET" class="d-flex ml-auto">
-      <input class="form-control me-2" type="search" name="recherche" style="width: 400px;" placeholder="Recherche..." aria-label="Search">
-      <button class="btn btn-outline-primary" type="submit">Rechercher</button>
-    </form>
-
-
-
   <table id="example1" class="table table-bordered table-striped">
     <thead>
       <tr>
@@ -71,66 +93,6 @@ $clients = $stmt->fetchAll();
       <?php endforeach; ?>
     </tbody>
   </table>
-  <div class="modal fade" id="add-client">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Enregistrer un client</h4>
-        </div>
-        <div class="modal-body">
-          <form class="forms-sample" method="post" action="save_client.php">
-            <div class="card-body">
-              <div class="form-group">
-                <label for="exampleInputEmail1">Nom boutique </label>
-                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Nom Boutique"
-                  name="boutique_nom">
-              </div>
-              <div class="form-group">
-                <label for="exampleInputEmail1">Nom </label>
-                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Nom" name="nom">
-              </div>
-              <div class="form-group">
-                <label for="exampleInputEmail3">Prenoms </label>
-                <input type="text" class="form-control" id="exampleInputEmail3" placeholder="Prenoms" name="prenoms">
-              </div>
-              <div class="form-group">
-                <label for="exampleInputPassword4">Contact</label>
-                <input type="text" class="form-control" id="exampleInputPassword4" placeholder="Contact" name="contact">
-              </div>
-              <div class="form-group">
-                <label for="exampleInputCity1">Login</label>
-                <input type="text" class="form-control" id="exampleInputCity1" placeholder="Login" name="login">
-              </div>
-              <div class="form-group">
-                <label for="exampleInputCity1">Mot de passe</label>
-                <input type="password" class="form-control" id="exampleInputCity1" placeholder="Mot de passe"
-                  name="password">
-              </div>
-              <div class="form-group">
-                <label for="exampleInputCity1">Verification mot de passe</label>
-                <input type="password" class="form-control" id="exampleInputCity1"
-                  placeholder="Verification mot de passe" name="retype_password">
-              </div>
-              <div class="form-group">
-                <label for="select" class="col-3 col-form-label">Rôle</label>
-                <div class="col-9">
-                  <select id="select" name="role" class="form-control" id="exampleInputCity1">
-                    <option value="clients">clients</option>
-                  </select>
-                </div>
-              </div>
-              <button type="submit" class="btn btn-primary mr-2" name="saveClient">Enregister</button>
-              <button class="btn btn-light">Annuler</button>
-            </div>
-          </form>
-        </div>
-      </div>
-      <!-- /.modal-content -->
-    </div>
-
-
-    <!-- /.modal-dialog -->
-  </div>
 
 </div>
 

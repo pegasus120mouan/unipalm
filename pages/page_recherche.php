@@ -107,9 +107,9 @@ $commandes = $stmt->fetchAll();
         <td><?= $commande['date_commande'] ?></td>
 
         <td class="actions">
-          <a href="update_commande_client.php?id=<?= $commande['commande_id'] ?>" class="edit"><i
+          <a href="commandes_update.php?id=<?= $commande['commande_id'] ?>" class="edit"><i
               class="fas fa-pen fa-xs" style="font-size:24px;color:blue"></i></a>
-          <a href="delete_commande_client.php?id=<?= $commande['commande_id'] ?>" class="trash"><i
+          <a href="delete_commandes.php?id=<?= $commande['commande_id'] ?>" class="trash"><i
               class="fas fa-trash fa-xs" style="font-size:24px;color:red"></i></a>
         </td>
 

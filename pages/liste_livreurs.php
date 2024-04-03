@@ -46,7 +46,12 @@ $statuts_comptes= $getStatut_compte->fetchAll(PDO::FETCH_ASSOC);
 
                 <td><?=$utilisateur['contact']?></td>
 
-                <td><?=$utilisateur['login']?></td>
+                <td>
+                 <a href="commandes_livreurs.php?id=<?= $utilisateur['id'] ?>">                 
+                        <?= $utilisateur['login'] ?>
+                        </a>
+
+                </td>
 
                 <td>
                 <a href="utilisateurs_profile.php?id=<?=$utilisateur['id']?>" class="edit"><img src="../dossiers_images/<?php echo $utilisateur['avatar']; ?>" alt="Logo" width="50" height="50"> </a>

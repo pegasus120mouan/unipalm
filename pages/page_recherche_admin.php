@@ -1,14 +1,29 @@
 <?php
 
 require_once '../inc/functions/connexion.php';
-require_once '../inc/functions/requete/requete_admin.php'; 
+//require_once '../inc/functions/requete/requete_admin.php'; 
 include('header.php');
 
-//$stmt = $conn->prepare("SELECT * FROM utilisateurs");
-//$stmt->execute();
+$recherche=$_GET['recherche'];
 
-$admins = $liste_admins->fetchAll();
-//foreach($users as $user)
+$stmt = $conn->prepare("SELECT
+utilisateurs.id as utilisateur_id,
+utilisateurs.nom AS utilisateur_nom,
+utilisateurs.prenoms as utilisateur_prenoms,
+ utilisateurs.contact as utilisateur_contact,
+  utilisateurs.login as utilisateur_login,
+  utilisateurs.avatar as utilisateur_avatar,
+    utilisateurs.role as utilisateur_role
+FROM utilisateurs WHERE utilisateurs.role ='admin' AND utilisateurs.nom LIKE :admins");
+
+
+
+
+
+$rechercheAvecPourcentage = '%' . $recherche . '%';
+$stmt->bindParam(':admins', $rechercheAvecPourcentage, PDO::PARAM_STR);
+$stmt->execute();
+$admins = $stmt->fetchAll();
 ?>
 
 
@@ -16,12 +31,6 @@ $admins = $liste_admins->fetchAll();
 
         <!-- Main row -->
         <div class="row">
-        
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-client">
-                  Enregistrer un administrateur
-                </button>   
-
-                <h1><span class="badge bg-success">Liste des administrateurs</span></h1>
 
                  <form action="page_recherche_admin.php" method="GET" class="d-flex ml-auto">
       <input class="form-control me-2" type="search" name="recherche" style="width: 400px;" placeholder="Recherche..." aria-label="Search">
@@ -43,16 +52,16 @@ $admins = $liste_admins->fetchAll();
                   <?php foreach ($admins as $admin): ?>
                   <tr>
                 
-                <td><?=$admin['nom']?></td>
-                <td><?=$admin['prenoms']?></td>
-                <td><?=$admin['contact']?></td>
-                <td><?=$admin['login']?></td>
+                <td><?=$admin['utilisateur_nom']?></td>
+                <td><?=$admin['utilisateur_prenoms']?></td>
+                <td><?=$admin['utilisateur_contact']?></td>
+                <td><?=$admin['utilisateur_login']?></td>
                 <td>
-                <a href="admin_users_profile.php?id=<?=$admin['id']?>" class="edit"><img src="../dossiers_images/<?php echo $admin['avatar']; ?>" alt="Logo" width="50" height="50"> </a>
+                <a href="admin_users_profile.php?id=<?=$admin['iutilisateur_id']?>" class="edit"><img src="../dossiers_images/<?php echo $admin['utilisateur_avatar']; ?>" alt="Logo" width="50" height="50"> </a>
                  </td>
                     <td class="actions">
-                        <a href="admin_update.php?id=<?=$admin['id']?>" class="edit"><i class="fas fa-pen fa-xs" style="font-size:24px;color:blue"></i></a>
-                        <a href="admin_users_delete.php?id=<?=$admin['id']?>" class="trash"><i class="fas fa-trash fa-xs" style="font-size:24px;color:red"></i></a>
+                        <a href="admin_users_profile.php?id=<?=$admin['utilisateur_id']?>" class="edit"><i class="fas fa-pen fa-xs" style="font-size:24px;color:blue"></i></a>
+                        <a href="admin_update.php?id=<?=$admin['utilisateur_id']?>" class="trash"><i class="fas fa-trash fa-xs" style="font-size:24px;color:red"></i></a>
                     </td>
                   </tr>
                   <?php endforeach; ?>

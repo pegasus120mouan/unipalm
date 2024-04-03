@@ -1,10 +1,10 @@
 <?php
-// Connexion à la base de données (à adapter avec vos informations)
 require_once '../inc/functions/connexion.php';   
 //session_start(); 
 
 // Récupération des données soumises via le formulaire
 $id = $_POST['id'];
+$livreur_id = $_GET['id_user'];
 $communes = $_POST['communes'];
 $cout_global = $_POST['cout_global'];
 $livraison = $_POST['livraison'];
@@ -37,7 +37,7 @@ if($query_execute)
         {
            // $_SESSION['message'] = "Insertion reussie";
             $_SESSION['popup'] = true;
-	      header('Location: commandes.php');
+	       header('Location: commandes_livreurs.php?id='.$livreur_id);
 	      exit(0);
 
             // Redirigez l'utilisateur vers la page d'accueil
