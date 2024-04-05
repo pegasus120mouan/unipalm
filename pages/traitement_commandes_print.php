@@ -106,7 +106,7 @@ $pdf->Cell(60, 10, utf8_decode("Nombre de colis non livrés:"), 1, 0, 'L');
 $pdf->SetTextColor(0); // Réinitialiser la couleur
 $pdf->Cell(60, 10, $nb_non_livre, 1, 1, 'C');
 
-$pdf->SetTextColor(0); // Réinitialiser la couleur
+
 
 
     // Output PDF
