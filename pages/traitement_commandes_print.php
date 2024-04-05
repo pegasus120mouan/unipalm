@@ -88,7 +88,7 @@ $pdf->Ln(10);
 
 
    // Affichage du nombre de colis livrés, non livrés et total
-$pdf->SetFont('Arial', 'I', 10);
+/*$pdf->SetFont('Arial', 'I', 10);
 $pdf->SetTextColor(0);
 $nbre_total = $nb_livre + $nb_non_livre;
 $pdf->SetTextColor(0, 0, 255); // Couleur bleue
@@ -104,7 +104,7 @@ $pdf->Cell(60, 10, $nb_livre, 1, 1, 'C');
 $pdf->SetTextColor(0, 0, 255); // Couleur bleue
 $pdf->Cell(60, 10, utf8_decode("Nombre de colis non livrés:"), 1, 0, 'L');
 $pdf->SetTextColor(0); // Réinitialiser la couleur
-$pdf->Cell(60, 10, $nb_non_livre, 1, 1, 'C');
+$pdf->Cell(60, 10, $nb_non_livre, 1, 1, 'C');*/
 
 
 
