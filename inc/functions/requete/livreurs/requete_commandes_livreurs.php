@@ -49,7 +49,7 @@ $cout_livraison = $conn->query("SELECT cout_livraison FROM cout_livraison");
 
 
 $getLivreurs = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS livreur_name 
-FROM utilisateurs  where role like 'livreur' ");
+FROM utilisateurs  where role like 'livreur' AND statut_compte=1");
 
 $getStatut = $conn->query("SELECT statut FROM statut_livraison");
 

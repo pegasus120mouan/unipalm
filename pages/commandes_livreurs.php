@@ -106,7 +106,13 @@ label {
     Enregistrer une commande
   </button>
   <a class="btn btn-outline-secondary" href="livreurs_commandes_print.php?id=<?= $id_user ?>"><i class="fa fa-print"
-      style="font-size:24px;color:green"></i></a>
+      style="font-size:24px;color:green"></i>
+  </a>
+
+<a href="vuegeneral_hier.php?id=<?= $id_user ?>" class="btn btn-warning ml-auto">Point d'hier</a>
+
+
+
   <!--<a href="commandes_update.php"><i class="fa fa-print" style="font-size:24px;color:green">Imprimer point du jour</i></a>
                 <button type="button"  class="btn btn-primary"><i class="fa fa-print"></i> Imprimer point du jour</button>-->
   <table id="example1" class="table table-bordered table-striped">
