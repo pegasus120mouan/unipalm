@@ -9,6 +9,7 @@ $stmt = $conn->prepare("SELECT utilisateurs.id as utilisateur_id,
        utilisateurs.login as utilisateur_login,
        utilisateurs.avatar as utilisateur_avatar,
        utilisateurs.role as utilisateur_role,
+       utilisateurs.statut_compte as statut_compte,
        boutiques.nom as boutique_nom
 FROM utilisateurs
 JOIN boutiques ON utilisateurs.boutique_id = boutiques.id
@@ -29,7 +30,7 @@ $clients = $stmt->fetchAll();
  <form action="page_recherche_client.php" method="GET" class="d-flex ml-auto">
       <input class="form-control me-2" type="search" name="recherche" style="width: 400px;" placeholder="Recherche..." aria-label="Search">
       <button class="btn btn-outline-primary" type="submit">Rechercher</button>
-    </form>
+ </form>
 
 
 
@@ -43,6 +44,7 @@ $clients = $stmt->fetchAll();
         <th>Login utilisateur</th>
         <th>Nom Entreprise</th>
         <th>Actions</th>
+        <th>Statut compte </th>
       </tr>
     </thead>
     <tbody>
@@ -57,8 +59,11 @@ $clients = $stmt->fetchAll();
         <td><?=$client['utilisateur_prenoms']?></td>
         <td><?=$client['utilisateur_contact']?></td>
         <td><?=$client['utilisateur_login']?></td>
-
-        <td><?=$client['boutique_nom']?></td>
+        <td>
+          <a class="btn btn-dark" href="commandes_clients.php?id=<?= $client['utilisateur_id'] ?>">
+              <?= $client['boutique_nom'] ?>
+          </a>
+        </td>
 
 
         <td class="actions">
@@ -67,6 +72,13 @@ $clients = $stmt->fetchAll();
           <a href="client_delete.php?id=<?=$client['utilisateur_id']?>" class="trash"><i class="fas fa-trash fa-xs"
               style="font-size:24px;color:red"></i></a>
         </td>
+           <td>
+                        <form method="post" action="liste_livreurs.php">
+                            <input type="hidden" name="user_id" value="<?=$client['id']?>">
+                            <input type="hidden" name="statut_compte" value="<?=($client['statut_compte'] == 1) ? 0 : 1 ?>">
+                            <input type="checkbox" name="statut_compte" data-toggle="toggle" data-on="Actif" data-off="Inactif" data-onstyle="success" data-offstyle="danger" <?=($client['statut_compte'] == 1) ? 'checked' : ''?> onchange="submitForm(this)">
+                        </form>
+                    </td>
       </tr>
       <?php endforeach; ?>
     </tbody>
@@ -159,6 +171,7 @@ $clients = $stmt->fetchAll();
 <script src="../../plugins/jquery/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
 <script src="../../plugins/jquery-ui/jquery-ui.min.js"></script>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <!-- <script>
   $.widget.bridge('uibutton', $.ui.button)

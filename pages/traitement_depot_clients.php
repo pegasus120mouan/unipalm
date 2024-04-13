@@ -15,6 +15,7 @@ if (isset($_POST['client']) && isset($_POST['date_debut']) && isset($_POST['date
     $sql = "SELECT
         b.nom AS nom_boutique,
         c.date_commande AS date_commande,
+        c.statut AS commande_statut,
         SUM(c.cout_reel) AS cout_reel_journalier
     FROM
         boutiques b
@@ -23,7 +24,7 @@ if (isset($_POST['client']) && isset($_POST['date_debut']) && isset($_POST['date
     JOIN
         commandes c ON u.id = c.utilisateur_id
     WHERE
-        c.date_commande BETWEEN :dateDebut AND :dateFin  AND b.nom = :client 
+        c.date_commande BETWEEN :dateDebut AND :dateFin  AND b.nom = :client AND c.statut = 'Livré'
     GROUP BY
         b.nom, c.date_commande
     ORDER BY

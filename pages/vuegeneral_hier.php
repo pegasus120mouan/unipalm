@@ -10,7 +10,21 @@ if (!isset($_SESSION['user_id'])) {
 
 $id_user = isset($_GET['id']) ? $_GET['id'] : null;
 
+
+$date_hier = date("d-m-Y", strtotime("-1 days"));
 //////////////////////////////////////somme  global///////////////////////////////////////////////////////////
+
+
+
+$getFullname = "SELECT CONCAT(nom, ' ', prenoms) AS fullname FROM utilisateurs WHERE utilisateurs.id = :id_user";
+$getFullnameStmt = $conn->prepare($getFullname);
+$getFullnameStmt->bindParam(':id_user', $id_user, PDO::PARAM_INT);
+$getFullnameStmt->execute();
+$fullname = $getFullnameStmt->fetchColumn();
+
+
+
+
 
 $getSommeGlobalQuery = "SELECT SUM(commandes.cout_global) AS sum_cout_global 
                         FROM commandes 
@@ -502,7 +516,7 @@ if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
       <!-- Main content -->
       <section class="content">
         <div class="container-fluid">
-          <h5 class="mb-2">Points d'hier</h5>
+<h5 class="mb-2">Points du <?php echo $date_hier; ?> de <strong style="font-size: 20px;"><?php echo $fullname; ?></strong></h5>
           <div class="row">
             <div class="col-md-3 col-sm-6 col-12">
               <div class="info-box">
