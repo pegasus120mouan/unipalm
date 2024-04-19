@@ -7,11 +7,14 @@ $aujourdhui = date("d-m-Y");
 $id_user = $_GET['id'];
 
 $sql = "SELECT utilisateurs.id as utilisateur_id, 
- concat(utilisateurs.nom,' ', utilisateurs.prenoms) as nom_utilisateurs,
+ utilisateurs.nom as utilisateur_nom, 
+ utilisateurs.prenoms as utilisateur_prenoms, 
  utilisateurs.contact as utilisateur_contact,
- utilisateurs.avatar as utilisateur_avatar
+ utilisateurs.avatar as utilisateur_avatar,
+ boutiques.nom as boutique_nom 
  FROM utilisateurs 
- WHERE role = 'clients' and utilisateurs.id = :id_user";
+ JOIN boutiques ON utilisateurs.boutique_id = boutiques.id 
+ WHERE utilisateurs.id = :id_user";
 
 $requete = $conn->prepare($sql);
 $requete->bindParam(':id_user', $id_user, PDO::PARAM_INT);
@@ -33,10 +36,10 @@ $requete->execute();
     <div class="form-group row">
       <label for="client" class="col-4 col-form-label">Select</label>
       <div class="form-group">
-        <select name="livreur_id" class="form-control">
+        <select name="utilisateur_id" class="form-control">
           <?php
           while ($selection = $requete->fetch()) {
-            echo '<option value="' . $selection['utilisateur_id'] . '">' . $selection['nom_utilisateurs'] . '</option>';
+            echo '<option value="' . $selection['boutique_nom'] . '">' . $selection['boutique_nom'] . '</option>';
           }
           ?></select>
 

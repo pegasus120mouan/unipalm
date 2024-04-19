@@ -355,7 +355,7 @@ function AddPage($orientation='', $size='', $rotation=0)
 
 function Header()
 {
-	$this->Image('../dist/img/logo.png', 10, 6, 50);
+	$this->Image('../../dist/img/logo.png', 10, 6, 50);
     
     // Title
 	//$this->Image('../dist/img/logo.png', 10, 6, 30);
@@ -369,15 +369,15 @@ function Header()
     $this->SetFont('Helvetica', '', 8);
 
     $this->Cell(0, 4, 'Sarl au Capital de 1 000 000 CFA', 0, 1, 'C');
-	$this->Image('../dist/img/home_icon.png', 67, $this->GetY() + 0, 3);
+	$this->Image('../../dist/img/home_icon.png', 67, $this->GetY() + 0, 3);
     $this->Cell(0, 4, "Cocody Riviera Golf en face de l'Ambassade des USA", 0, 1, 'C');
-	$this->Image('../dist/img/telephone_icon.png', 74, $this->GetY() + 0, 3);
+	$this->Image('../../dist/img/telephone_icon.png', 74, $this->GetY() + 0, 3);
     $this->Cell(0, 4, 'Tel: +225 0787703000 - +2250584828385', 0, 1, 'C');
-	$this->Image('../dist/img/email_icon.png', 78, $this->GetY() + 0, 4);
+	$this->Image('../../dist/img/email_icon.png', 78, $this->GetY() + 0, 4);
     $this->Cell(0, 4, 'Email: finance@ovl-delivery.online', 0, 1, 'C');
-	$this->Image('../dist/img/website_icon.png', 88, $this->GetY() + 0, 4);
+	$this->Image('../../dist/img/website_icon.png', 88, $this->GetY() + 0, 4);
     $this->Cell(0, 4, 'ovl-delivery.online', 0, 1, 'C');
-	$this->Image('../dist/img/whatsapp_icon.png', 88, $this->GetY() + 0, 4);
+	$this->Image('../../dist/img/whatsapp_icon.png', 88, $this->GetY() + 0, 4);
     $this->Cell(0, 4, '+2250584828385', 0, 1, 'C');
     
     // Line break

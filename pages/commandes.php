@@ -7,6 +7,9 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
 
 $statuts_livraisons = $getStatut->fetchAll(PDO::FETCH_ASSOC);
 
+$liste_boutiques = $getBoutique->fetchAll(PDO::FETCH_ASSOC);
+
+
 
 ////$stmt = $conn->prepare("SELECT * FROM users");
 //$stmt->execute();
@@ -101,9 +104,9 @@ label {
 
     <!-- Utilisation du formulaire Bootstrap avec ms-auto pour aligner à droite -->
     <form action="page_recherche.php" method="GET" class="d-flex ml-auto">
-    <input class="form-control me-2" type="search" name="recherche" style="width: 400px;" placeholder="Recherche..." aria-label="Search">
-    <button class="btn btn-outline-primary" type="submit">Rechercher</button>
-</form>
+      <input class="form-control me-2" type="search" name="recherche" style="width: 400px;" placeholder="Recherche..." aria-label="Search">
+      <button class="btn btn-outline-primary" type="submit">Rechercher</button>
+    </form>
 
 
 
@@ -126,6 +129,7 @@ label {
         <th>Actions</th>
         <th>Attribuer un livreur</th>
         <th>Changer Statut livraison</th>
+        <th>Changer le client</th>
       </tr>
     </thead>
     <tbody>
@@ -148,16 +152,16 @@ label {
 
 
           <td>
-    <?php if ($commande['commande_statut'] !== null): ?>
-        <?php if ($commande['commande_statut'] == 'Non Livré'): ?>
-            <span class="badge badge-danger badge-lg"><?= $commande['commande_statut'] ?></span>
-        <?php else: ?>
-            <span class="badge badge-success badge-lg"><?= $commande['commande_statut'] ?></span>
-        <?php endif; ?>
-    <?php else: ?>
-        <span class="badge badge-success badge-lg">Pas de point</span>
-    <?php endif; ?>
-       </td>
+              <?php if ($commande['commande_statut'] !== null): ?>
+                  <?php if ($commande['commande_statut'] == 'Non Livré'): ?>
+                      <span class="badge badge-danger badge-lg"><?= $commande['commande_statut'] ?></span>
+                  <?php else: ?>
+                      <span class="badge badge-success badge-lg"><?= $commande['commande_statut'] ?></span>
+                  <?php endif; ?>
+              <?php else: ?>
+                  <span class="badge badge-success badge-lg">Pas de point</span>
+              <?php endif; ?>
+         </td>
 
           <td><?= $commande['date_commande'] ?></td>
 
@@ -167,6 +171,7 @@ label {
             <a href="commandes_update.php?id=<?= $commande['commande_id'] ?>" class="edit"><i class="fas fa-pen fa-xs" style="font-size:24px;color:blue"></i></a>
             <a href="delete_commandes.php?id=<?= $commande['commande_id'] ?>" class="trash"><i class="fas fa-trash fa-xs" style="font-size:24px;color:red"></i></a>
           </td>
+
           <td>
             <?php if ($commande['nom_livreur']) : ?>
               <button class="btn btn-secondary" disabled>Attribuer un livreur</button>
@@ -175,6 +180,7 @@ label {
                 un livreur</button>
             <?php endif; ?>
           </td>
+
           <td>
             <?php if ($commande['commande_statut'] == 'Livré') : ?>
               <button class="btn btn-info" disabled>Changer le statut</button>
@@ -182,6 +188,12 @@ label {
               <button class="btn btn-warning" data-toggle="modal" data-target="#update_statut-<?= $commande['commande_id'] ?>">Changer le statut</button>
             <?php endif; ?>
           </td>
+
+          <td>
+              <button class="btn btn-success" data-toggle="modal" data-target="#update_client<?= $commande['commande_id'] ?>">Changer le client</button>
+
+          </td>
+          
         </tr>
         <div class="modal" id="update-<?= $commande['commande_id'] ?>">
           <div class="modal-dialog">
@@ -208,7 +220,6 @@ label {
         </div>
 
 
-
         <div class="modal" id="update_statut-<?= $commande['commande_id'] ?>">
           <div class="modal-dialog">
             <div class="modal-content">
@@ -232,6 +243,32 @@ label {
             </div>
           </div>
         </div>
+
+         <div class="modal" id="update_client<?= $commande['commande_id'] ?>">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-body">
+                <form action="traitement_commande_boutique_update.php" method="post">
+                  <input type="hidden" name="commande_id" value="<?= $commande['commande_id'] ?>">
+                  <div class="form-group">
+                    <label>Changer le client</label>
+                    <select name="id_boutique" class="form-control">
+                      <?php
+                      foreach ($liste_boutiques as $liste_boutique) {
+                        echo '<option value="' . $liste_boutique['id'] . '">' . $liste_boutique['nom_boutique'] . '</option>';
+                      }
+                      ?></select>
+
+                  </div>
+                  <button type="submit" class="btn btn-primary mr-2" name="saveCommande">Changer le client</button>
+                  <button class="btn btn-light">Annuler</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
       <?php endforeach; ?>
     </tbody>
   </table>

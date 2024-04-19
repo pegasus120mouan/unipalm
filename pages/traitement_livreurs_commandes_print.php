@@ -46,7 +46,7 @@ if (isset($_POST['livreur_id']) && isset($_POST['date'])) {
 
     // Informations sur le livreur et la date
     $pdf->SetFont('Arial', '', 12);
-    $pdf->Cell(0, 10, "Livreur: " . $resultat[0]['fullname_livreur'], 0, 1, 'L');
+    $pdf->Cell(0, 10, "Coursier: " . $resultat[0]['fullname_livreur'], 0, 1, 'L');
     $pdf->Cell(0, 10, "Date: $date", 0, 1, 'L');
 
     // En-tête du tableau

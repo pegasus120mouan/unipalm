@@ -12,7 +12,9 @@ if (isset($_POST['client']) && isset($_POST['date'])) {
                 commandes.id as commande_id,
                 utilisateur_id, livreur_id, communes, cout_global,
                 cout_livraison, cout_reel, statut, date_commande, clients.id as id_client,
-                clients.nom as client_nom, prenoms, contact, login, avatar, boutique_id, boutiques.nom as boutique_nom
+                clients.nom as client_nom, prenoms, contact, login, avatar, 
+                boutique_id, 
+                boutiques.nom as boutique_nom,boutiques.logo as boutique_logo
             FROM 
                 `commandes`  
             JOIN 

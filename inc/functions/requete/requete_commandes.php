@@ -33,7 +33,7 @@ $stmt = $conn->prepare(
 FROM commandes
 JOIN utilisateurs ON commandes.utilisateur_id = utilisateurs.id
 JOIN boutiques ON utilisateurs.boutique_id = boutiques.id
-LEFT JOIN utilisateurs AS livreur ON commandes.livreur_id = livreur.id ORDER BY commandes.date_commande DESC "
+LEFT JOIN utilisateurs AS livreur ON commandes.livreur_id = livreur.id ORDER BY commandes.date_commande DESC"
 
 
 );
@@ -159,3 +159,16 @@ $getLivreurs = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS livreur_nam
 FROM utilisateurs  where role like 'livreur' AND statut_compte=1");
 
 $getStatut = $conn->query("SELECT statut FROM statut_livraison");
+
+
+$getBoutique = $conn->query("SELECT 
+    utilisateurs.*, 
+    boutiques.nom AS nom_boutique,
+    boutiques.type_articles AS type_articles,
+    boutiques.logo AS logo_boutique
+FROM 
+    utilisateurs
+LEFT JOIN 
+    boutiques ON utilisateurs.boutique_id = boutiques.id
+WHERE 
+    utilisateurs.role = 'clients';");
