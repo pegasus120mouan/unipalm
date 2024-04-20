@@ -480,7 +480,7 @@ if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
               </a>
             </li>
             <li class="nav-item">
-              <a href="pages/kanban.html" class="nav-link">
+              <a href="point_livraison.php" class="nav-link">
                 <i class="nav-icon fas fa-columns"></i>
                 <p>
                   Depenses
