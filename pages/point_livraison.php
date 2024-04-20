@@ -16,7 +16,7 @@ $stmt->execute();
 $point_livreurs = $stmt->fetchAll();
 
 
-$livreurs_selection = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS nom_prenoms FROM livreurs");
+$livreurs_selection = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS nom_prenoms FROM utilisateurs WHERE role='livreur' AND statut_compte=1");
 
 
 $limit = $_GET['limit'] ?? 15;
