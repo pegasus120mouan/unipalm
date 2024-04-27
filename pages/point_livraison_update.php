@@ -36,7 +36,9 @@
 
   $requete = $conn->query("SELECT nom_boutique FROM clients");
 
-  $livreurs_selection = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS nom_prenoms FROM livreurs");
+  $livreurs_selection = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS nom_prenoms 
+FROM utilisateurs  where role like 'livreur' AND statut_compte=1");
+
 
   $cout_livraison = $conn->query("SELECT cout_livraison FROM cout_livraison");
   ?>
