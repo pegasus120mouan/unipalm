@@ -46,10 +46,16 @@ $statuts_comptes= $getStatut_compte->fetchAll(PDO::FETCH_ASSOC);
 
                 <td><?=$utilisateur['contact']?></td>
 
-           <td>
-    <a class="btn btn-dark" href="commandes_livreurs.php?id=<?= $utilisateur['id'] ?>">
-        <?= $utilisateur['login'] ?>
-    </a>
+   <td>
+    <?php if ($utilisateur['statut_compte'] == 0): ?>
+        <button class="btn btn-dark" disabled>
+            <?= $utilisateur['login'] ?>
+        </button>
+    <?php else: ?>
+        <a class="btn btn-dark" href="commandes_livreurs.php?id=<?= $utilisateur['id'] ?>">
+            <?= $utilisateur['login'] ?>
+        </a>
+    <?php endif; ?>
 </td>
 
                 <td>
