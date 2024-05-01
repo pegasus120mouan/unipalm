@@ -48,16 +48,15 @@ $statuts_comptes= $getStatut_compte->fetchAll(PDO::FETCH_ASSOC);
 
    <td>
     <?php if ($utilisateur['statut_compte'] == 0): ?>
-        <button class="btn btn-dark" disabled>
+        <button class="btn btn-dark btn-block" disabled>
             <?= $utilisateur['login'] ?>
         </button>
     <?php else: ?>
-        <a class="btn btn-dark" href="commandes_livreurs.php?id=<?= $utilisateur['id'] ?>">
+        <a class="btn btn-dark btn-block" href="commandes_livreurs.php?id=<?= $utilisateur['id'] ?>">
             <?= $utilisateur['login'] ?>
         </a>
     <?php endif; ?>
 </td>
-
                 <td>
                 <a href="utilisateurs_profile.php?id=<?=$utilisateur['id']?>" class="edit"><img src="../dossiers_images/<?php echo $utilisateur['avatar']; ?>" alt="Logo" width="50" height="50"> </a>
                  </td>
