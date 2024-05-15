@@ -189,12 +189,12 @@ $points = $stmt_soldes->fetchAll();
         <span class="brand-text font-weight-light">OVL Delivery Services</span>
       </a>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
+      <!-- Sidebar -->
+      <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
           <div class="image">
-            <img src="../../dossiers_images/<?php echo $_SESSION['avatar']; ?>" class="img-circle elevation-2" alt="Logo">
+            <img src="../dossiers_images/<?php echo $_SESSION['avatar']; ?>" class="img-circle elevation-2" alt="Logo">
             <!-- <img src="../../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">-->
           </div>
           <div class="info">
@@ -202,20 +202,20 @@ $points = $stmt_soldes->fetchAll();
           </div>
         </div>
 
-      <!-- SidebarSearch Form -->
-      <div class="form-inline">
-        <div class="input-group" data-widget="sidebar-search">
-          <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-          <div class="input-group-append">
-            <button class="btn btn-sidebar">
-              <i class="fas fa-search fa-fw"></i>
-            </button>
+        <!-- SidebarSearch Form -->
+        <div class="form-inline">
+          <div class="input-group" data-widget="sidebar-search">
+            <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+            <div class="input-group-append">
+              <button class="btn btn-sidebar">
+                <i class="fas fa-search fa-fw"></i>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Sidebar Menu -->
-      <nav class="mt-2">
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
           <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
@@ -316,12 +316,6 @@ $points = $stmt_soldes->fetchAll();
                     <p>Particulier</p>
                   </a>
                 </li>
-                <li class="nav-item">
-                  <a href="pages/UI/icons.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Boutique</p>
-                  </a>
-                </li>
               </ul>
             </li>
             <li class="nav-item">
@@ -335,7 +329,7 @@ $points = $stmt_soldes->fetchAll();
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="pages/tables/simple.html" class="nav-link">
+                  <a href="listes_engins.php" class="nav-link">
                     <i class="fas fa-bicycle"></i>
                     <p>Listes des engins</p>
                   </a>
@@ -362,24 +356,44 @@ $points = $stmt_soldes->fetchAll();
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="../liste_livreurs.php" class="nav-link">
+                  <a href="liste_livreurs.php" class="nav-link">
                     <i class="fas fa-male	"></i>
                     <p>Listes des livreurs</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="../liste_admins.php" class="nav-link">
+                  <a href="liste_admins.php" class="nav-link">
                   <i class="fas fa-user-tie"></i>
                     <p>Listes des admins</p>
+                  </a>
+                </li>
+
+                 <li class="nav-item">
+                  <a href="gestion_access.php" class="nav-link">
+                  <i class="fas fa-lock"></i>
+                    <p>Gestion des acccès</p>
                   </a>
                 </li>
 
 
               </ul>
             </li>
+             <li class="nav-item">
+              <a href="cout_livraison.php" class="nav-link">
+                <i class="nav-icon far fa-calendar-alt"></i>
+                <p>
+                  Coût Livraison
+                </p>
+              </a>
+             </li>
+
+
+
+
+
           <li class="nav-header">CAISSE</li>
              <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="analytics/vuegenerale_soldes.php" class="nav-link">
                 <i class="nav-icon far fa-calendar-alt"></i>
                 <p>
                   Soldes
@@ -388,18 +402,27 @@ $points = $stmt_soldes->fetchAll();
               </a>
              </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="analytics/vue_gestion_caisse.php" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>
                   Caisse
                 </p>
               </a>
             </li>
+
             <li class="nav-item">
-              <a href="pages/kanban.html" class="nav-link">
-                <i class="far fa-money-bill-alt"></i>
+              <a href="dettes.php" class="nav-link">
+                <i class='fas fa-coins'></i>
                 <p>
-                  Dépenses
+                  Dettes
+                </p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="imprevus.php" class="nav-link">
+                <i class='fas fa-question-circle'></i>
+                <p>
+                  Imprevus
                 </p>
               </a>
            </li>
@@ -416,19 +439,19 @@ $points = $stmt_soldes->fetchAll();
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="../clients_analytics.php" class="nav-link">
+                  <a href="clients_analytics.php" class="nav-link">
                     <i class="fa fa-bar-chart"></i>
                     <p>Clients</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="../liste_admins.php" class="nav-link">
+                  <a href="livreurs_analytics.php" class="nav-link">
                     <i class="fa fa-line-chart"></i>
                     <p>Livreurs</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="../liste_admins.php" class="nav-link">
+                  <a href="liste_admins.php" class="nav-link">
                     <i class="fa fa-pie-chart"></i>
                     <p>Caisse</p>
                   </a>
@@ -437,8 +460,9 @@ $points = $stmt_soldes->fetchAll();
             </li>
 
             <li class="nav-item">
-              <a href="../../logout.php" class="nav-link">
-                <i class="fa fa-sign-out"></i>
+              <a href="../logout.php" class="nav-link">
+              <i class="fa fa-arrow-right"></i>
+
                 <p>
                   Déconnexion
                 </p>
@@ -447,10 +471,10 @@ $points = $stmt_soldes->fetchAll();
 
           </ul>
         </nav>
-      <!-- /.sidebar-menu -->
-    </div>
-    <!-- /.sidebar -->
-  </aside>
+        <!-- /.sidebar-menu -->
+      </div>
+      <!-- /.sidebar -->
+    </aside>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
