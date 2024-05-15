@@ -190,7 +190,8 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
       <a href="commandes.php" class="brand-link">
-        <img src="../../dist/img/logo.png" alt="OVL Delivery Services" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <img src="../../dist/img/logo.png" alt="OVL Delivery Services" class="brand-image img-circle elevation-3"
+          style="opacity: .8">
         <span class="brand-text font-weight-light">OVL Delivery Services</span>
       </a>
 
@@ -219,6 +220,7 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
           </div>
         </div>
 
+        <!-- Sidebar Menu -->
         <nav class="mt-2">
           <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <!-- Add icons to the links using the .nav-icon class
@@ -320,17 +322,12 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
                     <p>Particulier</p>
                   </a>
                 </li>
-                <li class="nav-item">
-                  <a href="pages/UI/icons.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Boutique</p>
-                  </a>
-                </li>
               </ul>
             </li>
             <li class="nav-item">
               <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-table"></i>
+                <i class="fas fa-taxi"></i>
+              
                 <p>
                   Engins
                   <i class="fas fa-angle-left right"></i>
@@ -338,14 +335,14 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="pages/tables/simple.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
+                  <a href="listes_engins.php" class="nav-link">
+                    <i class="fas fa-bicycle"></i>
                     <p>Listes des engins</p>
                   </a>
                 </li>
                 <li class="nav-item">
                   <a href="pages/tables/data.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
+                    <i class="fas fa-folder-open"></i>
                     <p>Contrats</p>
                   </a>
                 </li>
@@ -366,22 +363,42 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
               <ul class="nav nav-treeview">
                 <li class="nav-item">
                   <a href="liste_livreurs.php" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
+                    <i class="fas fa-male	"></i>
                     <p>Listes des livreurs</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="admin_users.php" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
+                  <a href="liste_admins.php" class="nav-link">
+                  <i class="fas fa-user-tie"></i>
                     <p>Listes des admins</p>
+                  </a>
+                </li>
+
+                 <li class="nav-item">
+                  <a href="gestion_access.php" class="nav-link">
+                  <i class="fas fa-lock"></i>
+                    <p>Gestion des acccès</p>
                   </a>
                 </li>
 
 
               </ul>
             </li>
-            <li class="nav-header">CAISSE</li>
-            <li class="nav-item">
+             <li class="nav-item">
+              <a href="cout_livraison.php" class="nav-link">
+                <i class="nav-icon far fa-calendar-alt"></i>
+                <p>
+                  Coût Livraison
+                </p>
+              </a>
+             </li>
+
+
+
+
+
+          <li class="nav-header">CAISSE</li>
+             <li class="nav-item">
               <a href="analytics/vuegenerale_soldes.php" class="nav-link">
                 <i class="nav-icon far fa-calendar-alt"></i>
                 <p>
@@ -389,25 +406,77 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
                   <span class="badge badge-info right">2</span>
                 </p>
               </a>
-            </li>
+             </li>
             <li class="nav-item">
-              <a href="pages/gallery.html" class="nav-link">
+              <a href="vue_gestion_caisse.php" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>
                   Caisse
                 </p>
               </a>
             </li>
+
             <li class="nav-item">
-              <a href="imprevus.php" class="nav-link">
-                <i class="nav-icon fas fa-columns"></i>
+              <a href="dettes.php" class="nav-link">
+                <i class='fas fa-coins'></i>
                 <p>
-                  Depenses
+                  Dettes
                 </p>
               </a>
             </li>
+            <li class="nav-item">
+              <a href="imprevus.php" class="nav-link">
+                <i class='fas fa-question-circle'></i>
+                <p>
+                  Imprevus
+                </p>
+              </a>
+           </li>
+          
+
+
+           <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="fa fa-area-chart"></i>
+                <p>
+                  STATISTIQUES
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="clients_analytics.php" class="nav-link">
+                    <i class="fa fa-bar-chart"></i>
+                    <p>Clients</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="livreurs_analytics.php" class="nav-link">
+                    <i class="fa fa-line-chart"></i>
+                    <p>Livreurs</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="liste_admins.php" class="nav-link">
+                    <i class="fa fa-pie-chart"></i>
+                    <p>Caisse</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item">
+              <a href="../logout.php" class="nav-link">
+              <i class="fa fa-arrow-right"></i>
+
+                <p>
+                  Déconnexion
+                </p>
+              </a>
+           </li>
+
           </ul>
-        </nav
+        </nav>
         <!-- /.sidebar-menu -->
       </div>
       <!-- /.sidebar -->
