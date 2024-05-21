@@ -41,62 +41,7 @@ $commandes_livres_clients = $stmt->fetchAll();
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
-  <!-- DataTables -->from Reem Hwishel to All Participants:
-https://docs.logrhythm.com/deploy/7.14.0/
-from Reem Hwishel to All Participants:
-https://docs.logrhythm.com/deploy/7.14.0/select-a-method-of-deploying-logrhythm
-from Reem Hwishel to All Participants:
-command prompt.-  ip config /all
-from Reem Hwishel to All Participants:
-  https://logrhythm.instructorled.training/access/login
-from Reem Hwishel to All Participants:
-27868BD9F002    Anusha
-27868BD9F003    Sergio
-27868BD9F004    Nebojsa
-27868BD9F005    Shreenkhala
-27868BD9F006    Achraf
-27868BD9F007    Umesh
-27868BD9F008    M. Souleymane
-27868BD9F009    Syama
-27868BD9F010    Damjan
-27868BD9F011    Said
-27868BD9F012    Mohamed Anass
-27868BD9F013    Haitem
-27868BD9F014    Mohammed Khidir
-27868BD9F015    Mariam
-27868BD9F016    Bahle
-27868BD9F017    Sagar
-27868BD9F018    Ajay
-27868BD9F019    Ganesh
-27868BD9F020    Amr
-27868BD9F021    Nagesh
-from Reem Hwishel to All Participants:
-Before you begin installing anything in/on the Data Indexer please do the following:
-• From Bitvise on LRVM-PM Desktop enter into the Data Indexer command line (192.168.99.130) (lrvmdx)
-• Type (in the shell window)
-◦ Sudo vi /home/logrhythm/.ssh/known_hosts
-• Enter i ( “ i key” to edit/make changes to the file)
-• Remove all the lines in the known_hosts file (make it blank)
-• Save the file
-• Esc (key)
-• :wq! (enter)
-• Enter cat /home/logrhythm/.ssh/known_hosts to make sure it is empty
-Then continue with the Data Indexer installation.
-from Reem Hwishel to All Participants:
-Before you start pg 45 and begin installing anything in/on the Data Indexer please do the following: 
-• From Bitvise on LRVM-PM Desktop enter into the Data Indexer command line (192.168.99.130) (lrvmdx)
-• Type (in the shell window)
-◦ Sudo vi /home/logrhythm/.ssh/known_hosts
-• Enter i ( “ i key” to edit/make changes to the file)
-• Remove all the lines in the known_hosts file (make it blank)
-• Save the file
-• Esc (key)
-• :wq! (enter)
-• Enter cat /home/logrhythm/.ssh/known_hosts to make sure it is empty
-Then continue with the Data Indexer installation.
-
-from Reem Hwishel to All Participants:
-Right click - New > Organizational unit - Internal Service Accounts 
+  <!-- DataTables -->
   <link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="../../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
