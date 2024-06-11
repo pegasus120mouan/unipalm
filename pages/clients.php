@@ -59,11 +59,17 @@ $clients = $stmt->fetchAll();
         <td><?=$client['utilisateur_prenoms']?></td>
         <td><?=$client['utilisateur_contact']?></td>
         <td><?=$client['utilisateur_login']?></td>
-        <td>
-          <a class="btn btn-dark" href="commandes_clients.php?id=<?= $client['utilisateur_id'] ?>">
-              <?= $client['boutique_nom'] ?>
-          </a>
-        </td>
+          <td>
+    <?php if ($client['statut_compte'] == 0): ?>
+        <button class="btn btn-dark btn-block" disabled>
+            <?= $client['boutique_nom'] ?>
+        </button>
+    <?php else: ?>
+        <a class="btn btn-dark btn-block" href="commandes_clients.php?id=<?= $client['utilisateur_id'] ?>">
+            <?= $client['boutique_nom'] ?>
+        </a>
+    <?php endif; ?>
+</td>
 
 
         <td class="actions">
