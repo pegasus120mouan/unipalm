@@ -291,6 +291,12 @@ if (!isset($_SESSION['user_id'])) {
                     <p>Points des Livreurs</p>
                   </a>
                 </li>
+                 <li class="nav-item">
+                  <a href="liste_montants.php" class="nav-link">
+                    <i class="fas fa-wallet"></i>
+                    <p>Liste des montants</p>
+                  </a>
+                </li>
               </ul>
             </li>
             <li class="nav-item">
@@ -362,7 +368,7 @@ if (!isset($_SESSION['user_id'])) {
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="pages/tables/data.html" class="nav-link">
+                  <a href="contrats.php" class="nav-link">
                     <i class="fas fa-folder-open"></i>
                     <p>Contrats</p>
                   </a>
