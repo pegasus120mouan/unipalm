@@ -72,7 +72,7 @@ $montants_list = $Montants_pages[$page - 1] ?? [];
 
 <div class="row">
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-point">
-        Enregistrer un point
+        Voir un bilan
     </button>
 </div>
 
