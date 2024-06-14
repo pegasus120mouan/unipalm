@@ -293,7 +293,7 @@ if (!isset($_SESSION['user_id'])) {
                 </li>
                  <li class="nav-item">
                   <a href="liste_montants.php" class="nav-link">
-                    <i class="fas fa-wallet"></i>
+                    <i class="fas fa-list"></i>
                     <p>Liste des montants</p>
                   </a>
                 </li>
