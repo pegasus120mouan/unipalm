@@ -11,9 +11,6 @@ ORDER BY c.date_commande DESC");
 $stmt->execute();
 $point_montants= $stmt->fetchAll();
 
-$livreurs_selection = $conn->query("SELECT id, CONCAT(nom, ' ', prenoms) AS nom_prenoms 
-FROM utilisateurs 
-WHERE role='livreur' AND statut_compte=1");
 
 $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 15;
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
@@ -25,7 +22,7 @@ $montants_list = $Montants_pages[$page - 1] ?? [];
 <html>
 
 <head>
-    <title>Gestion des Points de Livraison</title>
+    <title>Point journalier</title>
     <style>
         .pagination-container {
             display: flex;
@@ -71,8 +68,8 @@ $montants_list = $Montants_pages[$page - 1] ?? [];
 <body>
 
 <div class="row">
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-point">
-        Voir un bilan
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recherche_point">
+        Voir un point
     </button>
 </div>
 
@@ -82,7 +79,6 @@ $montants_list = $Montants_pages[$page - 1] ?? [];
         <th>Livreur</th>
         <th>Montant</th>
         <th>Date</th>
-        <th>Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -91,14 +87,6 @@ $montants_list = $Montants_pages[$page - 1] ?? [];
             <td><?= htmlspecialchars($montant_livreur['fullname']) ?></td>
             <td><?= htmlspecialchars($montant_livreur['total_cout_livraison']) ?></td>
             <td><?= htmlspecialchars($montant_livreur['date_commande']) ?></td>
-            <td class="actions">
-                <a href="point_livraison_update.php?id=<?= $point_livreur['point_livreur_id'] ?>&utilisateur_id=<?= $point_livreur['livreur_id'] ?>" class="edit">
-                    <i class="fas fa-pen fa-xs" style="font-size:24px;color:blue"></i>
-                </a>
-                <a href="point_livraison_delete.php?id=<?= $point_livreur['point_livreur_id'] ?>" class="trash">
-                    <i class="fas fa-trash fa-xs" style="font-size:24px;color:red"></i>
-                </a>
-            </td>
         </tr>
     <?php endforeach; ?>
     </tbody>
@@ -126,36 +114,20 @@ $montants_list = $Montants_pages[$page - 1] ?? [];
     </form>
 </div>
 
-<div class="modal fade" id="add-point">
+<div class="modal fade" id="recherche_point">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Enregistrer une commande</h4>
+                <h4 class="modal-title">Rechercher un point</h4>
             </div>
             <div class="modal-body">
-                <form class="forms-sample" method="post" action="save_pointlivraison.php">
-                    <div class="form-group">
-                        <label>Prenom Livreur</label>
-                        <select id="select" name="livreur_id" class="form-control">
-                            <?php
-                            while ($rowLivreur = $livreurs_selection->fetch(PDO::FETCH_ASSOC)) {
-                                echo '<option value="' . htmlspecialchars($rowLivreur['id']) . '">' . htmlspecialchars($rowLivreur['nom_prenoms']) . '</option>';
-                            }
-                            ?>
-                        </select>
-                    </div>
+                <form class="forms-sample" method="post" action="recherche_gain.php">
 
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Recettes du jour</label>
-                        <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Recette" name="recette">
+                        <label for="exampleInputPassword1">Selectionnez la date</label>
+                        <input type="date" class="form-control" id="exampleInputPassword1" placeholder="date" name="date">
                     </div>
-
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Dépenses du jour</label>
-                        <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Dépenses du jour" name="depenses">
-                    </div>
-
-                    <button type="submit" class="btn btn-primary mr-2" name="savePLivraison">Enregister</button>
+                    <button type="submit" class="btn btn-primary mr-2">Recherche</button>
                     <button type="button" class="btn btn-light" data-dismiss="modal">Annuler</button>
                 </form>
             </div>
