@@ -1,6 +1,6 @@
 <?php
 require('../fpdf/fpdf.php');
-//include('header.php'); // Assurez-vous que le chemin vers le fichier FPDF est correct
+require_once '../../inc/functions/connexion.php';
 
 if (isset($_POST['client']) && isset($_POST['date'])) {
 
@@ -10,14 +10,14 @@ if (isset($_POST['client']) && isset($_POST['date'])) {
     // $id_user=$_SESSION['user_id'];
     
     // Étape 1 : Etablir la connexion à la base de données
-    $serveur = "localhost";
-    $nomUtilisateur = "root";
-    $motDePasse = "";
-    $nomBaseDeDonnees = "db_ovl";
+ //   $serveur = "localhost";
+ //   $nomUtilisateur = "root";
+ //   $motDePasse = "";
+  //  $nomBaseDeDonnees = "db_ovl";
 
-    try {
-        $connexion = new PDO("mysql:host=$serveur;dbname=$nomBaseDeDonnees", $nomUtilisateur, $motDePasse);
-        $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+   // try {
+   //     $connexion = new PDO("mysql:host=$serveur;dbname=$nomBaseDeDonnees", $nomUtilisateur, $motDePasse);
+   //     $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // Étape 2 : Exécuter la requête SQL pour récupérer les données du pays et de la date sélectionnée
         $sql =
@@ -42,7 +42,7 @@ if (isset($_POST['client']) && isset($_POST['date'])) {
             AND u.id = :id_user  
             AND c.statut like 'Livr%'";
             
-        $requete = $connexion->prepare($sql);
+        $requete = $conn->prepare($sql);
         $requete->bindParam(':id_user', $id_user);
         $requete->bindParam(':date', $date);
         $requete->execute();
@@ -115,10 +115,7 @@ if (isset($_POST['client']) && isset($_POST['date'])) {
         $pdf->Output();
 
         // Étape 5 : Fermer la connexion à la base de données
-        $connexion = null;
-    } catch (PDOException $e) {
-        echo "Erreur de connexion à la base de données : " . $e->getMessage();
-    }
+        $conn = null;
 } else {
     echo "Veuillez sélectionner un client et une date.";
 }
