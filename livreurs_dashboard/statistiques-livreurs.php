@@ -1,14 +1,7 @@
 <?php
 include('header_livreurs.php');
+require_once '../inc/functions/connexion.php';
 
-$serveur = "localhost";
-$utilisateur = "root";
-$motDePasse = "";
-$baseDeDonnees = "db_ovl";
-
-try {
-    $connexion = new PDO("mysql:host=$serveur;dbname=$baseDeDonnees", $utilisateur, $motDePasse);
-    $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $id_user = $_SESSION['user_id'];
 
@@ -20,7 +13,7 @@ try {
             GROUP BY pl.date_commande
             ORDER BY pl.date_commande DESC";
 
-    $requete = $connexion->prepare($sql);
+    $requete = $conn->prepare($sql);
     $requete->bindParam(':id_user', $id_user, PDO::PARAM_INT);
     $requete->execute();
 
@@ -35,9 +28,6 @@ try {
     }
 
     $jsonData = json_encode($dataPoints);
-} catch (PDOException $e) {
-    echo "Erreur de connexion à la base de données : " . $e->getMessage();
-}
 ?>
 
 <!DOCTYPE html>
