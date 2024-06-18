@@ -69,7 +69,7 @@ $montants_list = $Montants_pages[$page - 1] ?? [];
 
 <div class="row">
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recherche_point">
-        Voir un point
+        Voir un point-President_daniel
     </button>
 </div>
 
