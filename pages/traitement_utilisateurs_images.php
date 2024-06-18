@@ -1,16 +1,5 @@
 <?php
-session_start(); 
-$serveur = "localhost";
-$nomUtilisateur = "root";
-$motDePasse = "";
-$nomBaseDeDonnees = "db_ovl";
-try {
-    
-    // Établissez une connexion à la base de données MySQL en utilisant PDO
-    // Établissez une connexion à la base de données MySQL en utilisant PDO
-     // Établissez une connexion à la base de données MySQL en utilisant PDO
-    $pdo = new PDO("mysql:host=$serveur;dbname=$nomBaseDeDonnees", $nomUtilisateur, $motDePasse);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+require_once '../inc/functions/connexion.php';   
 
     $id_utilisateur = $_POST['id'];
 
@@ -28,7 +17,7 @@ try {
 
     // Préparez et exécutez la requête d'insertion pour stocker les données dans la base de données
    // $stmt = $pdo->prepare("INSERT INTO clients set logo = ? where id= ? ");
-    $stmt = $pdo->prepare("UPDATE utilisateurs SET avatar = ? WHERE id = ?");
+    $stmt = $conn->prepare("UPDATE utilisateurs SET avatar = ? WHERE id = ?");
    $stmt->bindParam(1, $_FILES['photo']['name']);
    $stmt->bindParam(2, $id_utilisateur);
     $stmt->execute();
@@ -45,7 +34,4 @@ try {
             //header("Location: home1.php");
            // exit();
         }
-} catch (PDOException $e) {
-    die("Erreur de connexion à la base de données : " . $e->getMessage());
-}
 ?>
