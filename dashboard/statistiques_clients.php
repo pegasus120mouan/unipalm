@@ -1,14 +1,6 @@
 <?php
 include('header-statistiques.php');
-
-$serveur = "localhost";
-$utilisateur = "root";
-$motDePasse = "";
-$baseDeDonnees = "db_ovl";
-
-try {
-    $connexion = new PDO("mysql:host=$serveur;dbname=$baseDeDonnees", $utilisateur, $motDePasse);
-    $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+require_once '../inc/functions/connexion.php';
 
     $id_user = $_SESSION['user_id']; // Remplacez cela par l'id du client que vous souhaitez
 
@@ -32,7 +24,7 @@ try {
             c.id, cmd.date_commande DESC
     ";
 
-    $requete = $connexion->prepare($sql);
+    $requete = $conn->prepare($sql);
     $requete->bindParam(':id_user', $id_user, PDO::PARAM_INT);
     $requete->execute();
 
@@ -47,9 +39,6 @@ try {
     }
 
     $jsonData = json_encode($dataPoints);
-} catch (PDOException $e) {
-    echo "Erreur de connexion à la base de données : " . $e->getMessage();
-}
 ?>
 
 <!DOCTYPE html>
