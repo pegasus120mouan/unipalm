@@ -1,94 +1,50 @@
 <?php
+session_start();
 require_once '../inc/functions/connexion.php';
+require_once '../inc/functions/requete/requete_dashboard_hier.php';
+
+$dateHier = date('d-m-Y', strtotime('-1 day'));
 
 
-if (!isset($_SESSION['user_id'])) {
-  // Redirigez vers la page de connexion si l'utilisateur n'est pas connecté
-  header("Location: ../index.php");
-  exit();
-}
+$date=date('Y-m-d H:i:s');
+$pointParclients_hier = $getPoints_clients_hier->fetchAll(PDO::FETCH_ASSOC);
+$totalAmount_hier = array_sum(array_column($pointParclients_hier, 'total_amount'));
+$totalVersement_hier = array_sum(array_column($pointParclients_hier, 'total_cout_reel'));
+$totalCout_livraison_hier = array_sum(array_column($pointParclients_hier, 'total_cout_livraison'));
 
-$getSommeGlobalQuery = "SELECT sum(cout_global) as sum_cout_global 
-from utilisateurs 
-join commandes on utilisateurs.id=commandes.livreur_id 
-JOIN livreurs on livreurs.id=commandes.livreur_id 
-WHERE date_commande=CURRENT_DATE()-1 
-AND livreurs.nom='Kone' 
-AND livreurs.prenoms='Lassina' 
-AND commandes.statut='Livré'";
-$getSommeGlobalQueryStmt = $conn->query($getSommeGlobalQuery);
-$somme_global = $getSommeGlobalQueryStmt->fetch(PDO::FETCH_ASSOC);
+$pointParlivreurs_hier= $getPoints_a_donners_hier->fetchAll(PDO::FETCH_ASSOC);
 
 
-$getCoutReelQuery = "SELECT sum(cout_reel) as sum_cout_reel 
-from utilisateurs 
-join commandes on utilisateurs.id=commandes.livreur_id 
-JOIN livreurs on livreurs.id=commandes.livreur_id 
-WHERE date_commande=CURRENT_DATE()-1 
-AND livreurs.nom='Kone' 
-AND livreurs.prenoms='Lassina'
-AND commandes.statut='Livré'";
-$getCoutReelQueryStmt = $conn->query($getCoutReelQuery);
-$somme_cout_reel = $getCoutReelQueryStmt->fetch(PDO::FETCH_ASSOC);
-
-$totalLivraison = $somme_global['sum_cout_global'] - $somme_cout_reel['sum_cout_reel'];
-
-
-$getSommeDepenseQuery = "SELECT depense as somme_depense,date_commande,livreurs.nom,livreurs.prenoms from points_livreurs 
-JOIN livreurs ON points_livreurs.utilisateur_id=livreurs.id WHERE date_commande=CURRENT_DATE()-1 AND livreurs.nom='Kone' AND livreurs.prenoms='Lassina'";
-$getSommeDepenseQueryStmt = $conn->query($getSommeDepenseQuery);
-$somme_depense = $getSommeDepenseQueryStmt->fetch(PDO::FETCH_ASSOC);
-
-$getSommeDepenseQuery = "SELECT depense as somme_depense,date_commande,livreurs.nom,livreurs.prenoms from points_livreurs 
-JOIN livreurs ON points_livreurs.utilisateur_id=livreurs.id WHERE date_commande=CURRENT_DATE()-1 AND livreurs.nom='Kone' AND livreurs.prenoms='Lassina'";
-$getSommeDepenseQueryStmt = $conn->query($getSommeDepenseQuery);
-$somme_depense = $getSommeDepenseQueryStmt->fetch(PDO::FETCH_ASSOC);
-
-
-$getSommeGainQuery = "SELECT gain_jour as gain,date_commande,livreurs.nom,livreurs.prenoms from points_livreurs 
-JOIN livreurs ON points_livreurs.utilisateur_id=livreurs.id WHERE date_commande=CURRENT_DATE()-1 AND livreurs.nom='Kone' AND livreurs.prenoms='Lassina'";
-$getSommeGainQueryStmt = $conn->query($getSommeGainQuery);
-$somme_gain = $getSommeGainQueryStmt->fetch(PDO::FETCH_ASSOC);
-
-//$somme_depense = $somme_depense ?? ['somme_depense'=>0];
-
-if (is_array($somme_global) && isset($somme_global['sum_cout_global'])) {
-  $totalAVerser = (int) $somme_global['sum_cout_global'];
-} else {
-  $totalAVerser = 0; // or another default value
-}
-
-if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
-  $totalAVerser -= (int) $somme_depense['somme_depense'];
-}
-
-
-//$totalAVerser = (int) $somme_global['sum_cout_global'] -  $somme_depense['somme_depense'];
-//Point Livreurs-----------------------------------
+$pointParlivreur_gains_hier = $getPoints_Livreurs_hier->fetchAll(PDO::FETCH_ASSOC);
 
 
 ?>
+ 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vue Generale</title>
+  <title>OVL | Point</title>
+  <link rel="icon" href="../../dist/img/logo.png" type="image/x-icon">
+  <link rel="shortcut icon" href="../../dist/img/logo.png" type="image/x-icon">
 
   <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="../../plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
 </head>
 
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
   <div class="wrapper">
+
+    <!-- Preloader -->
+
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
       <!-- Left navbar links -->
@@ -452,7 +408,7 @@ if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
               </a>
              </li>
             <li class="nav-item">
-              <a href="analytics/vue_gestion_caisse.php" class="nav-link">
+              <a href="vue_gestion_caisse.php" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>
                   Caisse
@@ -529,41 +485,43 @@ if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
       <!-- Content Header (Page header) -->
-      <section class="content-header">
+      <div class="content-header">
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <h1>Tableau de bord</h1>
-            </div>
+              <h1 class="m-0">Point d'hier <?php echo $dateHier; ?></h1>
+            </div><!-- /.col -->
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Vue Générale</a></li>
+              <li class="breadcrumb-item"><a href="#">Tableau de Bord</a></li>
                 <li class="breadcrumb-item active"><?php echo $_SESSION['user_role']; ?></li>
               </ol>
-            </div>
-          </div>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
         </div><!-- /.container-fluid -->
-      </section>
+      </div>
+      <!-- /.content-header -->
 
       <!-- Main content -->
       <section class="content">
         <div class="container-fluid">
-          <h5 class="mb-2">Points d'hier</h5>
+          <!-- Info boxes -->
           <div class="row">
-            <div class="col-md-3 col-sm-6 col-12">
+            <div class="col-12 col-sm-6 col-md-3">
               <div class="info-box">
-                <span class="info-box-icon bg-info"><i class="fas fa-money-bill"></i></span>
-
-              
+                <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
 
                 <div class="info-box-content">
-                  <span class="info-box-text"><i>Montant Global hier</i></span>
-                  <span class="info-box-number" style="font-size: 24px;">
-                    <?php if ($somme_global == 0) {
+                  <span class="info-box-text">Montant Global</span>
+                  <span class="info-box-number">
+                    <?php
+                    if ($totalAmount_hier == 0) {
                       echo "0";
                     } else {
-                      echo $somme_global['sum_cout_global'];
-                    } ?>
+                      echo $totalAmount_hier;
+                    }
+                    ?>
+                    <small>CFA</small>
                   </span>
                 </div>
                 <!-- /.info-box-content -->
@@ -571,14 +529,49 @@ if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
               <!-- /.info-box -->
             </div>
             <!-- /.col -->
-            <div class="col-md-2 col-sm-6 col-12">
-              <div class="info-box">
-                <span class="info-box-icon bg-success"><i class="fas fa-money-bill-wave"></i></span>
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
 
                 <div class="info-box-content">
-                  <span class="info-box-text"><i>Montant Réel clients</i></span>
-                  <span class="info-box-number" style="font-size: 24px;">
-                    <?= $somme_cout_reel['sum_cout_reel']; ?>
+                  <span class="info-box-text">Montant à donner</span>
+                  <span class="info-box-number">
+                    <?php
+                    if ($totalVersement_hier == 0) {
+                      echo "0";
+                    } else {
+                      echo $totalVersement_hier;
+                    }
+                    ?>
+                    <small>CFA</small>
+                  </span>
+
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+
+            <!-- fix for small devices only -->
+            <div class="clearfix hidden-md-up"></div>
+
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
+
+                <div class="info-box-content">
+                  <span class="info-box-text">Recette Global</span>
+                  <span class="info-box-number">
+
+                    <?php
+                    if ($totalCout_livraison_hier == 0) {
+                      echo "0";
+                    } else {
+                      echo $totalCout_livraison_hier;
+                    }
+                    ?>
+                    <small>CFA</small>
                   </span>
                 </div>
                 <!-- /.info-box-content -->
@@ -586,19 +579,16 @@ if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
               <!-- /.info-box -->
             </div>
             <!-- /.col -->
-            <div class="col-md-2 col-sm-6 col-12">
-              <div class="info-box">
-                <span class="info-box-icon bg-primary"><i class="fas fa-receipt"></i></span>
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
 
                 <div class="info-box-content">
-                  <span class="info-box-text"><i>Total livraison</i></span>
-                  <span class="info-box-number" style="font-size: 24px;">
-                    <?php if ($totalLivraison == 0) {
-                      echo "0";
-                    } else {
-                      echo $totalLivraison;
-                    } ?>
-
+                  <span class="info-box-text">Nombre de colis livré hier</span>
+                  <span class="info-box-number">
+                    <a href="analytics/vue_generale_colis_livres.php"><?php echo $nombreColisLivre_hier; ?> 
+                    <small> Colis livrés</small>
+                    </a>
                   </span>
                 </div>
                 <!-- /.info-box-content -->
@@ -606,93 +596,239 @@ if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
               <!-- /.info-box -->
             </div>
             <!-- /.col -->
-            <div class="col-md-2 col-sm-6 col-12">
-              <div class="info-box">
-                <span class="info-box-icon bg-danger"><i class="far fa-copy"></i></span>
+          </div>
+          <!-- /.row -->
 
-                <div class="info-box-content">
-                  <span class="info-box-text"><i>Dépenses</i></span>
-                  <span class="info-box-number" style="font-size: 24px;">
-                    <?php if ($somme_depense == 0) {
-                      echo "0";
-                    } else {
-                      echo $somme_depense['somme_depense'];
-                    } ?>
-                  </span>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title">Points par Clients</h5>
+                  <div class="card-tools">
+                    <a href="#" class="btn btn-tool btn-sm">
+                      <i class="fas fa-download"></i>
+                    </a>
+                    <a href="#" class="btn btn-tool btn-sm">
+                      <i class="fas fa-bars"></i>
+                    </a>
+                  </div>
                 </div>
-                <!-- /.info-box-content -->
-              </div>
-              <!-- /.info-box -->
-            </div>
-
-            <div class="col-md-3 col-sm-6 col-12">
-              <div class="info-box">
-                <span class="info-box-icon bg-warning"><i class="fas fa-wallet"></i></span>
-
-                <div class="info-box-content">
-                  <span class="info-box-text"><i>Gain du jour</i></span>
-                  <span class="info-box-number" style="font-size: 24px;">
-                    <?php if ($somme_gain == 0) {
-                      echo "0";
-                    } else {
-                      echo $somme_gain['gain'];
-                    } ?>
-                  </span>
+                <div class="card-body table-responsive p-0">
+                  <table class="table table-striped table-valign-middle">
+                    <thead>
+                      <tr>
+                        <th>Clients</th>
+                        <th>Montant Global</th>
+                        <th>Gain  livraison</th>
+                        <th>Versements</th>
+                        <th>Nbre de colis Récu</th>
+                        <th>Nbre de livré</th>
+                        <th>Nbre de colis non Livré</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($pointParclients_hier as $pointParclient_hier) : ?>
+                      <tr>
+                        <td>
+                        
+                       <a href="#">                 
+                        <?= $pointParclient_hier['boutique_nom'] ?>
+                        </a> 
+                  
+                        </td>
+                        <td><?= $pointParclient_hier['total_amount'] ?></td>
+                        <td><?= $pointParclient_hier['total_cout_livraison'] ?></td>
+                        <td><?= $pointParclient_hier['total_cout_reel'] ?></td>
+                        <td>
+                        <a href="#">                 
+                        <?= $pointParclient_hier['total_orders'] ?>
+                        </a>                    
+                      </td>
+                        <td>
+                        <a href="#">                 
+                        <?= $pointParclient_hier['total_delivered_orders'] ?>
+                        </a>                    
+                      </td>                      
+                        <td>
+                        <a href="#">
+                        <?= $pointParclient_hier['total_undelivered_orders'] ?>
+                        </a>
+                      </td>
+                      </tr>
+                      <?php endforeach; ?>
+                    </tbody>
+                  </table>
                 </div>
-                <!-- /.info-box-content -->
               </div>
-              <!-- /.info-box -->
+
+
+              <div class="card">
+                <div class="card-header bg-primary">
+                  <h5 class="card-title">Versement</h5>
+                  <div class="card-tools">
+                    <a href="#" class="btn btn-tool btn-sm">
+                      <i class="fas fa-download"></i>
+                    </a>
+                    <a href="#" class="btn btn-tool btn-sm">
+                      <i class="fas fa-bars"></i>
+                    </a>
+                  </div>
+                </div>
+                <div class="card-body table-responsive p-0">
+                  <table class="table table-striped table-valign-middle table-info">
+                    <thead>
+                      <tr>
+                        <th style="color: black">Nom  du livreur</th>
+                        <th style="color: black">Montant Global</th>
+                        <th style="color: black">Depenses</th>
+                        <th style="color: black">Montant à remettre</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($pointParlivreurs_hier as $pointParlivreur_hier) : ?>
+                      <tr>
+                        
+                      <td style="color: black;">
+                        
+                        <a href="#">                 
+                         <?= $pointParlivreur_hier['fullname'] ?>
+                         </a> 
+                   
+                      </td>
+                      <td style="color: black;"><?= $pointParlivreur_hier['cout_global'] ?></td>
+                      <td style="color: black;"><?= $pointParlivreur_hier['depense'] ?></td>
+                      <td style="color: black;"><?= $pointParlivreur_hier['montant_a_remettre'] ?></td>
+                      </tr>
+                      <?php endforeach; ?>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- /.card -->
             </div>
-            <!-- /.info-box -->
+            <!-- /.col -->
+          </div>
+          <!-- /.row -->
+
+          <!-- Main row -->
+          <div class="row">
+            <!-- Left col -->
+            <div class="col-md-8">
+              <!-- MAP & BOX PANE -->
+              <div class="card">
+                <!-- /.card-header -->
+                <div class="card-body p-0">
+                  <div class="d-md-flex">
+
+
+                  </div><!-- /.d-md-flex -->
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <!-- /.card -->
+
+              <!-- /.card-header -->
+              <!-- /.card-body -->
+              <!-- /.card-footer -->
+            </div>
+            <!--/.card -->
           </div>
           <!-- /.col -->
         </div>
         <!-- /.row -->
 
-        <!-- =========================================================== -->
+        <!-- TABLE: LATEST ORDERS -->
+        <div class="card">
+          <div class="card-header border-transparent">
+            <h3 class="card-title">Point livreur</h3>
 
-        <!-- =========================================================== -->
-        <h5 class="mt-4 mb-2"></h5>
-        <div class="row">
-          <div class="col-md-12 col-sm-6 col-12">
-            <div class="info-box bg-dark">
-            <span class="info-box-icon" style="font-size: 48px;">
-                <i class="fas fa-hand-holding-usd">
-                </i></span>
-              
-              <div class="info-box-content">
-                <span style="text-align: center; font-size: 20px;" class="info-box-text">Montant à verser</span>
-
-                <div class="progress">
-                  <div class="progress-bar" style="width: 100%"></div>
-                </div>
-                <span class="progress-description">
-                <h1 style="text-align: center; font-size: 70px;"><strong><?php echo $totalAVerser; ?></strong></h1>
-                </span>
-              </div>
-              <!-- /.info-box-content -->
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+              </button>
             </div>
-            <!-- /.info-box -->
           </div>
+          <!-- /.card-header -->
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table m-0">
+                <thead>
+                  <tr>
+                    <th>Livreur</th>
+                    <th>Recette</th>
+                    <th>Dépense</th>
+                    <th>Gain</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($pointParlivreur_gains_hier as $pointParlivreur_gain_hier) : ?>
+                  <tr>
+                    <td>              
+                        <?= $pointParlivreur_gain_hier['nom_livreur'] ?>
+                  </td>
+                    <td>
+                    <?= $pointParlivreur_gain_hier['somme_cout_livraison'] ?>
+                    </td>
+                    <td><span class="badge badge-success"><?= $pointParlivreur_gain_hier['somme_depenses'] ?></span></td>
+                    <td>
+                      <div class="sparkbar" data-color="#00a65a" data-height="20"><?= $pointParlivreur_gain_hier['gain_par_livreur'] ?></div>
+                    </td>
+                  </tr>
+
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
+            <!-- /.table-responsive -->
+          </div>
+          <!-- /.card-body -->
+          <!-- /.card-footer -->
         </div>
-        <!-- /.row -->
-
-        <!-- =========================================================== -->
-       
-
-        <!-- =========================================================== -->
-
+        <!-- /.card -->
     </div>
-    <!-- ./wrapper -->
+    <!-- /.col -->
+  </div>
+  <!-- /.row -->
+  </div>
+  <!--/. container-fluid -->
+  </section>
+  <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
 
-    <!-- jQuery -->
-    <script src="../plugins/jquery/jquery.min.js"></script>
-    <!-- Bootstrap 4 -->
-    <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- AdminLTE App -->
-    <script src="../dist/js/adminlte.min.js"></script>
-    <!-- AdminLTE for demo purposes -->
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+
+  <!-- Main Footer -->
+  </div>
+  <!-- ./wrapper -->
+
+  <!-- REQUIRED SCRIPTS -->
+  <!-- jQuery -->
+  <script src="../../plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap -->
+  <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- overlayScrollbars -->
+  <script src="../../plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+  <!-- AdminLTE App -->
+  <script src="../../dist/js/adminlte.js"></script>
+
+  <!-- PAGE PLUGINS -->
+  <!-- jQuery Mapael -->
+  <!-- ChartJS -->
+  <script src="../../plugins/chart.js/Chart.min.js"></script>
+
+  <!-- AdminLTE for demo purposes -->
 
 </body>
+
+</html>
 
 </html>
