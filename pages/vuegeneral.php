@@ -614,42 +614,43 @@ $pointParlivreur_gains_hier = $getPoints_Livreurs_hier->fetchAll(PDO::FETCH_ASSO
                   </div>
                 </div>
                 <div class="card-body table-responsive p-0">
-                  <table class="table table-striped table-valign-middle">
+                  <table class="table table-striped table-valign-middle" style="background-color: white;">
+
                     <thead>
                       <tr>
-                        <th>Clients</th>
-                        <th>Montant Global</th>
-                        <th>Gain  livraison</th>
-                        <th>Versements</th>
-                        <th>Nbre de colis Récu</th>
-                        <th>Nbre de livré</th>
-                        <th>Nbre de colis non Livré</th>
+                        <th style="color: black">Clients</th>
+                        <th style="color: black">Montant Global</th>
+                        <th style="color: black">Gain  livraison</th>
+                        <th style="color: black">Versements</th>
+                        <th style="color: black">Nbre de colis Récu</th>
+                        <th style="color: black">Nbre de livré</th>
+                        <th style="color: black">Nbre de colis non Livré</th>
                       </tr>
                     </thead>
                     <tbody>
                     <?php foreach ($pointParclients_hier as $pointParclient_hier) : ?>
                       <tr>
-                        <td>
+                        <td style="color: black">
                         
                        <a href="#">                 
                         <?= $pointParclient_hier['boutique_nom'] ?>
                         </a> 
                   
                         </td>
-                        <td><?= $pointParclient_hier['total_amount'] ?></td>
-                        <td><?= $pointParclient_hier['total_cout_livraison'] ?></td>
-                        <td><?= $pointParclient_hier['total_cout_reel'] ?></td>
-                        <td>
+                         <td style="color: black"><?= $pointParclient_hier['total_amount'] ?></td>
+                        <td style="color: black"><?= $pointParclient_hier['total_cout_livraison'] ?></td>
+                        <td style="color: black"><?= $pointParclient_hier['total_cout_reel'] ?></td>
+                         <td style="color: black">
                         <a href="#">                 
                         <?= $pointParclient_hier['total_orders'] ?>
                         </a>                    
                       </td>
-                        <td>
+                         <td style="color: black">
                         <a href="#">                 
                         <?= $pointParclient_hier['total_delivered_orders'] ?>
                         </a>                    
                       </td>                      
-                        <td>
+                        <td style="color: black">
                         <a href="#">
                         <?= $pointParclient_hier['total_undelivered_orders'] ?>
                         </a>
@@ -675,7 +676,7 @@ $pointParlivreur_gains_hier = $getPoints_Livreurs_hier->fetchAll(PDO::FETCH_ASSO
                   </div>
                 </div>
                 <div class="card-body table-responsive p-0">
-                  <table class="table table-striped table-valign-middle table-info">
+                 <table class="table table-striped table-valign-middle table-info" style="background-color: white;">
                     <thead>
                       <tr>
                         <th style="color: black">Nom  du livreur</th>
@@ -739,9 +740,9 @@ $pointParlivreur_gains_hier = $getPoints_Livreurs_hier->fetchAll(PDO::FETCH_ASSO
         <!-- /.row -->
 
         <!-- TABLE: LATEST ORDERS -->
-        <div class="card">
+        <div class="card" style="background-color: white">
           <div class="card-header border-transparent">
-            <h3 class="card-title">Point livreur</h3>
+<h3 class="card-title" style="color: black; font-weight: bold">Point livreur</h3>
 
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -758,23 +759,23 @@ $pointParlivreur_gains_hier = $getPoints_Livreurs_hier->fetchAll(PDO::FETCH_ASSO
               <table class="table m-0">
                 <thead>
                   <tr>
-                    <th>Livreur</th>
-                    <th>Recette</th>
-                    <th>Dépense</th>
-                    <th>Gain</th>
+                    <th style="color: black">Livreur</th>
+                    <th style="color: black">Recette</th>
+                    <th style="color: black">Dépense</th>
+                    <th style="color: black">Gain</th>
                   </tr>
                 </thead>
                 <tbody>
                 <?php foreach ($pointParlivreur_gains_hier as $pointParlivreur_gain_hier) : ?>
                   <tr>
-                    <td>              
+                    <td style="color: black">              
                         <?= $pointParlivreur_gain_hier['nom_livreur'] ?>
                   </td>
-                    <td>
+                    <td style="color: black">
                     <?= $pointParlivreur_gain_hier['somme_cout_livraison'] ?>
                     </td>
-                    <td><span class="badge badge-success"><?= $pointParlivreur_gain_hier['somme_depenses'] ?></span></td>
-                    <td>
+                    <td style="color: black"><span class="badge badge-success"><?= $pointParlivreur_gain_hier['somme_depenses'] ?></span></td>
+                    <td style="color: black">
                       <div class="sparkbar" data-color="#00a65a" data-height="20"><?= $pointParlivreur_gain_hier['gain_par_livreur'] ?></div>
                     </td>
                   </tr>
