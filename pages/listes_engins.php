@@ -5,7 +5,13 @@ include('header.php');
 
 $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
+<style>
+.table-head-gray {
+    background-color:  #616a6b  /* Couleur de fond gris clair */
+    color: #333; /* Couleur du texte */
+    font-weight: bold; /* Police en gras */
+}
+</style>
 <div class="row">
   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-engin">
     Enregistrer un engin
@@ -13,20 +19,20 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
 
   <a class="btn btn-outline-secondary" href="commandes_print.php"><i class="fa fa-print" style="font-size:24px;color:green"></i></a>
   <table style="max-height: 90vh !important; overflow-y: scroll !important" id="example1" class="table table-bordered table-striped">
-    <thead>
-        <th>Type Engin</th>
-        <th>Année Fabrication</th>
-        <th>Numero Chassis</th>
-        <th>Plaque d'Immatriculation</th>
-        <th>Couleur</th>
-        <th>Marque</th>
-        <th>Date d'ajout</th>
-        <th>Statut</th>
-        <th>Actions</th>
-        <th>Attribuer à</th>
-        <th>Changer le livreur</th>
-        <th>Changer le statut</th>
-    </thead>
+    <thead class="thead-dark">
+    <th>Type Engin</th>
+    <th>Année Fabrication</th>
+    <th>Numero Chassis</th>
+    <th>Plaque d'Immatriculation</th>
+    <th>Couleur</th>
+    <th>Marque</th>
+    <th>Date d'ajout</th>
+    <th>Statut</th>
+    <th>Actions</th>
+    <th>Attribuer à</th>
+    <th>Changer le livreur</th>
+    <th>Changer le statut</th>
+</thead>
     <tbody>
       <?php foreach ($engins as $engin) : ?>
         <tr>

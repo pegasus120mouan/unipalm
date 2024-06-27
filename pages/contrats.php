@@ -14,7 +14,7 @@ include('header.php');
     </a>
     <table style="max-height: 90vh !important; overflow-y: scroll !important" id="example1"
         class="table table-bordered table-striped">
-        <thead>
+        <thead class="thead-dark">
             <tr>
                 <th>Avatar</th>
                 <th>Numéro chassis</th>
