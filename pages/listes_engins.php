@@ -65,15 +65,13 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
             <a href="delete_engins.php?id=<?= $engin['engin_id'] ?>" class="trash"><i class="fas fa-trash fa-xs" style="font-size:24px;color:red"></i></a>
           </td>
           <td>
-            <?php if ($engin['nom_livreur']) : ?>
-              <button class="btn btn-secondary" disabled><?= $engin['nom_livreur'] ?></button>
-            <?php endif; ?>
-          </td>
+                 <img src="../dossiers_images/<?php echo $engin['avatar']; ?>" alt="Avatar" width="50" height="50" title="<?= $engin['nom_livreur'] ?>">
+                </td>
           <td>
               <button class="btn btn-warning" data-toggle="modal" data-target="#update_livreur-<?= $engin['engin_id'] ?>">Changer le livreur</button>
           </td>
           <td>
-              <button class="btn btn-warning" data-toggle="modal" data-target="#update_statut-<?= $engin['engin_id'] ?>">Changer le statut</button>
+              <button class="btn btn-info" data-toggle="modal" data-target="#update_statut-<?= $engin['engin_id'] ?>">Changer le statut</button>
           </td>
         </tr>
         

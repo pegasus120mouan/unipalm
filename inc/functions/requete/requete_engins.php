@@ -5,6 +5,7 @@ $stmt_engins = $conn->prepare(
     "SELECT 
     engins.engin_id AS engin_id, 
     concat(utilisateurs.nom, ' ', utilisateurs.prenoms) AS nom_livreur,
+    utilisateurs.avatar AS avatar,
     engins.type_engin AS type_engin, 
     engins.annee_fabrication AS annee_fabrication,
     engins.numero_chassis  AS numero_chassis,
