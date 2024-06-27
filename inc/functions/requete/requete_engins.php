@@ -7,6 +7,7 @@ $stmt_engins = $conn->prepare(
     concat(utilisateurs.nom, ' ', utilisateurs.prenoms) AS nom_livreur,
     engins.type_engin AS type_engin, 
     engins.annee_fabrication AS annee_fabrication,
+    engins.numero_chassis  AS numero_chassis,
     engins.plaque_immatriculation AS plaque_immatriculation,
     engins.couleur AS couleur,
     engins.marque AS marque,

@@ -20,6 +20,7 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
     <thead>
         <th>Type Engin</th>
         <th>Année Fabrication</th>
+        <th>Numero Chassis</th>
         <th>Plaque d'Immatriculation</th>
         <th>Couleur</th>
         <th>Marque</th>
@@ -41,6 +42,14 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
             <?php endif; ?>
           </td>
           <td><?= $engin['annee_fabrication'] ?></td>
+      <td>
+    <?php if ($engin['numero_chassis'] !== null) : ?>
+        <?= $engin['numero_chassis'] ?>
+    <?php else : ?>
+        <span class="badge badge-pill badge-danger">Numero Chassis manquant</span>
+    <?php endif; ?>
+</td>
+
           <td><?= $engin['plaque_immatriculation'] ?></td>
           <td><?= $engin['couleur'] ?></td>  
           <td><?= $engin['marque'] ?></td>  

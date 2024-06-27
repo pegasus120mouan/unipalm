@@ -61,6 +61,11 @@
         value="<?php echo $modif_engins['annee_fabrication']; ?>">
     </div>
     <div class="form-group">
+      <label for="exampleInputName1">Numéro Chassis</label>
+      <input type="text" class="form-control" id="exampleInputName1" placeholder="Numéro Chassis" name="numero_chassis"
+        value="<?php echo $modif_engins['numero_chassis']; ?>">
+    </div>
+    <div class="form-group">
       <label for="exampleInputName1">Plaque d'immatriculation</label>
       <input type="text" class="form-control" id="exampleInputName1" placeholder="date" name="plaque_immatriculation"
         value="<?php echo $modif_engins['plaque_immatriculation']; ?>">
