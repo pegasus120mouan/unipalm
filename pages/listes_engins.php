@@ -4,11 +4,7 @@ require_once '../inc/functions/requete/requete_engins.php';
 include('header.php');
 
 $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
-
-//var_dump($commandes_list);
 ?>
-
-
 
 <div class="row">
   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-engin">
@@ -24,7 +20,7 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
         <th>Plaque d'Immatriculation</th>
         <th>Couleur</th>
         <th>Marque</th>
-        <th>Date_ajout</th>
+        <th>Date d'ajout</th>
         <th>Statut</th>
         <th>Actions</th>
         <th>Attribuer à</th>
@@ -42,24 +38,27 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
             <?php endif; ?>
           </td>
           <td><?= $engin['annee_fabrication'] ?></td>
-      <td>
-    <?php if ($engin['numero_chassis'] !== null) : ?>
-        <?= $engin['numero_chassis'] ?>
-    <?php else : ?>
-        <span class="badge badge-pill badge-danger">Numero Chassis manquant</span>
-    <?php endif; ?>
-</td>
-
+          <td>
+            <?php if ($engin['numero_chassis'] !== null) : ?>
+                <span class="numero-chassis" title="Marque: <?= $engin['marque'] ?>, Couleur: <?= $engin['couleur'] ?>">
+                  <b><i><?= $engin['numero_chassis'] ?></i></b>
+                </span>
+            <?php else : ?>
+                <span class="badge badge-pill badge-danger">Numero Chassis manquant</span>
+            <?php endif; ?>
+          </td>
           <td><?= $engin['plaque_immatriculation'] ?></td>
           <td><?= $engin['couleur'] ?></td>  
           <td><?= $engin['marque'] ?></td>  
-          <td><?= $engin['date_ajout'] ?></td>  
-          <td style="background-color: 
-          <?php
-           echo ($engin['statut'] === 'En Utilisation') ? 'green' :
-         (($engin['statut'] === 'Pas attribuée') ? 'yellow' :
-         (($engin['statut'] === 'En Panne') ? 'red' : '')); ?>">
-        <?= $engin['statut'] ?>
+          <td><?= $engin['date_ajout'] ?></td>
+          <td>
+            <?php if ($engin['statut'] === 'En Utilisation') : ?>
+              <span class="badge badge-pill badge-success"><?= $engin['statut'] ?></span>
+            <?php elseif ($engin['statut'] === 'Pas attribuée') : ?>
+              <span class="badge badge-pill badge-warning"><?= $engin['statut'] ?></span>
+            <?php else : ?>
+              <span class="badge badge-pill badge-danger"><?= $engin['statut'] ?></span>
+            <?php endif; ?>
           </td>
           <td class="actions">
             <a href="engins_update.php?id=<?= $engin['engin_id'] ?>" class="edit"><i class="fas fa-pen fa-xs" style="font-size:24px;color:blue"></i></a>
@@ -67,32 +66,31 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
           </td>
           <td>
             <?php if ($engin['nom_livreur']) : ?>
-              <button class="btn btn-secondary" disabled><?= $engin['nom_livreur'] ?>
-            </button>
+              <button class="btn btn-secondary" disabled><?= $engin['nom_livreur'] ?></button>
             <?php endif; ?>
           </td>
           <td>
               <button class="btn btn-warning" data-toggle="modal" data-target="#update_livreur-<?= $engin['engin_id'] ?>">Changer le livreur</button>
           </td>
-
           <td>
               <button class="btn btn-warning" data-toggle="modal" data-target="#update_statut-<?= $engin['engin_id'] ?>">Changer le statut</button>
           </td>
         </tr>
+        
+        <!-- Modal pour changer le statut -->
         <div class="modal" id="update_statut-<?= $engin['engin_id'] ?>">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-body">
-              <form action="traitement_engin_statut_update.php" method="post">
+                <form action="traitement_engin_statut_update.php" method="post">
                   <input type="hidden" name="engin_id" value="<?= $engin['engin_id'] ?>">
                   <div class="form-group">
-                    <label>Livreur</label>
+                    <label>Statut</label>
                     <select name="statut" class="form-control">
                       <option value="En Utilisation">En Utilisation</option>
                       <option value="En Panne">En Panne</option>
-          
-                      </select>
-
+                      <option value="Pas attribuée">Pas attribuée</option>
+                    </select>
                   </div>
                   <button type="submit" class="btn btn-primary mr-2" name="saveCommande">Attribuer</button>
                   <button class="btn btn-light">Annuler</button>
@@ -102,21 +100,20 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
           </div>
         </div>
 
+        <!-- Modal pour changer le livreur -->
         <div class="modal" id="update_livreur-<?= $engin['engin_id'] ?>">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-body">
-              <form action="traitement_engin_livreurs_update.php" method="post">
+                <form action="traitement_engin_livreurs_update.php" method="post">
                   <input type="hidden" name="engin_id" value="<?= $engin['engin_id'] ?>">
                   <div class="form-group">
                     <label>Livreur</label>
                     <select name="utilisateur_id" class="form-control">
-                      <?php
-                      foreach ($rows as $row) {
+                      <?php foreach ($rows as $row) {
                         echo '<option value="' . $row['id'] . '">' . $row['nom_livreur'] . '</option>';
-                      }
-                      ?></select>
-
+                      } ?>
+                    </select>
                   </div>
                   <button type="submit" class="btn btn-primary mr-2" name="saveCommande">Attribuer</button>
                   <button class="btn btn-light">Annuler</button>
@@ -125,10 +122,12 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
             </div>
           </div>
         </div>
+        
       <?php endforeach; ?>
     </tbody>
   </table>
 
+  <!-- Modal pour ajouter un engin -->
   <div class="modal fade" id="add-engin">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -146,7 +145,6 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
                 <label for="exampleInputPassword1">Plaque d'immatriculation</label>
                 <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Plaque d'immatriculation" name="plaque_immatriculation">
               </div>
-             
               <div class="form-group">
                 <label for="exampleInputPassword1">Couleur</label>
                 <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Couleur" name="couleur">
@@ -159,50 +157,19 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
                 <label>Type d'engin</label>
                 <?php
                 echo  '<select id="select" name="type_engin" class="form-control">';
-                while ($typeEngins= $type_engins->fetch(PDO::FETCH_ASSOC)) {
+                while ($typeEngins = $type_engins->fetch(PDO::FETCH_ASSOC)) {
                   echo '<option value="' . $typeEngins['type'] . '">' . $typeEngins['type'] . '</option>';
                 }
-                echo '</select>'
+                echo '</select>';
                 ?>
               </div>
-
               <div class="form-group">
-                    <label>Livreur</label>
-                    <select name="utilisateur_id" class="form-control">
-                      <?php
-                      foreach ($rows as $row) {
-                        echo '<option value="' . $row['id'] . '">' . $row['nom_livreur'] . '</option>';
-                      }
-                      ?></select>
-
-                  </div>
-              <button type="submit" class="btn btn-primary mr-2" name="saveCommande">Enregister</button>
-              <button class="btn btn-light">Annuler</button>
-            </div>
-          </form>
-        </div>
-      </div>
-      <!-- /.modal-content -->
-
-      <div class="modal" id="update_statut-<?= $engin['engin_id'] ?>">
-          <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Changer le livreur</h4>
-        </div>
-        <div class="modal-body">
-          <form class="forms-sample" method="post" action="save1_engins.php">
-            <div class="card-body">
-              <div class="form-group">
-              <div class="form-group">
-                <label>Attribué à</label>
-                <?php
-                echo  '<select id="select" name="utilisateur_id" class="form-control">';
-                while ($selectLivreurs= $getLivreurs->fetch(PDO::FETCH_ASSOC)) {
-                  echo '<option value="' . $selectLivreurs['id'] . '">' . $selectLivreurs['nom_livreur'] . '</option>';
-                }
-                echo '</select>'
-                ?>
+                <label>Livreur</label>
+                <select name="utilisateur_id" class="form-control">
+                  <?php foreach ($rows as $row) {
+                    echo '<option value="' . $row['id'] . '">' . $row['nom_livreur'] . '</option>';
+                  } ?>
+                </select>
               </div>
               <button type="submit" class="btn btn-primary mr-2" name="saveCommande">Enregister</button>
               <button class="btn btn-light">Annuler</button>
@@ -210,60 +177,16 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
           </form>
         </div>
       </div>
-      <!-- /.modal-content -->
     </div>
-    </div>
-
-
-
-
-
-
-
-
-
-
-
-
-    <!-- /.modal-dialog -->
   </div>
-
 </div>
-
-</div>
-
-<!-- /.row (main row) -->
-</div><!-- /.container-fluid -->
-<!-- /.content -->
-</div>
-<!-- /.content-wrapper -->
-<!-- <footer class="main-footer">
-    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong>
-    All rights reserved.
-    <div class="float-right d-none d-sm-inline-block">
-      <b>Version</b> 3.2.0
-    </div>
-  </footer>-->
-
-<!-- Control Sidebar -->
-<aside class="control-sidebar control-sidebar-dark">
-  <!-- Control sidebar content goes here -->
-</aside>
-<!-- /.control-sidebar -->
-</div>
-<!-- ./wrapper -->
 
 <!-- jQuery -->
 <script src="../../plugins/jquery/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
 <script src="../../plugins/jquery-ui/jquery-ui.min.js"></script>
-<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-<!-- <script>
-  $.widget.bridge('uibutton', $.ui.button)
-</script>-->
 <!-- Bootstrap 4 -->
 <script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
-
 <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- ChartJS -->
 <script src="../../plugins/chart.js/Chart.min.js"></script>
@@ -285,62 +208,74 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
 <script src="../../plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 <!-- AdminLTE App -->
 <script src="../../dist/js/adminlte.js"></script>
-<?php
 
-if (isset($_SESSION['popup']) && $_SESSION['popup'] ==  true) {
-  ?>
-    <script>
-      var audio = new Audio("../inc/sons/notification.mp3");
-      audio.volume = 1.0; // Assurez-vous que le volume n'est pas à zéro
-      audio.play().then(() => {
-        // Lecture réussie
-        var Toast = Swal.mixin({
-          toast: true,
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 3000
+<script>
+    $(document).ready(function () {
+        $('.trash').on('click', function (e) {
+            e.preventDefault();
+            var link = $(this).attr('href');
+            Swal.fire({
+                title: 'Êtes-vous sûr(e) de vouloir supprimer ce contrat ?',
+                text: "Cette action est irréversible !",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Oui, supprimer !'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = link;
+                }
+            });
         });
-  
-        Toast.fire({
-          icon: 'success',
-          title: 'Action effectuée avec succès.'
-        });
-      }).catch((error) => {
-        console.error('Erreur de lecture audio :', error);
-      });
-    </script>
-  <?php
-    $_SESSION['popup'] = false;
-  }
-  ?>
-
-
-
-<!------- Delete Pop--->
-<?php
-
-if (isset($_SESSION['delete_pop']) && $_SESSION['delete_pop'] ==  true) {
-?>
-  <script>
-    var Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 3000
     });
 
-    Toast.fire({
-      icon: 'error',
-      title: 'Action échouée.'
-    })
-  </script>
+    <?php
+    if (isset($_SESSION['popup']) && $_SESSION['popup'] == true) {
+    ?>
+        var audio = new Audio("../inc/sons/notification.mp3");
+        audio.volume = 1.0; // Assurez-vous que le volume n'est pas à zéro
+        audio.play().then(() => {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
 
-<?php
-  $_SESSION['delete_pop'] = false;
-}
-?>
+            Toast.fire({
+                icon: 'success',
+                title: 'Action effectuée avec succès.'
+            });
+        }).catch((error) => {
+            console.error('Erreur de lecture audio :', error);
+        });
+    <?php
+        $_SESSION['popup'] = false;
+    }
+    ?>
+
+    <?php
+    if (isset($_SESSION['delete_pop']) && $_SESSION['delete_pop'] == true) {
+    ?>
+        var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        Toast.fire({
+            icon: 'error',
+            title: 'Action échouée.'
+        });
+    <?php
+        $_SESSION['delete_pop'] = false;
+    }
+    ?>
+</script>
+
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <!--<script src="dist/js/pages/dashboard.js"></script>-->
 </body>
-
 </html>

@@ -17,9 +17,8 @@ include('header.php');
         <thead>
             <tr>
                 <th>Avatar</th>
+                <th>Numéro chassis</th>
                 <th>Plaque d'Immatriculation</th>
-                <th>Couleur</th>
-                <th>Marque</th>
                 <th>Statut</th>
                 <th>Vignette Debut</th>
                 <th>Vignette Fin</th>
@@ -79,10 +78,23 @@ include('header.php');
                 <td>
                  <img src="../dossiers_images/<?php echo $contrat['avatar']; ?>" alt="Avatar" width="50" height="50" title="<?= $contrat['fullname'] ?>">
                 </td>
+                 <td>
+    <?php if ($contrat['numero_chassis'] !== null) : ?>
+        <b><i title="Marque: <?= $contrat['marque'] ?>, Couleur: <?= $contrat['couleur'] ?>"><?= $contrat['numero_chassis'] ?></i></b>
+    <?php else : ?>
+        <span class="badge badge-pill badge-danger">Numero Chassis manquant</span>
+    <?php endif; ?>
+</td>
                 <td style="background-color: black; color: white"><?= $contrat['plaque_immatriculation'] ?></td>
-                <td><?= $contrat['couleur'] ?></td>
-                <td><?= $contrat['marque'] ?></td>
-                <td><?= $contrat['statut_engin'] ?></td>
+   <td>
+    <?php if ($contrat['statut_engin'] === 'En Utilisation') : ?>
+        <span class="badge badge-pill badge-success badge-custom"><?= $contrat['statut_engin'] ?></span>
+    <?php elseif ($contrat['statut_engin'] === 'Pas attribuée') : ?>
+        <span class="badge badge-pill badge-warning badge-custom"><?= $contrat['statut_engin'] ?></span>
+    <?php else : ?>
+        <span class="badge badge-pill badge-danger badge-custom"><?= $contrat['statut_engin'] ?></span>
+    <?php endif; ?>
+</td>
                 <td><?= $contrat['vignette_date_debut'] ?></td>
                  <td style="font-weight: bold"><?= $contrat['vignette_date_fin'] ?></td>
                 <td style="background-color: <?= $vignetteColor ?>; color: <?= $vignetteTextColor ?>;">

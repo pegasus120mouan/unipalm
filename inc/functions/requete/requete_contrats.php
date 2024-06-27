@@ -11,6 +11,7 @@ $stmt_contrats = $conn->prepare(
     e.couleur,
     e.date_ajout,
     e.marque,
+    e.numero_chassis AS numero_chassis,
     e.statut AS statut_engin,
     CONCAT(u.nom, ' ', u.prenoms) AS fullname,
     u.contact,
