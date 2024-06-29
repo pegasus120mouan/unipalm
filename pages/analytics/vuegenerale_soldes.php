@@ -393,7 +393,7 @@ $points = $stmt_soldes->fetchAll();
 
           <li class="nav-header">CAISSE</li>
              <li class="nav-item">
-              <a href="analytics/vuegenerale_soldes.php" class="nav-link">
+              <a href="vuegenerale_soldes.php" class="nav-link">
                 <i class="nav-icon far fa-calendar-alt"></i>
                 <p>
                   Soldes
@@ -402,7 +402,7 @@ $points = $stmt_soldes->fetchAll();
               </a>
              </li>
             <li class="nav-item">
-              <a href="analytics/vue_gestion_caisse.php" class="nav-link">
+              <a href="vue_gestion_caisse.php" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>
                   Caisse
