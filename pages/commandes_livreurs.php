@@ -21,7 +21,7 @@ from commandes
 join livreurs on livreurs.id=commandes.livreur_id
 join clients on clients.id=commandes.utilisateur_id
 join boutiques on boutiques.id=clients.boutique_id
-WHERE livreurs.id=:id_user order by date_commande DESC LIMIT 20");
+WHERE livreurs.id=:id_user order by date_commande DESC");
 
 
 
@@ -268,27 +268,28 @@ label {
         </tbody>
   </table>
 
-  <div class="pagination-container bg-secondary d-flex justify-content-center w-100 text-white p-3">
-    <?php if($page > 1 ): ?>
-        <a href="?page=<?= $page - 1 ?>" class="btn btn-primary"><</a>
+<!-- Pagination links -->
+<div class="pagination-container bg-secondary d-flex justify-content-center w-100 text-white p-3">
+    <?php if ($page > 1): ?>
+        <a href="?id=<?= $id_user ?>&page=<?= $page - 1 ?>&limit=<?= $limit ?>" class="btn btn-primary mr-2">Précédent</a>
     <?php endif; ?>
 
-    <span><?= $page . '/' . count($commande_livreurs_pages) ?></span>
-
-    <?php if($page < count($commande_livreurs_pages)): ?>
-        <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">></a>
+    <?php if ($page < count($commande_livreurs_pages)): ?>
+        <a href="?id=<?= $id_user ?>&page=<?= $page + 1 ?>&limit=<?= $limit ?>" class="btn btn-primary ml-2">Suivant</a>
     <?php endif; ?>
 
-    <form action="" method="get" class="items-per-page-form">
+    <form action="" method="get" class="items-per-page-form ml-3">
+        <input type="hidden" name="id" value="<?= $id_user ?>">
         <label for="limit">Afficher :</label>
-        <select name="limit" id="limit" class="items-per-page-select">
-            <option value="5" <?php if ($limit == 5) { echo 'selected'; } ?> >5</option>
-            <option value="10" <?php if ($limit == 10) { echo 'selected'; } ?>>10</option>
-            <option value="15" <?php if ($limit == 15) { echo 'selected'; } ?>>15</option>
+        <select name="limit" id="limit" class="items-per-page-select" onchange="this.form.submit()">
+            <option value="5" <?= $limit == 5 ? 'selected' : '' ?>>5</option>
+            <option value="10" <?= $limit == 10 ? 'selected' : '' ?>>10</option>
+            <option value="15" <?= $limit == 15 ? 'selected' : '' ?>>15</option>
         </select>
-        <button type="submit" class="submit-button">Valider</button>
     </form>
 </div>
+
+
 
 
 
