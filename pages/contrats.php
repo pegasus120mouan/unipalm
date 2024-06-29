@@ -95,12 +95,20 @@ include('header.php');
         <span class="badge badge-pill badge-danger badge-custom"><?= $contrat['statut_engin'] ?></span>
     <?php endif; ?>
 </td>
-                <td><?= $contrat['vignette_date_debut'] ?></td>
-                 <td style="font-weight: bold"><?= $contrat['vignette_date_fin'] ?></td>
+                <td>
+                <?= date('d-m-y', strtotime($contrat['vignette_date_debut'])) ?>
+                </td>
+                 <td style="font-weight: bold">
+                  <?= date('d-m-y', strtotime($contrat['vignette_date_fin'])) ?>
+                 </td>
                 <td style="background-color: <?= $vignetteColor ?>; color: <?= $vignetteTextColor ?>;">
                     <?= $vignetteDaysRemaining ?> jours</td>
-                <td><?= $contrat['assurance_date_debut'] ?></td>
-                 <td style="font-weight: bold"><?= $contrat['assurance_date_fin'] ?></td>
+                <td>
+                <?= date('d-m-y', strtotime($contrat['assurance_date_debut'])) ?>
+                </td>
+                 <td style="font-weight: bold">
+                 <?= date('d-m-y', strtotime($contrat['assurance_date_fin'])) ?>
+                 </td>
                 <td style="background-color: <?= $assuranceColor ?>; color: <?= $assuranceTextColor ?>;">
                     <?= $assuranceDaysRemaining ?> jours</td>
                 <td class="actions">
