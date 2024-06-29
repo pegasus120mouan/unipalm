@@ -270,12 +270,14 @@ label {
 
 <!-- Pagination links -->
 <div class="pagination-container bg-secondary d-flex justify-content-center w-100 text-white p-3">
-    <?php if ($page > 1): ?>
-        <a href="?id=<?= $id_user ?>&page=<?= $page - 1 ?>&limit=<?= $limit ?>" class="btn btn-primary mr-2">Précédent</a>
+    <?php if($page > 1): ?>
+        <a href="?id=<?= $id_user ?>&page=<?= $page - 1 ?>&limit=<?= $limit ?>" class="btn btn-primary">&lt;</a>
     <?php endif; ?>
 
-    <?php if ($page < count($commande_livreurs_pages)): ?>
-        <a href="?id=<?= $id_user ?>&page=<?= $page + 1 ?>&limit=<?= $limit ?>" class="btn btn-primary ml-2">Suivant</a>
+    <span><?= $page . '/' . count($commande_livreurs_pages) ?></span>
+
+    <?php if($page < count($commande_livreurs_pages)): ?>
+        <a href="?id=<?= $id_user ?>&page=<?= $page + 1 ?>&limit=<?= $limit ?>" class="btn btn-primary">&gt;</a>
     <?php endif; ?>
 
     <form action="" method="get" class="items-per-page-form ml-3">
@@ -286,8 +288,10 @@ label {
             <option value="10" <?= $limit == 10 ? 'selected' : '' ?>>10</option>
             <option value="15" <?= $limit == 15 ? 'selected' : '' ?>>15</option>
         </select>
+        <button type="submit" class="submit-button">Valider</button>
     </form>
 </div>
+
 
 
 
