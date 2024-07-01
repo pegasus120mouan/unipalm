@@ -1,15 +1,7 @@
 <?php
 session_start(); 
 
-$serveur = "localhost";
-$nomUtilisateur = "root";
-$motDePasse = "";
-$nomBaseDeDonnees = "db_ovl";
-
-try {
-    // Établissez une connexion à la base de données MySQL en utilisant PDO
-    $pdo = new PDO("mysql:host=$serveur;dbname=$nomBaseDeDonnees", $nomUtilisateur, $motDePasse);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+require_once '../inc/functions/connexion.php';   
 
     // Récupérez l'ID de l'engin à partir des données POST
     $id_engin = $_POST['id'];
@@ -47,7 +39,7 @@ try {
     }
 
     // Préparez et exécutez la requête d'insertion pour stocker les données dans la base de données
-    $stmt = $pdo->prepare("UPDATE engins SET image_1 = ?, image_2 = ?, image_3 = ?, image_4 = ? WHERE engin_id = ?");
+    $stmt = $conn->prepare("UPDATE engins SET image_1 = ?, image_2 = ?, image_3 = ?, image_4 = ? WHERE engin_id = ?");
     $stmt->bindParam(1, $image1Path);
     $stmt->bindParam(2, $image2Path);
     $stmt->bindParam(3, $image3Path);
@@ -61,7 +53,4 @@ try {
           header('Location: infos_engins.php?id=' . $id_engin);
         exit(0);
     }
-} catch (PDOException $e) {
-    die("Erreur de connexion à la base de données : " . $e->getMessage());
-}
 ?>
