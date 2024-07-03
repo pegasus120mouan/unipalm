@@ -133,7 +133,7 @@ label {
 
 
          <td>
-         <a href="versement_detaille.php?id=<?= $dette['dette_id'] ?>">
+         <a href="versement_detaille.php?id=<?= $imprevu['id'] ?>">
           <button type="button" class="btn btn-warning">
               Détails
           </button>
