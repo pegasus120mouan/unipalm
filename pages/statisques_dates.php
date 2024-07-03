@@ -87,7 +87,7 @@ if (isset($_POST['client']) && isset($_POST['month_start']) && isset($_POST['mon
         // Utiliser le tableau de correspondance pour obtenir le mois en français
         $mois_commande_fr = $mois_francais[$row['mois_commande']];
         $pdf->Cell(60, 10, utf8_decode($mois_commande_fr), 1, 0, 'C');
-        $pdf->Cell(60, 10, number_format($row['cout_reel_mensuel'], 0, '', ''), 1, 1, 'C'); // Supprimer les virgules
+        $pdf->Cell(60, 10, number_format($row['cout_reel_mensuel'], 0, ',', ' '), 1, 1, 'C'); // Supprimer les virgules
     }
 
     // Total
