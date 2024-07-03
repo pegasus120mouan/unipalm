@@ -91,9 +91,9 @@ if (isset($_POST['client']) && isset($_POST['month_start']) && isset($_POST['mon
     }
 
     // Total
-    $pdf->SetFont('Arial', 'B', 12);
+    $pdf->SetFont('Arial', 'B', 20);
     $pdf->Cell(120, 10, 'Total', 1, 0, 'R'); // Bold text
-    $pdf->Cell(60, 10, number_format($total, 0, '', ''), 1, 1, 'C', true); // true for filling cell, supprimer les virgules
+$pdf->Cell(60, 10, number_format($total, 0, ',', ' '), 1, 1, 'C', true);
 
     // Output PDF
     $pdf->Output();
