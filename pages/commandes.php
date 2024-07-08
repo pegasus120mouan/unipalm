@@ -1,6 +1,7 @@
 <?php
 require_once '../inc/functions/connexion.php';
 require_once '../inc/functions/requete/requete_commandes.php';
+require_once '../inc/functions/requete/requetes_selection_boutique.php';
 include('header.php');
 
 $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
@@ -44,9 +45,9 @@ $commandes_list = $commande_pages[$page - 1] ?? [];
     padding: 8px;
     text-decoration: none;
     color: white;
-    background-color: #007bff; /* Bleu */
+    background-color: #007bff; 
     border: 1px solid #007bff;
-    border-radius: 4px; /* Ajout de la bordure arrondie */
+    border-radius: 4px; 
     margin-right: 4px;
 }
 
@@ -60,7 +61,7 @@ label {
 
 .items-per-page-select {
     padding: 6px;
-    border-radius: 4px; /* Ajout de la bordure arrondie */
+    border-radius: 4px; 
 }
 
 .submit-button {
@@ -68,16 +69,25 @@ label {
     background-color: #007bff;
     color: #fff;
     border: none;
-    border-radius: 4px; /* Ajout de la bordure arrondie */
+    border-radius: 4px; 
     cursor: pointer;
+}
+ .custom-icon {
+            color: green;
+            font-size: 24px;
+            margin-right: 8px;
+ }
+ .spacing {
+    margin-right: 10px; 
+    margin-bottom: 20px;
 }
 </style>
 
   <style>
         @media only screen and (max-width: 767px) {
-            /* Styles spécifiques pour les écrans de taille de téléphone */
+            
             th {
-                display: none; /* Cacher les en-têtes de colonnes sur les petits écrans */
+                display: none; 
             }
             tbody tr {
                 display: block;
@@ -86,7 +96,7 @@ label {
                 padding: 10px;
             }
             tbody tr td::before {
-                /* Ajouter un pseudo-élément ::before pour afficher le titre de chaque colonne */
+
                 font-weight: bold;
                 margin-right: 5px;
             }
@@ -95,17 +105,23 @@ label {
 
 
 <div class="row">
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-commande">
+  <button type="button" class="btn btn-primary spacing" data-toggle="modal" data-target="#add-commande">
     Enregistrer une commande
   </button>
 
-  <a class="btn btn-outline-secondary" href="commandes_print.php"><i class="fa fa-print" style="font-size:24px;color:green"></i></a>
+
+    <button type="button" class="btn btn-outline-secondary spacing" data-toggle="modal" data-target="#add-point">
+        <i class="fas fa-print custom-icon"></i>
+    </button>
+
+
+ <!-- <a class="btn btn-outline-secondary" href="commandes_print.php"><i class="fa fa-print" style="font-size:24px;color:green"></i></a>-->
 
 
     <!-- Utilisation du formulaire Bootstrap avec ms-auto pour aligner à droite -->
     <form action="page_recherche.php" method="GET" class="d-flex ml-auto">
       <input class="form-control me-2" type="search" name="recherche" style="width: 400px;" placeholder="Recherche..." aria-label="Search">
-      <button class="btn btn-outline-primary" type="submit">Rechercher</button>
+      <button class="btn btn-outline-primary spacing" type="submit">Rechercher</button>
     </form>
 
 
@@ -348,6 +364,36 @@ label {
 
     <!-- /.modal-dialog -->
   </div>
+
+    <div class="modal fade" id="add-point">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form class="forms-sample" method="post" action="traitement_commandes_print.php">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Client</label>
+                                   <div class="form-group">
+                                    <select name="client" class="form-control">
+                                      <?php
+                                      while ($selection = $stmt_select_boutique->fetch()) {
+                                        echo '<option value="' . $selection['nom_boutique'] . '">' . $selection['nom_boutique'] . '</option>';
+                                      }
+                                      ?></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Mois Fin</label>
+                                  <input id="date" name="date" type="date" class="form-control">
+                                  </div>
+                            <input type="submit" class="btn btn-primary mr-2" value="Imprimer">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 
 </div>
 

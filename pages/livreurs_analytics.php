@@ -53,6 +53,9 @@ $statistiques_livreurs = $stmt->fetchAll();
 
 <!-- Main row -->
 <div class="row">
+ <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#vue_stats">
+    Statistiques par mois par livreur
+  </button>
   <table id="example1" class="table table-bordered table-striped">
   <thead>
       <tr>
