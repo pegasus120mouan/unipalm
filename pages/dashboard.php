@@ -680,7 +680,7 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
                       <tr>
                         <th style="color: black">Nom  du livreur</th>
                         <th style="color: black">Montant Global</th>
-                        <th style="color: black">Depenses</th>
+                        <th style="color: black">Dépenses</th>
                         <th style="color: black">Montant à remettre</th>
                       </tr>
                     </thead>

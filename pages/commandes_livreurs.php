@@ -109,9 +109,12 @@ label {
       style="font-size:24px;color:green"></i>
   </a>
 
+<a href="#" class="btn btn-info ml-auto" data-toggle="modal" data-target="#modal-livreur-<?= $id_user ?>">Dépot à effectuer</a>
+
+
+
+
 <a href="vuegeneral_hier.php?id=<?= $id_user ?>" class="btn btn-warning ml-auto">Point d'hier</a>
-
-
 
   <!--<a href="commandes_update.php"><i class="fa fa-print" style="font-size:24px;color:green">Imprimer point du jour</i></a>
                 <button type="button"  class="btn btn-primary"><i class="fa fa-print"></i> Imprimer point du jour</button>-->
@@ -297,13 +300,6 @@ label {
 
 
 
-
-
-
-
-
-
-
   <div class="modal fade" id="add-commande">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -355,6 +351,36 @@ label {
 
     <!-- /.modal-dialog -->
   </div>
+
+
+  <!-- Modal -->
+<div class="modal fade" id="modal-livreur-<?= $id_user ?>" tabindex="-1" aria-labelledby="modalLivreurLabel-<?= $id_user ?>" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLivreurLabel">Voir un point</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form-livreur-<?= $id_user ?>" action="traitement_depot_date.php" method="POST">
+                    <input type="hidden" name="id_livreur" id="id_livreur-<?= $id_user ?>" value="<?= $id_user ?>">
+                    <div class="form-group">
+                        <label for="start-date">Date Début</label>
+                        <input type="date" class="form-control" id="start-date" name="start_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="end-date">Date Fin</label>
+                        <input type="date" class="form-control" id="end-date" name="end_date" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger">Imprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 </div>
 

@@ -16,16 +16,18 @@ $admins = $liste_admins->fetchAll();
 
         <!-- Main row -->
         <div class="row">
+
         
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-client">
+                <button type="button" class="btn btn-primary" data-toggle="modal" 
+                data-target="#add-client" style="margin-bottom: 15px; margin-left: 15px;">
                   Enregistrer un administrateur
                 </button>   
 
-                <h1><span class="badge bg-success">Liste des administrateurs</span></h1>
+                <h1>Liste des administrateurs</h1>
 
                  <form action="page_recherche_admin.php" method="GET" class="d-flex ml-auto">
       <input class="form-control me-2" type="search" name="recherche" style="width: 400px;" placeholder="Recherche..." aria-label="Search">
-      <button class="btn btn-outline-primary" type="submit">Rechercher</button>
+      <button class="btn btn-outline-primary" type="submit" style="margin-bottom: 15px; margin-left: 15px;">Rechercher</button>
  </form>
 
                 <table id="example1" class="table table-bordered table-striped">

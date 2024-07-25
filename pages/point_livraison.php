@@ -75,9 +75,9 @@ $points_list = $points_pages[$page - 1] ?? [];
 <body>
 
 <div class="row">
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-point">
-        Enregistrer un point
-    </button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-point" style="margin-bottom: 15px;">
+    Enregistrer un point
+</button>
 </div>
 
 <table id="example1" class="table table-bordered table-striped">
@@ -138,7 +138,7 @@ $points_list = $points_pages[$page - 1] ?? [];
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Enregistrer une commande</h4>
+                <h4 class="modal-title">Enregistrer un point</h4>
             </div>
             <div class="modal-body">
                 <form class="forms-sample" method="post" action="save_pointlivraison.php">

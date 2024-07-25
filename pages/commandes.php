@@ -101,6 +101,9 @@ label {
                 margin-right: 5px;
             }
         }
+        .margin-right-15 {
+        margin-right: 15px;
+       }
     </style>
 
 
@@ -119,10 +122,11 @@ label {
 
 
     <!-- Utilisation du formulaire Bootstrap avec ms-auto pour aligner à droite -->
-    <form action="page_recherche.php" method="GET" class="d-flex ml-auto">
-      <input class="form-control me-2" type="search" name="recherche" style="width: 400px;" placeholder="Recherche..." aria-label="Search">
-      <button class="btn btn-outline-primary spacing" type="submit">Rechercher</button>
-    </form>
+<form action="page_recherche.php" method="GET" class="d-flex ml-auto">
+    <input class="form-control me-2" type="search" name="recherche" style="width: 400px;" placeholder="Recherche..." aria-label="Search">
+    <button class="btn btn-outline-primary spacing" style="margin-left: 15px;" type="submit">Rechercher</button>
+</form>
+
 
 
 
@@ -382,7 +386,7 @@ label {
                                       ?></select>
                             </div>
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Mois Fin</label>
+                                <label for="exampleInputEmail1">Sélectionner la date</label>
                                   <input id="date" name="date" type="date" class="form-control">
                                   </div>
                             <input type="submit" class="btn btn-primary mr-2" value="Imprimer">

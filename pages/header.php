@@ -455,6 +455,45 @@ if (!isset($_SESSION['user_id'])) {
                 </p>
               </a>
            </li>
+
+           <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="fa fa-camera-retro"></i>
+                <p>
+                  Banners
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="banner_admin.php" class="nav-link">
+                   <i class="fa fa-solid fa-camera"></i>
+                    <p>Banner Administrateur</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="livreurs_analytics.php" class="nav-link">
+                    <i class="fa fa-solid fa-image"></i>
+                    <p>Livreurs</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="liste_admins.php" class="nav-link">
+                    <i class="fa fa-pie-chart"></i>
+                    <p>Caisse</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+
+
+
+
+
+
+
+
            <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="fa fa-area-chart"></i>
