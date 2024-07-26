@@ -7,47 +7,82 @@ if (!isset($_SESSION['user_id'])) {
   header("Location: ../index.php");
   exit();
 }
+$id_user = $_GET['id'];
 
-$getSommeGlobalQuery = "SELECT sum(cout_global) as sum_cout_global 
-from utilisateurs 
-join commandes on utilisateurs.id=commandes.livreur_id 
-JOIN livreurs on livreurs.id=commandes.livreur_id 
-WHERE date_commande=CURRENT_DATE()-1 
-AND livreurs.nom='Kone' 
-AND livreurs.prenoms='Lassina' 
-AND commandes.statut='Livré'";
-$getSommeGlobalQueryStmt = $conn->query($getSommeGlobalQuery);
+$getSommeGlobalQuery = "
+    SELECT SUM(cout_global) AS sum_cout_global 
+    FROM utilisateurs 
+    JOIN commandes ON utilisateurs.id = commandes.livreur_id 
+    JOIN livreurs ON livreurs.id = commandes.livreur_id 
+    WHERE date_commande = CURDATE() - INTERVAL 1 DAY 
+    AND commandes.livreur_id = :id_user 
+    AND commandes.statut = 'Livré'
+";
+
+$getSommeGlobalQueryStmt = $conn->prepare($getSommeGlobalQuery);
+$getSommeGlobalQueryStmt->bindParam(':id_user', $id_user, PDO::PARAM_INT);
+$getSommeGlobalQueryStmt->execute();
 $somme_global = $getSommeGlobalQueryStmt->fetch(PDO::FETCH_ASSOC);
 
+// Montant reel
 
-$getCoutReelQuery = "SELECT sum(cout_reel) as sum_cout_reel 
-from utilisateurs 
-join commandes on utilisateurs.id=commandes.livreur_id 
-JOIN livreurs on livreurs.id=commandes.livreur_id 
-WHERE date_commande=CURRENT_DATE()-1 
-AND livreurs.nom='Kone' 
-AND livreurs.prenoms='Lassina'
-AND commandes.statut='Livré'";
-$getCoutReelQueryStmt = $conn->query($getCoutReelQuery);
+$getCoutReelQuery = "SELECT SUM(cout_reel) AS sum_cout_reel 
+    FROM utilisateurs 
+    JOIN commandes ON utilisateurs.id = commandes.livreur_id 
+    JOIN livreurs ON livreurs.id = commandes.livreur_id 
+    WHERE date_commande = CURDATE() - INTERVAL 1 DAY 
+    AND commandes.livreur_id = :id_user
+";
+
+$getCoutReelQueryStmt = $conn->prepare($getCoutReelQuery);
+$getCoutReelQueryStmt->bindParam(':id_user', $id_user, PDO::PARAM_INT);
+$getCoutReelQueryStmt->execute();
 $somme_cout_reel = $getCoutReelQueryStmt->fetch(PDO::FETCH_ASSOC);
 
 $totalLivraison = $somme_global['sum_cout_global'] - $somme_cout_reel['sum_cout_reel'];
 
 
-$getSommeDepenseQuery = "SELECT depense as somme_depense,date_commande,livreurs.nom,livreurs.prenoms from points_livreurs 
-JOIN livreurs ON points_livreurs.utilisateur_id=livreurs.id WHERE date_commande=CURRENT_DATE()-1 AND livreurs.nom='Kone' AND livreurs.prenoms='Lassina'";
-$getSommeDepenseQueryStmt = $conn->query($getSommeDepenseQuery);
+
+// Depenses
+
+$getSommeDepenseQuery = "
+    SELECT depense AS somme_depense, date_commande, livreurs.nom, livreurs.prenoms
+    FROM points_livreurs 
+    JOIN livreurs ON points_livreurs.utilisateur_id = livreurs.id 
+    WHERE date_commande = CURDATE() - INTERVAL 1 DAY 
+    AND livreurs.id = :id_user
+";
+
+$getSommeDepenseQueryStmt = $conn->prepare($getSommeDepenseQuery);
+$getSommeDepenseQueryStmt->bindParam(':id_user', $id_user, PDO::PARAM_INT);
+$getSommeDepenseQueryStmt->execute();
 $somme_depense = $getSommeDepenseQueryStmt->fetch(PDO::FETCH_ASSOC);
 
-$getSommeDepenseQuery = "SELECT depense as somme_depense,date_commande,livreurs.nom,livreurs.prenoms from points_livreurs 
-JOIN livreurs ON points_livreurs.utilisateur_id=livreurs.id WHERE date_commande=CURRENT_DATE()-1 AND livreurs.nom='Kone' AND livreurs.prenoms='Lassina'";
-$getSommeDepenseQueryStmt = $conn->query($getSommeDepenseQuery);
+
+
+
+$getSommeDepenseQuery = "SELECT depense AS somme_depense, date_commande, livreurs.nom, livreurs.prenoms
+    FROM points_livreurs 
+    JOIN livreurs ON points_livreurs.utilisateur_id = livreurs.id 
+    WHERE date_commande = CURDATE() - INTERVAL 1 DAY 
+    AND points_livreurs.utilisateur_id = :id_user
+";
+
+$getSommeDepenseQueryStmt = $conn->prepare($getSommeDepenseQuery);
+$getSommeDepenseQueryStmt->bindParam(':id_user', $id_user, PDO::PARAM_INT);
+$getSommeDepenseQueryStmt->execute();
 $somme_depense = $getSommeDepenseQueryStmt->fetch(PDO::FETCH_ASSOC);
 
 
-$getSommeGainQuery = "SELECT gain_jour as gain,date_commande,livreurs.nom,livreurs.prenoms from points_livreurs 
-JOIN livreurs ON points_livreurs.utilisateur_id=livreurs.id WHERE date_commande=CURRENT_DATE()-1 AND livreurs.nom='Kone' AND livreurs.prenoms='Lassina'";
-$getSommeGainQueryStmt = $conn->query($getSommeGainQuery);
+$getSommeGainQuery = "SELECT gain_jour as gain, date_commande, livreurs.nom, livreurs.prenoms 
+    FROM points_livreurs 
+    JOIN livreurs ON points_livreurs.utilisateur_id = livreurs.id 
+    WHERE date_commande = CURDATE() - INTERVAL 1 DAY 
+    AND points_livreurs.utilisateur_id = :id_user";
+
+$getSommeGainQueryStmt = $conn->prepare($getSommeGainQuery);
+$getSommeGainQueryStmt->bindParam(':id_user', $id_user, PDO::PARAM_INT);
+$getSommeGainQueryStmt->execute();
 $somme_gain = $getSommeGainQueryStmt->fetch(PDO::FETCH_ASSOC);
 
 //$somme_depense = $somme_depense ?? ['somme_depense'=>0];
@@ -74,7 +109,7 @@ if (is_array($somme_depense) && isset($somme_depense['somme_depense'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vue Generale</title>
+  <title>Vue Generale hier</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet"
