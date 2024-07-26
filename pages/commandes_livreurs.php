@@ -3,6 +3,8 @@ require_once '../inc/functions/connexion.php';
 require_once '../inc/functions/requete/livreurs/requete_commandes_livreurs.php';
 include('header.php');
 
+$aujourdhui = date("d-m-Y");
+
 $id_user = $_GET['id'];
 
 
@@ -22,15 +24,23 @@ join livreurs on livreurs.id=commandes.livreur_id
 join clients on clients.id=commandes.utilisateur_id
 join boutiques on boutiques.id=clients.boutique_id
 WHERE livreurs.id=:id_user order by date_commande DESC");
-
-
-
 // Liaison de la variable avec le paramètre de la requête
 $requete->bindParam(':id_user', $id_user, PDO::PARAM_INT);
 $requete->execute();
 $commande_livreurs = $requete->fetchAll();
 
+// Selection Livreur
 
+$sql = "SELECT utilisateurs.id as utilisateur_id, 
+ concat(utilisateurs.nom,' ', utilisateurs.prenoms) as nom_utilisateurs,
+ utilisateurs.contact as utilisateur_contact,
+ utilisateurs.avatar as utilisateur_avatar
+ FROM utilisateurs 
+ WHERE role = 'livreur' and utilisateurs.id = :id_user";
+
+$requete = $conn->prepare($sql);
+$requete->bindParam(':id_user', $id_user, PDO::PARAM_INT);
+$requete->execute();
 
 
 
@@ -98,23 +108,35 @@ label {
     border-radius: 4px; /* Ajout de la bordure arrondie */
     cursor: pointer;
 }
+   .block-container {
+      background-color:  #d7dbdd ;
+      padding: 20px;
+      border-radius: 5px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
 </style>
 
 
 <div class="row">
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-commande">
-    Enregistrer une commande
-  </button>
-  <a class="btn btn-outline-secondary" href="livreurs_commandes_print.php?id=<?= $id_user ?>"><i class="fa fa-print"
-      style="font-size:24px;color:green"></i>
-  </a>
+    <div class="block-container">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-commande">
+      <i class="fa fa-edit"></i>Enregistrer une commande
+    </button>
 
-<a href="#" class="btn btn-info ml-auto" data-toggle="modal" data-target="#modal-livreur-<?= $id_user ?>">Dépot à effectuer</a>
+    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#print-commande">
+      <i class="fa fa-print"></i> Imprimer un point
+    </button>
 
+    
+    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-livreur-<?= $id_user ?>">
+      <i class="fa fa-history"></i> Dépot à effectuer entre date
+    </button>
 
-
-
-<a href="vuegeneral_hier.php?id=<?= $id_user ?>" class="btn btn-warning ml-auto">Point d'hier</a>
+    <a href="vuegeneral_hier.php?id=<?= $id_user ?>" class="btn btn-warning ml-auto">
+     <i class="fa fa-calendar-minus-o"></i>Point d'hier
+    </a>
+  </div>
 
   <!--<a href="commandes_update.php"><i class="fa fa-print" style="font-size:24px;color:green">Imprimer point du jour</i></a>
                 <button type="button"  class="btn btn-primary"><i class="fa fa-print"></i> Imprimer point du jour</button>-->
@@ -294,12 +316,6 @@ label {
         <button type="submit" class="submit-button">Valider</button>
     </form>
 </div>
-
-
-
-
-
-
   <div class="modal fade" id="add-commande">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -341,6 +357,42 @@ label {
               </div>
               <button type="submit" class="btn btn-primary mr-2" name="saveCommande">Enregister</button>
               <button class="btn btn-light">Annuler</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+
+
+    <!-- /.modal-dialog -->
+  </div>
+
+
+    <div class="modal fade" id="print-commande">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Imprimer un point <strong><?php echo $aujourdhui; ?></strong></h4>
+        </div>
+        <div class="modal-body">
+          <form action="traitement_livreurs_commandes_print.php" method="POST">
+            <div class="form-group">
+                <label>Livreur</label>
+                <?php
+                echo  '<select id="select" name="livreur_id" class="form-control">';
+                while ($selection = $requete->fetch()) {
+                  echo '<option value="' . $selection['utilisateur_id'] . '">' . $selection['nom_utilisateurs'] . '</option>';
+                }
+                echo '</select>'
+                ?>
+            </div>
+              <div class="form-group">
+                <label for="exampleInputPassword1">Date</label>
+                <input type="date" class="form-control" id="exampleInputPassword1" placeholder="Selectionner date"
+                  name="date">
+              </div>
+              <button type="submit" class="btn btn-danger mr-2">Imprimer</button>
             </div>
           </form>
         </div>
