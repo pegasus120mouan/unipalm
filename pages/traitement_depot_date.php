@@ -20,7 +20,7 @@ if (isset($_POST['id_livreur']) && isset($_POST['start_date']) && isset($_POST['
         CONCAT(u.nom, ' ', u.prenoms) AS fullname_livreur,
         SUM(c.cout_global) AS total_cout_global,
         p.depense AS total_depense,
-        SUM(c.cout_global) - COALESCE(SUM(p.depense), 0) AS montant_depot
+        SUM(c.cout_global) - (p.depense) AS montant_depot
     FROM
         commandes c
     JOIN
