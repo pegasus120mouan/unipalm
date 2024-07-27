@@ -70,15 +70,15 @@ try {
     $pdf->Cell(30, 5, "Boutique", 1, 1, 'C', 1);
 
     // Calculer le total et remplir le tableau
-    $total = 0;
-    foreach ($resultat as $row) {
-        $total += $row['cout_global'];
-        $pdf->Cell(50, 5, $row['communes'], 1);
-        $pdf->Cell(50, 5, $row['cout_global'], 1);
-        $pdf->Cell(50, 5, $row['statut'], 1);
-        $pdf->Cell(30, 5, $row['boutique_nom'], 1);
-        $pdf->Ln();
-    }
+ $total = 0;
+foreach ($resultat as $row) {
+    $total += $row['cout_global'];
+    $pdf->Cell(50, 5, utf8_decode($row['communes']), 1);
+    $pdf->Cell(50, 5, $row['cout_global'], 1);
+    $pdf->Cell(50, 5, utf8_decode($row['statut']), 1);
+    $pdf->Cell(30, 5, utf8_decode($row['boutique_nom']), 1);
+    $pdf->Ln();
+}
 
     // Ajouter le total
     $pdf->SetFillColor(173, 216, 230);
