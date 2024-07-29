@@ -420,7 +420,7 @@ if (!isset($_SESSION['user_id'])) {
 
 
 
-          <li class="nav-header">CAISSE</li>
+          <li class="nav-header"><strong>GESTION CAISSE</strong></li>
              <li class="nav-item">
               <a href="analytics/vuegenerale_soldes.php" class="nav-link">
                 <i class="nav-icon far fa-calendar-alt"></i>
@@ -435,6 +435,15 @@ if (!isset($_SESSION['user_id'])) {
                 <i class="nav-icon far fa-image"></i>
                 <p>
                   Caisse
+                </p>
+              </a>
+            </li>
+
+              <li class="nav-item">
+              <a href="analytics/vue_ovl_statisques.php" class="nav-link">
+                <i class="nav-icon fas fa-balance-scale"></i>
+                <p>
+                 <strong>Mes statisques</strong>
                 </p>
               </a>
             </li>
