@@ -439,6 +439,47 @@ if (!isset($_SESSION['user_id'])) {
               </a>
             </li>
 
+
+                        <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-chart-pie"></i>
+                <p>
+                  POINTS DES DEPOTS
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="listes_des_depots.php" class="nav-link">
+                    <i class="fas fa-clone"></i>
+                    <p>Liste des dépots</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="commandes_livrees.php" class="nav-link">
+                    <i class="far fa-clone"></i>
+                    <p>Commandes Livrées</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="commandes_non_livrees.php" class="nav-link">
+                    <i class="fas fa-file"></i>
+                    <p>Commandes non livrées</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+
+            <li class="nav-item">
+              <a href="analytics/vue_gestion_caisse.php" class="nav-link">
+                <i class="nav-icon far fa-image"></i>
+                <p>
+                  Caisse
+                </p>
+              </a>
+            </li>
+
               <li class="nav-item">
               <a href="analytics/vue_ovl_statisques.php" class="nav-link">
                 <i class="nav-icon fas fa-balance-scale"></i>

@@ -104,30 +104,54 @@ label {
         .margin-right-15 {
         margin-right: 15px;
        }
+        .block-container {
+      background-color:  #d7dbdd ;
+      padding: 20px;
+      border-radius: 5px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
     </style>
 
 
 <div class="row">
-  <button type="button" class="btn btn-primary spacing" data-toggle="modal" data-target="#add-commande">
+
+    <div class="block-container">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-commande">
+      <i class="fa fa-edit"></i>Enregistrer une commande
+    </button>
+
+    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#add-point">
+      <i class="fa fa-print"></i> Imprimer un point
+    </button>
+
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#search-commande">
+      <i class="fa fa-search"></i> Recherche un point
+    </button>
+  </div>
+
+
+
+ <!-- <button type="button" class="btn btn-primary spacing" data-toggle="modal" data-target="#add-commande">
     Enregistrer une commande
   </button>
 
 
-    <button type="button" class="btn btn-outline-secondary spacing" data-toggle="modal" data-target="#add-point">
+    <button type="button" class="btn btn-outline-secondary spacing" data-toggle="modal" data-target="#recherche-commande1">
         <i class="fas fa-print custom-icon"></i>
     </button>
 
 
- <!-- <a class="btn btn-outline-secondary" href="commandes_print.php"><i class="fa fa-print" style="font-size:24px;color:green"></i></a>-->
+  <a class="btn btn-outline-secondary" href="commandes_print.php"><i class="fa fa-print" style="font-size:24px;color:green"></i></a>
 
 
-    <!-- Utilisation du formulaire Bootstrap avec ms-auto pour aligner à droite -->
+     Utilisation du formulaire Bootstrap avec ms-auto pour aligner à droite
 <form action="page_recherche.php" method="GET" class="d-flex ml-auto">
     <input class="form-control me-2" type="search" name="recherche" style="width: 400px;" placeholder="Recherche..." aria-label="Search">
     <button class="btn btn-outline-primary spacing" style="margin-left: 15px;" type="submit">Rechercher</button>
 </form>
 
-
+-->
 
 
 
@@ -369,6 +393,160 @@ label {
     <!-- /.modal-dialog -->
   </div>
 
+<!-- Recherche par Communes -->
+<div class="modal fade" id="search-commande-communes">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Recherche par Communes</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form class="forms-sample" method="GET" action="page_recherche.php">
+          <div class="card-body">
+            <div class="form-group">
+              <label for="communeInput">Entrez la commune</label>
+              <input type="text" class="form-control" id="communeInput" placeholder="Recherche une commune" name="recherche">
+            </div>
+            <button type="submit" class="btn btn-primary mr-2">Recherche</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recherche par Date -->
+<div class="modal fade" id="search-commande-date">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Recherche par Date</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form class="forms-sample" method="GET" action="page_recherche_date.php">
+          <div class="card-body">
+            <div class="form-group">
+              <label for="dateInput">Sélectionner la date</label>
+              <input type="date" class="form-control" id="dateInput" name="date">
+            </div>
+            <button type="submit" class="btn btn-primary mr-2">Recherche</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recherche par Livreur -->
+<div class="modal fade" id="search-commande-livreur">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Recherche par Livreur</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form class="forms-sample" method="GET" action="page_recherche_livreur.php">
+          <div class="card-body">
+              <div class="form-group">
+                  <label>Selectionner le livreur</label>
+                  <select name="livreur_id" class="form-control">
+                    <?php
+                      foreach ($rows as $row) {
+                        echo '<option value="' . $row['id'] . '">' . $row['livreur_name'] . '</option>';
+                      }
+                      ?></select>
+
+                </div>
+            <button type="submit" class="btn btn-primary mr-2">Recherche</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recherche par Client -->
+<div class="modal fade" id="search-commande-client">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Recherche par Client</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form class="forms-sample" method="GET" action="page_recherche_clients.php">
+          <div class="card-body">
+                   <div class="form-group">
+                    <label>Selectionner le client</label>
+                    <select name="id_boutique" class="form-control">
+                      <?php
+                      foreach ($liste_boutiques as $liste_boutique) {
+                        echo '<option value="' . $liste_boutique['id'] . '">' . $liste_boutique['nom_boutique'] . '</option>';
+                      }
+                      ?></select>
+
+                  </div>
+            <button type="submit" class="btn btn-primary mr-2">Recherche</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recherche par Statut -->
+<div class="modal fade" id="search-commande-statut">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Recherche par Statut</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form class="forms-sample" method="GET" action="page_recherche_statut.php">
+          <div class="card-body">
+            <div class="form-group">
+                    <label>Selectionner le statut</label>
+                    <select name="statut" class="form-control">
+                    <option value="Livré">Livré</option>
+                    <option value="Non Livré">Non Livré</option>
+                      
+                      </select>
+
+                  </div>
+            <button type="submit" class="btn btn-primary mr-2">Recherche</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Main Search Modal -->
+<div class="modal fade" id="search-commande">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Recherche un point</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <button type="button" class="btn btn-info w-100 mb-2" onclick="showSearchModal('search-commande-communes')">Recherche par Communes</button>
+        <button type="button" class="btn btn-danger w-100 mb-2" onclick="showSearchModal('search-commande-date')">Recherche par Date</button>
+        <button type="button" class="btn btn-secondary w-100 mb-2" onclick="showSearchModal('search-commande-livreur')">Recherche par Livreur</button>
+        <button type="button" class="btn btn-dark w-100 mb-2" onclick="showSearchModal('search-commande-client')">Recherche par Client</button>
+        <button type="button" class="btn btn-warning w-100 mb-2" onclick="showSearchModal('search-commande-statut')">Recherche par Statut</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
     <div class="modal fade" id="add-point">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -399,7 +577,8 @@ label {
         <!-- /.modal-dialog -->
     </div>
 
-</div>
+  
+
 
 <!-- /.row (main row) -->
 </div><!-- /.container-fluid -->
@@ -510,6 +689,18 @@ if (isset($_SESSION['delete_pop']) && $_SESSION['delete_pop'] ==  true) {
 ?>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <!--<script src="dist/js/pages/dashboard.js"></script>-->
+<script>
+function showSearchModal(modalId) {
+  // Hide all modals
+  document.querySelectorAll('.modal').forEach(modal => {
+    $(modal).modal('hide');
+  });
+
+  // Show the selected modal
+  $('#' + modalId).modal('show');
+}
+</script>
+
 </body>
 
 </html>
