@@ -535,11 +535,25 @@ label {
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body">
-        <button type="button" class="btn btn-info w-100 mb-2" onclick="showSearchModal('search-commande-communes')">Recherche par Communes</button>
-        <button type="button" class="btn btn-danger w-100 mb-2" onclick="showSearchModal('search-commande-date')">Recherche par Date</button>
-        <button type="button" class="btn btn-secondary w-100 mb-2" onclick="showSearchModal('search-commande-livreur')">Recherche par Livreur</button>
-        <button type="button" class="btn btn-dark w-100 mb-2" onclick="showSearchModal('search-commande-client')">Recherche par Client</button>
-        <button type="button" class="btn btn-warning w-100 mb-2" onclick="showSearchModal('search-commande-statut')">Recherche par Statut</button>
+      <button type="button" class="btn btn-outline-dark w-100 mb-2" onclick="showSearchModal('search-commande-communes')">
+          <i class="fa fa-map-marker"></i>Recherche par Communes
+      </button>  
+
+       <button type="button" class="btn btn-outline-dark w-100 mb-2" onclick="showSearchModal('search-commande-date')">
+       <i class="fa fa-calendar"></i>Recherche par Date
+       </button>
+
+        <button type="button" class="btn btn-outline-dark w-100 mb-2" onclick="showSearchModal('search-commande-livreur')">
+        <i class="fa fa-motorcycle"></i>Recherche par Livreur
+        </button>
+
+        <button type="button" class="btn btn-outline-dark w-100 mb-2" onclick="showSearchModal('search-commande-client')">
+        <i class="fa fa-home"></i>Recherche par Client
+        </button>
+
+        <button type="button" class="btn btn-outline-dark w-100 mb-2" onclick="showSearchModal('search-commande-statut')">
+        <i class="fa fa-check-circle"></i>Recherche par Statut
+        </button>
       </div>
     </div>
   </div>
