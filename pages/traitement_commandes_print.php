@@ -67,15 +67,13 @@ if (isset($_POST['client']) && isset($_POST['date'])) {
             $pdf->Cell(60, 10, utf8_decode($row['statut']), 1, 1, 'C');
         } else {
             $pdf->SetFillColor(255, 0, 0); // Rouge
-        $pdf->SetTextColor(255, 0, 0); // Blanc pour le texte
+            $pdf->SetTextColor(255, 0, 0); // Blanc pour le texte
             $nb_non_livre++;
-           // $pdf->SetFillColor(255, 0, 0);
-           // $pdf->SetTextColor(255, 0, 0);
             $pdf->Cell(60, 10, utf8_decode($row['communes']), 1, 0, 'C');
             $pdf->Cell(60, 10, $row['cout_reel'], 1, 0, 'C');
             $pdf->Cell(60, 10, utf8_decode($row['statut']), 1, 1, 'C');
         }
-        $pdf->SetTextColor(0);
+        $pdf->SetTextColor(0); // Reset text color
     }
 
     // Total
@@ -86,33 +84,16 @@ if (isset($_POST['client']) && isset($_POST['date'])) {
     $pdf->Cell(60, 10, $total, 1, 1, 'C', true);
 
     // Affichage du nombre de colis livrés, non livrés et total
-$pdf->Ln(10);
+    $pdf->Ln(10);
 
+    // Format the date for the file name
+    $formatted_date_for_filename = date("d-m-Y", strtotime($date));
 
-   // Affichage du nombre de colis livrés, non livrés et total
-/*$pdf->SetFont('Arial', 'I', 10);
-$pdf->SetTextColor(0);
-$nbre_total = $nb_livre + $nb_non_livre;
-$pdf->SetTextColor(0, 0, 255); // Couleur bleue
+    // Generate the file name
+    $file_name = 'Point_du_' . $formatted_date_for_filename . '_de_' . $client . '.pdf';
 
-$pdf->Cell(60, 10, utf8_decode("Nombre de colis reçus:"), 1, 0, 'L');
-$pdf->SetTextColor(0); // Réinitialiser la couleur
-$pdf->Cell(60, 10, $nbre_total, 1, 1, 'C');
-
-$pdf->SetTextColor(0, 0, 255); // Couleur bleue
-$pdf->Cell(60, 10, utf8_decode("Nombre de colis livrés:"), 1, 0, 'L');
-$pdf->SetTextColor(0); // Réinitialiser la couleur
-$pdf->Cell(60, 10, $nb_livre, 1, 1, 'C');
-$pdf->SetTextColor(0, 0, 255); // Couleur bleue
-$pdf->Cell(60, 10, utf8_decode("Nombre de colis non livrés:"), 1, 0, 'L');
-$pdf->SetTextColor(0); // Réinitialiser la couleur
-$pdf->Cell(60, 10, $nb_non_livre, 1, 1, 'C');*/
-
-
-
-
-    // Output PDF
-    $pdf->Output();
+    // Output PDF with the specific file name
+    $pdf->Output('I', $file_name);
 
     // Close database connection
     $conn = null;
