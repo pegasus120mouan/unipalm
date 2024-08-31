@@ -1,6 +1,7 @@
 <?php
 require_once '../inc/functions/connexion.php';
 require_once '../inc/functions/requete/requetes_selection_boutique.php';
+
 include('header.php');
 
 // Définir la locale en français
@@ -43,6 +44,10 @@ $statistiques_clients = $stmt->fetchAll();
 
 <div class="row">
     <a href="statistiques_clients_depots.php" class="btn btn-secondary spacing" role="button">Statistiques clients</a>
+<button type="button" class="btn btn-secondary spacing" data-toggle="modal" data-target="#vue_stats_clients">
+    Statistiques clients
+  </button>
+
  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#vue_stats">
     Statistiques par mois
   </button>
@@ -129,6 +134,69 @@ $statistiques_clients = $stmt->fetchAll();
             <?php endforeach; ?>
         </tbody>
     </table>
+
+    <div class="modal fade" id="vue_stats_clients">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form action="traitement_depot_clients.php" method="POST">
+    <div class="form-group row">
+      <label for="client" class="col-4 col-form-label">Nom boutique</label>
+      <div class="form-group">
+        <select name="client" class="form-control">
+          <?php
+          while ($selection = $stmt_select_boutique->fetch()) {
+            echo '<option value="' . $selection['nom_boutique'] . '">' . $selection['nom_boutique'] . '</option>';
+          }
+          ?></select>
+
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="date_debut" class="col-4 col-form-label">Date début</label>
+      <div class="col-8">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <i class="fa fa-calendar"></i>
+            </div>
+          </div>
+          <input id="date" name="date_debut" type="date" class="form-control">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="date_fin" class="col-4 col-form-label">Date Fin</label>
+      <div class="col-8">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <i class="fa fa-calendar"></i>
+            </div>
+          </div>
+          <input id="date" name="date_fin" type="date" class="form-control">
+        </div>
+      </div>
+    </div>
+
+
+    <div class="form-group row">
+      <div class="offset-4 col-8">
+        <button type="submit" class="btn btn-warning btn-rounded btn-fw">Imprimer</button>
+      </div>
+
+    </div>
+  </form>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+
+
     <div class="modal fade" id="vue_stats">
         <div class="modal-dialog">
             <div class="modal-content">
