@@ -43,7 +43,6 @@ $statistiques_clients = $stmt->fetchAll();
 </style>
 
 <div class="row">
-    <a href="statistiques_clients_depots.php" class="btn btn-secondary spacing" role="button">Statistiques clients</a>
 <button type="button" class="btn btn-secondary spacing" data-toggle="modal" data-target="#vue_stats_clients">
     Statistiques clients
   </button>
@@ -240,8 +239,8 @@ $statistiques_clients = $stmt->fetchAll();
                                   <div class="form-group">
                                     <select name="client" class="form-control">
                                       <?php
-                                      while ($selection = $stmt_select_boutique->fetch()) {
-                                        echo '<option value="' . $selection['nom_boutique'] . '">' . $selection['nom_boutique'] . '</option>';
+                                      while ($selection_mois = $stmt_select_boutique_mois->fetch()) {
+                                        echo '<option value="' . $selection_mois['nom_boutique'] . '">' . $selection_mois['nom_boutique'] . '</option>';
                                       }
                                       ?></select>
 

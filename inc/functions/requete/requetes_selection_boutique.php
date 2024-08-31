@@ -21,7 +21,7 @@ FROM `commandes`
 join (select * from utilisateurs where role = 'clients')  as clients on clients.id=commandes.utilisateur_id
 join boutiques on clients.boutique_id=boutiques.id"
 );
-
+// Selection de boutique pour client
 $stmt_select_boutique = $conn->prepare(
     "SELECT utilisateurs.id as id, boutiques.nom as nom_boutique
     FROM utilisateurs 
@@ -29,6 +29,15 @@ $stmt_select_boutique = $conn->prepare(
      WHERE role NOT IN ('admin', 'livreur')"
 );
 $stmt_select_boutique->execute();
+
+// Selection de boutique pour mois
+$stmt_select_boutique_mois = $conn->prepare(
+    "SELECT utilisateurs.id as id, boutiques.nom as nom_boutique
+    FROM utilisateurs 
+     join boutiques on utilisateurs.boutique_id=boutiques.id
+     WHERE role NOT IN ('admin', 'livreur')"
+);
+$stmt_select_boutique_mois->execute();
 //$selections = $stmt_select_boutqiue->fetchAll();
 
 /*$getClientsQuery = "SELECT utilisateurs.id as id, boutiques.nom as nom_boutique
