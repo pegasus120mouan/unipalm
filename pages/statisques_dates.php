@@ -64,11 +64,11 @@ if (isset($_POST['client']) && isset($_POST['month_start']) && isset($_POST['mon
     $pdf->SetFont('Arial', 'B', 12); // Set font to bold
     $pdf->Cell(20, 10, "De: ", 0, 0, 'L'); // Bold text
     $pdf->SetFont('Arial', '', 12); // Reset font to regular
-    $pdf->Cell(50, 10, "{$mois_francais[date('F', mktime(0, 0, 0, $month_start, 1))]} $year", 0, 0, 'L'); // Regular text
+    $pdf->Cell(50, 10, utf8_decode("{$mois_francais[date('F', mktime(0, 0, 0, $month_start, 1))]} $year"), 0, 0, 'L');
     $pdf->SetFont('Arial', 'B', 12); // Set font to bold
     $pdf->Cell(20, 10, "A: ", 0, 0, 'L'); // Bold text
     $pdf->SetFont('Arial', '', 12); // Reset font to regular
-    $pdf->Cell(0, 10, "{$mois_francais[date('F', mktime(0, 0, 0, $month_end, 1))]} $year", 0, 1, 'L'); // Regular text
+    $pdf->Cell(0, 10, utf8_decode("{$mois_francais[date('F', mktime(0, 0, 0, $month_end, 1))]} $year"), 0, 1, 'L');
 
     // Table headers
     $pdf->SetFont('Arial', 'B', 12);
