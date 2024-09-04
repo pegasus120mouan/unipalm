@@ -67,9 +67,10 @@ INNER JOIN
 WHERE 
     YEAR(c.date_commande) = YEAR(CURDATE())
 GROUP BY 
-    b.nom
+    b.nom, YEAR(c.date_commande)
 ORDER BY 
-    nombre_commandes DESC";
+    nombre_commandes DESC;
+";
 
 $requeteBoutiques = $conn->prepare($sqlBoutiques);
 $requeteBoutiques->execute();
@@ -228,14 +229,14 @@ $jsonBoutiqueData = json_encode($boutiqueData);
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addCommandeLabel">Les clients les plus prolifiques</h5>
+                    <h3 class="modal-title" id="addCommandeLabel">Les clients les plus prolifiques</h3>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <!-- Contenu du modal -->
-                    <p>Voici les informations sur les clients les plus prolifiques.</p>
+                    <p><i>Voici les informations sur les clients les plus prolifiques.</i></p>
                     <canvas id="clientsChart" height="400"></canvas> <!-- Canvas pour le graphique en secteurs -->
                 </div>
                 <div class="modal-footer">
