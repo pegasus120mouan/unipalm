@@ -528,7 +528,7 @@ if (!isset($_SESSION['user_id'])) {
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="liste_admins.php" class="nav-link">
+                  <a href="gestion_caisse.php" class="nav-link">
                     <i class="fa fa-pie-chart"></i>
                     <p>Caisse</p>
                   </a>
@@ -566,9 +566,9 @@ if (!isset($_SESSION['user_id'])) {
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="liste_admins.php" class="nav-link">
+                  <a href="gestion_caisse.php" class="nav-link">
                     <i class="fa fa-pie-chart"></i>
-                    <p>Caisse</p>
+                    <p>OVL</p>
                   </a>
                 </li>
               </ul>
