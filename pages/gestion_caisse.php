@@ -53,24 +53,124 @@ while ($row = $requete->fetch(PDO::FETCH_ASSOC)) {
 
 $jsonData = json_encode($dataPoints);
 
-// Requête pour les boutiques avec le plus grand nombre de commandes
-$sqlBoutiques = "SELECT 
-    b.nom AS boutique_nom,
+
+
+
+// Requête pour les statistiques des commandes
+$sql_livreurs = "SELECT 
     YEAR(c.date_commande) AS annee,
-    COUNT(c.id) AS nombre_commandes
+    MONTH(c.date_commande) AS mois_numero,
+    CASE MONTH(c.date_commande)
+        WHEN 1 THEN 'Janvier'
+        WHEN 2 THEN 'Février'
+        WHEN 3 THEN 'Mars'
+        WHEN 4 THEN 'Avril'
+        WHEN 5 THEN 'Mai'
+        WHEN 6 THEN 'Juin'
+        WHEN 7 THEN 'Juillet'
+        WHEN 8 THEN 'Août'
+        WHEN 9 THEN 'Septembre'
+        WHEN 10 THEN 'Octobre'
+        WHEN 11 THEN 'Novembre'
+        WHEN 12 THEN 'Décembre'
+    END AS mois,
+    c.livreur_id,
+    CONCAT(u.nom, ' ', u.prenoms) AS livreur_nom,
+    COUNT(c.id) AS nombre_commandes,
+    SUM(CASE WHEN c.statut = 'Livré' THEN 1 ELSE 0 END) AS nombre_commandes_livre,
+    SUM(CASE WHEN c.statut = 'Non Livré' THEN 1 ELSE 0 END) AS nombre_commandes_non_livre,
+    SUM(CASE WHEN c.statut = 'Livré' THEN c.cout_livraison ELSE 0 END) AS total_cout_livraison,
+    IFNULL(SUM(pl.depense), 0) AS total_depense,
+    IFNULL(SUM(pl.recette), 0) AS total_recette
 FROM 
     commandes c
 INNER JOIN 
-    utilisateurs u ON c.utilisateur_id = u.id
-INNER JOIN 
-    boutiques b ON u.boutique_id = b.id
+    utilisateurs u ON c.livreur_id = u.id
+LEFT JOIN 
+    points_livreurs pl ON c.livreur_id = pl.utilisateur_id AND DATE(pl.date_commande) = DATE(c.date_commande)
 WHERE 
-    YEAR(c.date_commande) = YEAR(CURDATE())
+    YEAR(c.date_commande) = YEAR(CURDATE()) -- Filtre pour l'année en cours
 GROUP BY 
-    b.nom, YEAR(c.date_commande)
+    annee, mois_numero, mois, c.livreur_id, livreur_nom
 ORDER BY 
-    nombre_commandes DESC;
-";
+    annee DESC, mois_numero DESC, nombre_commandes DESC";
+
+$requete_livreurs = $conn->prepare($sql_livreurs);
+$requete_livreurs->execute();
+
+$dataPoints_livreurs = array();
+
+while ($row_clients = $requete_livreurs->fetch(PDO::FETCH_ASSOC)) {
+    $dataPoints_livreurs[] = array(
+        'annee' => $row_clients['annee'],
+        'mois' =>  $row_clients['mois'],
+        'livreur_nom' => $row_clients['livreur_nom'],
+        'nombre_commandes' => $row_clients['nombre_commandes'],
+        'nombre_commandes_livre' => $row_clients['nombre_commandes_livre'],
+        'nombre_commandes_non_livre' => $row_clients['nombre_commandes_non_livre'],
+    );
+}
+
+$jsonData_livreurs = json_encode($dataPoints_livreurs);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Requête pour les boutiques avec le plus grand nombre de commandes
+$sqlBoutiques = "SELECT 
+    YEAR(c.date_commande) AS annee,
+    MONTH(c.date_commande) AS mois_numero,
+    CASE MONTH(c.date_commande)
+        WHEN 1 THEN 'Janvier'
+        WHEN 2 THEN 'Février'
+        WHEN 3 THEN 'Mars'
+        WHEN 4 THEN 'Avril'
+        WHEN 5 THEN 'Mai'
+        WHEN 6 THEN 'Juin'
+        WHEN 7 THEN 'Juillet'
+        WHEN 8 THEN 'Août'
+        WHEN 9 THEN 'Septembre'
+        WHEN 10 THEN 'Octobre'
+        WHEN 11 THEN 'Novembre'
+        WHEN 12 THEN 'Décembre'
+    END AS mois,
+    c.livreur_id,
+    CONCAT(u.nom, ' ', u.prenoms) AS livreur_nom,
+    COUNT(c.id) AS nombre_commandes,
+    SUM(CASE WHEN c.statut = 'Livré' THEN 1 ELSE 0 END) AS nombre_commandes_livre,
+    SUM(CASE WHEN c.statut = 'Non Livré' THEN 1 ELSE 0 END) AS nombre_commandes_non_livre,
+    SUM(CASE WHEN c.statut = 'Livré' THEN c.cout_livraison ELSE 0 END) AS total_cout_livraison,
+    IFNULL(SUM(pl.depense), 0) AS total_depense,
+    IFNULL(SUM(pl.recette), 0) AS total_recette
+FROM 
+    commandes c
+INNER JOIN 
+    utilisateurs u ON c.livreur_id = u.id
+LEFT JOIN 
+    points_livreurs pl ON c.livreur_id = pl.utilisateur_id AND DATE(pl.date_commande) = DATE(c.date_commande)
+WHERE 
+    YEAR(c.date_commande) = YEAR(CURDATE()) -- Filtre pour l'année en cours
+GROUP BY 
+    annee, mois_numero, mois, c.livreur_id, livreur_nom
+ORDER BY 
+    annee DESC, mois_numero DESC, nombre_commandes DESC;";
 
 $requeteBoutiques = $conn->prepare($sqlBoutiques);
 $requeteBoutiques->execute();
@@ -80,8 +180,11 @@ $boutiqueData = array();
 while ($row = $requeteBoutiques->fetch(PDO::FETCH_ASSOC)) {
     $boutiqueData[] = array(
         'annee' => $row['annee'],
-        'boutique_nom' => $row['boutique_nom'],
-        'nombre_commandes' => $row['nombre_commandes']
+        'mois' => $row['mois'],
+        'livreur_nom' => $row['livreur_nom'],
+        'nombre_commandes' => $row['nombre_commandes'],
+        'nombre_commandes_livre' => $row['nombre_commandes_livre'],
+        'nombre_commandes_non_livre' => $row['nombre_commandes_non_livre']
     );
 }
 
@@ -176,11 +279,11 @@ $jsonBoutiqueData = json_encode($boutiqueData);
 
     <div class="row">
         <div class="block-container">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-commande">
-                <i class="fa fa-edit"></i> Statistiques clients
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#stat-clients">
+                <i class="fas fa-chart-bar"></i> Statistiques clients
             </button>
-            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#add-point">
-                <i class="fa fa-print"></i> Imprimer un point
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#stat-livreurs">
+                <i class="fas fa-chart-pie"></i> Statistiques livreurs
             </button>
             <button type="button" class="btn btn-success" data-toggle="modal" data-target="#search-commande">
                 <i class="fa fa-search"></i> Recherche un point
@@ -225,7 +328,7 @@ $jsonBoutiqueData = json_encode($boutiqueData);
     </div>
 
     <!-- Modal Add Commande -->
-    <div class="modal fade" id="add-commande" tabindex="-1" role="dialog" aria-labelledby="addCommandeLabel" aria-hidden="true">
+    <div class="modal fade" id="stat-clients" tabindex="-1" role="dialog" aria-labelledby="addCommandeLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -354,6 +457,96 @@ $jsonBoutiqueData = json_encode($boutiqueData);
             }
         });
     </script>
+
+
+    <div class="modal fade" id="stat-livreurs" tabindex="-1" role="dialog" aria-labelledby="stat-boutiquesLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="stat-boutiquesLabel">Statistiques des Boutiques</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                                <table id="boutiqueTable" class="display table table-striped table-bordered">
+
+                         <thead class="thead-dark">
+                            <tr>
+                                <th>Année</th>
+                                <th>Mois</th>
+                                <th>Nom Livreur</th>
+                                <th>Nombre colis</th>
+                                <th>Nombre de colis livrés</th>
+                                <th>Nombre de colis non livrés</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($boutiqueData as $boutique): ?>
+                            <tr>
+                                <td><?php echo $boutique['annee']; ?></td>
+                                <td><?php echo $boutique['mois']; ?></td>
+                                <td><?php echo $boutique['livreur_nom']; ?></td>
+                                <td><?php echo $boutique['nombre_commandes']; ?></td>
+                                <td><?php echo $boutique['nombre_commandes_livre']; ?></td>
+                                <td><?php echo $boutique['nombre_commandes_non_livre']; ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var ctx = document.getElementById('myChart').getContext('2d');
+            var chartData = <?php echo $jsonData; ?>;
+
+            var labels = chartData.map(function(data) { return data.mois + ' ' + data.annee; });
+            var recettes = chartData.map(function(data) { return data.total_recette; });
+            var depenses = chartData.map(function(data) { return data.total_depense; });
+
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Recettes',
+                            data: recettes,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Dépenses',
+                            data: depenses,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Initialisation des tables
+            $('#livreurTable').DataTable();
+            $('#boutiqueTable').DataTable();
+        });
+    </script>
+
 
     <!-- Inclure jQuery et Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
