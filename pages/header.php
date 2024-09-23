@@ -444,7 +444,7 @@ if (!isset($_SESSION['user_id'])) {
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-chart-pie"></i>
                 <p>
-                  POINTS DES DEPOTS
+                  Points des dépots
                   <i class="right fas fa-angle-left"></i>
                 </p>
               </a>
@@ -548,7 +548,7 @@ if (!isset($_SESSION['user_id'])) {
               <a href="#" class="nav-link">
                 <i class="fa fa-area-chart"></i>
                 <p>
-                  STATISTIQUES
+                  Analytics
                   <i class="fas fa-angle-left right"></i>
                 </p>
               </a>

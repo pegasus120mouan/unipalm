@@ -189,7 +189,22 @@ while ($row = $requeteBoutiques->fetch(PDO::FETCH_ASSOC)) {
 }
 
 $jsonBoutiqueData = json_encode($boutiqueData);
+
+
+
+$sqlGain = "SELECT YEAR(date_commande) AS annee, 
+       SUM(depense) AS total_depense, 
+       SUM(gain_jour) AS total_gain_jour,
+       SUM(recette) AS total_recette
+FROM points_livreurs
+GROUP BY YEAR(date_commande)
+ORDER BY annee DESC";
+$requeteGain = $conn->prepare($sqlGain);
+$requeteGain->execute();
+
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -285,7 +300,7 @@ $jsonBoutiqueData = json_encode($boutiqueData);
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#stat-livreurs">
                 <i class="fas fa-chart-pie"></i> Statistiques livreurs
             </button>
-            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#search-commande">
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#stat-gains">
                 <i class="fa fa-search"></i> Recherche un point
             </button>
         </div>
@@ -490,6 +505,46 @@ $jsonBoutiqueData = json_encode($boutiqueData);
                                 <td><?php echo $boutique['nombre_commandes']; ?></td>
                                 <td><?php echo $boutique['nombre_commandes_livre']; ?></td>
                                 <td><?php echo $boutique['nombre_commandes_non_livre']; ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+        <div class="modal fade" id="stat-gains" tabindex="-1" role="dialog" aria-labelledby="stat-boutiquesLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="stat-boutiquesLabel">Statistiques des gains</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                                <table id="boutiqueTable" class="display table table-striped table-bordered">
+
+                         <thead class="thead-dark">
+                            <tr>
+                                <th>Année d'exercice</th>
+                                <th>Total de recettes par Année</th>
+                                <th>Total des dépenses par Année</th>
+                                <th>Gain Total par Année</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($requeteGain as $gain): ?>
+                            <tr>
+                                <td><?php echo $gain['annee']; ?></td>
+                                <td><?php echo $gain['total_recette']; ?></td>
+                                <td><?php echo $gain['total_depense']; ?></td>
+                                <td><?php echo $gain['total_gain_jour']; ?></td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
