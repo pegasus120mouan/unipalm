@@ -1,5 +1,5 @@
 <?php
-session_start();
+//session_start();
 require_once '../inc/functions/connexion.php';
 require_once '../inc/functions/requete/requete_dashboard.php';
 
@@ -26,18 +26,53 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OVL | Point</title>
-  <link rel="icon" href="../../dist/img/logo.png" type="image/x-icon">
-  <link rel="shortcut icon" href="../../dist/img/logo.png" type="image/x-icon">
+  <title>Tableau de bord</title>
 
   <!-- Google Font: Source Sans Pro -->
+  <link rel="icon" href="../dist/img/logo.png" type="image/x-icon">
+  <link rel="shortcut icon" href="../dist/img/logo.png" type="image/x-icon">
+
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome Icons -->
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
-  <!-- overlayScrollbars -->
-  <link rel="stylesheet" href="../../plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  <!-- Tempusdominus Bootstrap 4 -->
+  <link rel="stylesheet" href="../../plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- JQVMap -->
+  <link rel="stylesheet" href="../../plugins/jqvmap/jqvmap.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="../../plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="../../plugins/daterangepicker/daterangepicker.css">
+  <!-- summernote -->
+  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <link rel="stylesheet" href="../../plugins/summernote/summernote-bs4.min.css">
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="../../plugins/datatables-buttons/css/buttons.bootstrap4.min.css"> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="../../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
 </head>
 
 <body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
@@ -45,7 +80,7 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- Preloader -->
 
-    <!-- Navbar -->
+        <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
       <!-- Left navbar links -->
       <ul class="navbar-nav">
@@ -58,22 +93,19 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
         <li class="nav-item d-none d-sm-inline-block">
           <a href="commandes.php" class="nav-link">Les commandes</a>
         </li>
-        <li class="nav-item d-none d-sm-inline-block">
-          <a href="../logout.php" class="nav-link">Déconnexion</a>
-        </li>
       </ul>
 
       <!-- Right navbar links -->
       <ul class="navbar-nav ml-auto">
         <!-- Navbar Search -->
         <li class="nav-item">
-          <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+          <a class="nav-link" data-widget="navbar-search" href="recherche_colis.php" role="button">
             <i class="fas fa-search"></i>
           </a>
           <div class="navbar-search-block">
             <form class="form-inline">
               <div class="input-group input-group-sm">
-                <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                <input class="form-control form-control-navbar" type="search" name="communeInput" placeholder="Recherche un colis" aria-label="Search">
                 <div class="input-group-append">
                   <button class="btn btn-navbar" type="submit">
                     <i class="fas fa-search"></i>
@@ -87,64 +119,6 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
           </div>
         </li>
 
-        <!-- Messages Dropdown Menu -->
-        <li class="nav-item dropdown">
-          <a class="nav-link" data-toggle="dropdown" href="#">
-            <i class="far fa-comments"></i>
-            <span class="badge badge-danger navbar-badge">3</span>
-          </a>
-          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-            <a href="#" class="dropdown-item">
-              <!-- Message Start -->
-              <div class="media">
-                <img src="dist/img/user1-128x128.jpg" alt="User Avatar" class="img-size-50 mr-3 img-circle">
-                <div class="media-body">
-                  <h3 class="dropdown-item-title">
-                    Brad Diesel
-                    <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
-                  </h3>
-                  <p class="text-sm">Call me whenever you can...</p>
-                  <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-                </div>
-              </div>
-              <!-- Message End -->
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item">
-              <!-- Message Start -->
-              <div class="media">
-                <img src="dist/img/user8-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
-                <div class="media-body">
-                  <h3 class="dropdown-item-title">
-                    John Pierce
-                    <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
-                  </h3>
-                  <p class="text-sm">I got your message bro</p>
-                  <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-                </div>
-              </div>
-              <!-- Message End -->
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item">
-              <!-- Message Start -->
-              <div class="media">
-                <img src="dist/img/user3-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
-                <div class="media-body">
-                  <h3 class="dropdown-item-title">
-                    Nora Silvester
-                    <span class="float-right text-sm text-warning"><i class="fas fa-star"></i></span>
-                  </h3>
-                  <p class="text-sm">The subject goes here</p>
-                  <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-                </div>
-              </div>
-              <!-- Message End -->
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
-          </div>
-        </li>
         <!-- Notifications Dropdown Menu -->
         <li class="nav-item dropdown">
           <a class="nav-link" data-toggle="dropdown" href="#">
@@ -152,10 +126,10 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
             <span class="badge badge-warning navbar-badge">15</span>
           </a>
           <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-            <span class="dropdown-item dropdown-header">15 Notifications</span>
+            <span class="dropdown-item dropdown-header">0 Notifications</span>
             <div class="dropdown-divider"></div>
             <a href="#" class="dropdown-item">
-              <i class="fas fa-envelope mr-2"></i> 4 new messages
+              <i class="fas fa-envelope mr-2"></i> 0 Nouveaux Messages
               <span class="float-right text-muted text-sm">3 mins</span>
             </a>
             <div class="dropdown-divider"></div>
@@ -186,6 +160,7 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
     </nav>
     <!-- /.navbar -->
 
+    <!-- Main Sidebar Container -->
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
@@ -270,6 +245,12 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
                     <p>Points des Livreurs</p>
                   </a>
                 </li>
+                 <li class="nav-item">
+                  <a href="liste_montants.php" class="nav-link">
+                    <i class="fas fa-list"></i>
+                    <p>Liste des montants</p>
+                  </a>
+                </li>
               </ul>
             </li>
             <li class="nav-item">
@@ -341,17 +322,13 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="pages/tables/data.html" class="nav-link">
+                  <a href="contrats.php" class="nav-link">
                     <i class="fas fa-folder-open"></i>
                     <p>Contrats</p>
                   </a>
                 </li>
-
               </ul>
             </li>
-
-
-
             <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-table"></i>
@@ -397,7 +374,7 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
 
 
 
-          <li class="nav-header">CAISSE</li>
+          <li class="nav-header"><strong>GESTION CAISSE</strong></li>
              <li class="nav-item">
               <a href="analytics/vuegenerale_soldes.php" class="nav-link">
                 <i class="nav-icon far fa-calendar-alt"></i>
@@ -408,10 +385,60 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
               </a>
              </li>
             <li class="nav-item">
-              <a href="vue_gestion_caisse.php" class="nav-link">
+              <a href="analytics/vue_gestion_caisse.php" class="nav-link">
                 <i class="nav-icon far fa-image"></i>
                 <p>
                   Caisse
+                </p>
+              </a>
+            </li>
+
+
+                        <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-chart-pie"></i>
+                <p>
+                  Points des dépots
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="listes_des_depots.php" class="nav-link">
+                    <i class="fas fa-clone"></i>
+                    <p>Liste des dépots</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="commandes_livrees.php" class="nav-link">
+                    <i class="far fa-clone"></i>
+                    <p>Commandes Livrées</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="commandes_non_livrees.php" class="nav-link">
+                    <i class="fas fa-file"></i>
+                    <p>Commandes non livrées</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+
+            <li class="nav-item">
+              <a href="analytics/vue_gestion_caisse.php" class="nav-link">
+                <i class="nav-icon far fa-image"></i>
+                <p>
+                  Caisse
+                </p>
+              </a>
+            </li>
+
+              <li class="nav-item">
+              <a href="analytics/vue_ovl_statisques.php" class="nav-link">
+                <i class="nav-icon fas fa-balance-scale"></i>
+                <p>
+                 <strong>Mes statisques</strong>
                 </p>
               </a>
             </li>
@@ -432,14 +459,50 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
                 </p>
               </a>
            </li>
-          
+
+           <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="fa fa-camera-retro"></i>
+                <p>
+                  Banners
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="banner_admin.php" class="nav-link">
+                   <i class="fa fa-solid fa-camera"></i>
+                    <p>Banner Administrateur</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="livreurs_analytics.php" class="nav-link">
+                    <i class="fa fa-solid fa-image"></i>
+                    <p>Livreurs</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="gestion_caisse.php" class="nav-link">
+                    <i class="fa fa-pie-chart"></i>
+                    <p>Caisse</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+
+
+
+
+
+
 
 
            <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="fa fa-area-chart"></i>
                 <p>
-                  STATISTIQUES
+                  Analytics
                   <i class="fas fa-angle-left right"></i>
                 </p>
               </a>
@@ -457,9 +520,9 @@ $pointParlivreur_gains = $getPoints_Livreurs->fetchAll(PDO::FETCH_ASSOC);
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="liste_admins.php" class="nav-link">
+                  <a href="gestion_caisse.php" class="nav-link">
                     <i class="fa fa-pie-chart"></i>
-                    <p>Caisse</p>
+                    <p>OVL</p>
                   </a>
                 </li>
               </ul>

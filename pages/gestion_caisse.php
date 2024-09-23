@@ -301,7 +301,7 @@ $requeteGain->execute();
                 <i class="fas fa-chart-pie"></i> Statistiques livreurs
             </button>
             <button type="button" class="btn btn-success" data-toggle="modal" data-target="#stat-gains">
-                <i class="fa fa-search"></i> Recherche un point
+                <i class="fa fa-money"></i> Point global des entrances
             </button>
         </div>
         <div class="col-md-6" id="myTable">
@@ -518,44 +518,110 @@ $requeteGain->execute();
     </div>
 
 
-        <div class="modal fade" id="stat-gains" tabindex="-1" role="dialog" aria-labelledby="stat-boutiquesLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="stat-boutiquesLabel">Statistiques des gains</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                                <table id="boutiqueTable" class="display table table-striped table-bordered">
+    <div class="modal fade" id="stat-gains" tabindex="-1" role="dialog" aria-labelledby="stat-boutiquesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="stat-boutiquesLabel">Statistiques des gains</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Table Display -->
+                <table id="boutiqueTable" class="display table table-striped table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Année d'exercice</th>
+                            <th>Total de recettes par Année</th>
+                            <th>Total des dépenses par Année</th>
+                            <th>Gain Total par Année</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        // Prepare arrays for JavaScript usage
+                        $years = [];
+                        $totalRecettes = [];
+                        $totalDepenses = [];
+                        $totalGains = [];
 
-                         <thead class="thead-dark">
-                            <tr>
-                                <th>Année d'exercice</th>
-                                <th>Total de recettes par Année</th>
-                                <th>Total des dépenses par Année</th>
-                                <th>Gain Total par Année</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach ($requeteGain as $gain): ?>
-                            <tr>
-                                <td><?php echo $gain['annee']; ?></td>
-                                <td><?php echo $gain['total_recette']; ?></td>
-                                <td><?php echo $gain['total_depense']; ?></td>
-                                <td><?php echo $gain['total_gain_jour']; ?></td>
-                            </tr>
+                        foreach ($requeteGain as $gain):
+                            // Fill the arrays
+                            $years[] = $gain['annee'];
+                            $totalRecettes[] = $gain['total_recette'];
+                            $totalDepenses[] = $gain['total_depense'];
+                            $totalGains[] = $gain['total_gain_jour'];
+                        ?>
+                        <tr>
+                            <td><?php echo $gain['annee']; ?></td>
+                            <td><?php echo $gain['total_recette']; ?></td>
+                            <td><?php echo $gain['total_depense']; ?></td>
+                            <td><?php echo $gain['total_gain_jour']; ?></td>
+                        </tr>
                         <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                </div>
+                    </tbody>
+                </table>
+
+                <!-- Bar Chart Display -->
+                <canvas id="gainChart" width="400" height="200"></canvas>
+
+                <!-- Pass PHP arrays to JavaScript -->
+                <script>
+                    var years = <?php echo json_encode($years); ?>;
+                    var totalRecettes = <?php echo json_encode($totalRecettes); ?>;
+                    var totalDepenses = <?php echo json_encode($totalDepenses); ?>;
+                    var totalGains = <?php echo json_encode($totalGains); ?>;
+                </script>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Script to generate the bar chart -->
+<script>
+    var ctx = document.getElementById('gainChart').getContext('2d');
+    var gainChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: years, // x-axis labels
+            datasets: [
+                {
+                    label: 'Total Recettes',
+                    data: totalRecettes,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Total Dépenses',
+                    data: totalDepenses,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Total Gains',
+                    data: totalGains,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
