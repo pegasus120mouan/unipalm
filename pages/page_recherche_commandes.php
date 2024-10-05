@@ -62,7 +62,7 @@ WHERE
     $pdf->SetFillColor(255);
 
     // Données
-    $pdf->SetFont('Arial', '', 12);
+    $pdf->SetFont('Helvetica', '', 9);
     foreach ($resultat as $row) {
         if ($row['commande_statut'] != 'Livré') {
             $pdf->SetFillColor(255, 0, 0); // Rouge pour les non-livrés
