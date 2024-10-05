@@ -526,6 +526,40 @@ label {
 </div>
 
 
+<div class="modal fade" id="search-commande-remis">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Recherche commis par client</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form class="forms-sample" method="POST" action="page_recherche_commandes.php">
+          <div class="card-body">
+            <div class="form-group">
+              <label>Selectionner le client</label>
+              <select name="client" class="form-control">
+                <?php
+                foreach ($liste_boutiques as $liste_boutique) {
+                  echo '<option value="' . $liste_boutique['nom_boutique'] . '">' . $liste_boutique['nom_boutique'] . '</option>';
+                }
+                ?>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="dateInput">Sélectionner la date</label>
+              <input type="date" class="form-control" id="dateInput" name="date">
+            </div>
+            <button type="submit" class="btn btn-primary mr-2">Recherche</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 <!-- Main Search Modal -->
 <div class="modal fade" id="search-commande">
   <div class="modal-dialog">
@@ -553,6 +587,10 @@ label {
 
         <button type="button" class="btn btn-outline-dark w-100 mb-2" onclick="showSearchModal('search-commande-statut')">
         <i class="fa fa-check-circle"></i>Recherche par Statut
+        </button>
+
+        <button type="button" class="btn btn-outline-dark w-100 mb-2" onclick="showSearchModal('search-commande-remis')">
+        <i class="fa fa-check-circle"></i>Recherche par colis remis
         </button>
       </div>
     </div>

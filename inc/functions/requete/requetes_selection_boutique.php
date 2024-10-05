@@ -30,6 +30,20 @@ $stmt_select_boutique = $conn->prepare(
 );
 $stmt_select_boutique->execute();
 
+
+
+
+$stmt_select_commandes = $conn->prepare(
+    "SELECT utilisateurs.id as id, boutiques.nom as nom_boutique
+    FROM utilisateurs 
+     join boutiques on utilisateurs.boutique_id=boutiques.id
+     WHERE role NOT IN ('admin', 'livreur')"
+);
+$stmt_select_commandes->execute();
+
+
+
+
 // Selection de boutique pour mois
 $stmt_select_boutique_mois = $conn->prepare(
     "SELECT utilisateurs.id as id, boutiques.nom as nom_boutique
