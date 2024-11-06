@@ -1,6 +1,6 @@
 <?php
 require_once '../inc/functions/connexion.php';
-require 'vendor/autoload.php';  // Assurez-vous que PhpSpreadsheet est correctement chargé
+require '../vendor/autoload.php';  // Assurez-vous que PhpSpreadsheet est correctement chargé
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
