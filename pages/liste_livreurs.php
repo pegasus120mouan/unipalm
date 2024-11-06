@@ -13,16 +13,32 @@ $statuts_comptes= $getStatut_compte->fetchAll(PDO::FETCH_ASSOC);
 //foreach($users as $user)
 ?>
 
+  <style>
+        .block-container {
+      background-color:  #d7dbdd ;
+      padding: 20px;
+      border-radius: 5px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+</style>
 
 
 
         <!-- Main row -->
-        
         <div class="row">
 
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-client">
-                  Enregistrer un livreur
-                </button>   
+            <div class="block-container">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-client">
+              <i class="fa fa-edit"></i>Enregistrer un livreur
+            </button>
+
+            <button type="button" class="btn btn-danger" onclick="window.location.href='export_livreurs.php'">
+              <i class="fa fa-print"></i> Exporter la liste des livreurs
+             </button>
+        </div>
+
+
 
   <table id="example1" class="table table-bordered table-striped">
     <thead>
