@@ -128,7 +128,7 @@ label {
 
         <th>Reste à payer</th>
         <th>Actions</th>
-        <th>Effectuer un paiemen1t</th>
+        <th>Effectuer un paiement</th>
       </tr>
     </thead>
     <tbody>
