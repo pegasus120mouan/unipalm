@@ -128,7 +128,7 @@ label {
     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#search-commande">
       <i class="fa fa-search"></i> Recherche un point
     </button>
-  </div>
+</div>
 
 
 

@@ -66,11 +66,11 @@ $montants_list = $Montants_pages[$page - 1] ?? [];
 </head>
 
 <body>
-
 <div class="row">
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recherche_point">
-        Voir un point
-    </button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recherche_point" style="margin-bottom: 15px;">
+    Voir un point
+</button>
+
 </div>
 
 <table id="example1" class="table table-bordered table-striped">

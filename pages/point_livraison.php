@@ -69,14 +69,28 @@ $points_list = $points_pages[$page - 1] ?? [];
             border-radius: 4px;
             cursor: pointer;
         }
+                .block-container {
+      background-color:  #d7dbdd ;
+      padding: 20px;
+      border-radius: 5px;
+      width: 100%;
+      margin-bottom: 20px;
+       }
     </style>
 </head>
 
 <body>
 
+
 <div class="row">
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-point" style="margin-bottom: 15px;">
-    Enregistrer un point
+
+    <div class="block-container">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-point">
+      <i class="fa fa-edit"></i>Enregistrer un point
+    </button>
+
+    <button type="button" class="btn btn-danger" onclick="window.location.href='export_points.php'">
+  <i class="fa fa-print"></i> Exporter un point
 </button>
 </div>
 
