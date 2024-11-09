@@ -59,11 +59,12 @@ foreach ($point_commandes as $point_commande) {
 
 // Définir le nom du fichier et les en-têtes pour le téléchargement
 $filename = 'commandes_' . date('Y-m-d') . '.csv';
-header('Content-Type: text/csv');
+header('Content-Type: text/csv; charset=UTF-8');
 header("Content-Disposition: attachment; filename=\"$filename\"");
 header('Cache-Control: max-age=0');
 
-// Créer le fichier CSV et le télécharger
+// Créer le fichier CSV et le télécharger avec BOM
 $writer = new Csv($spreadsheet);
+$writer->setUseBOM(true);  // This adds the UTF-8 BOM
 $writer->save('php://output');
 exit;
