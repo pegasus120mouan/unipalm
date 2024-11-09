@@ -3,7 +3,7 @@ require_once '../inc/functions/connexion.php';
 require '../vendor/autoload.php';  // Assurez-vous que PhpSpreadsheet est correctement chargé
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
 
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
@@ -36,11 +36,11 @@ foreach ($point_livreurs as $point) {
 }
 
 // Définir le nom du fichier et les en-têtes pour le téléchargement
-$filename = 'points_livraison_' . date('Y-m-d') . '.xlsx';
-header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+$filename = 'points_livraison_' . date('Y-m-d') . '.csv';
+header('Content-Type: text/csv');
 header("Content-Disposition: attachment; filename=\"$filename\"");
 
-// Créer le fichier et le télécharger
-$writer = new Xlsx($spreadsheet);
+// Créer le fichier CSV et le télécharger
+$writer = new Csv($spreadsheet);
 $writer->save('php://output');
 exit;
