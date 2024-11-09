@@ -4,7 +4,7 @@ require_once '../inc/functions/requete/requete_utilisateurs.php';
 require '../vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
 
 // Créer une nouvelle feuille de calcul
 $spreadsheet = new Spreadsheet();
@@ -31,15 +31,14 @@ foreach ($utilisateurs as $utilisateur) {
     $row++;
 }
 
-// Créer et télécharger le fichier Excel
-$writer = new Xlsx($spreadsheet);
-$filename = 'Liste_des_livreurs.xlsx';
+// Créer et télécharger le fichier CSV
+$writer = new Csv($spreadsheet);
+$filename = 'Liste_des_livreurs.csv';
 
 // Envoyer les en-têtes pour le téléchargement
-header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+header('Content-Type: text/csv');
 header("Content-Disposition: attachment; filename=\"$filename\"");
 header('Cache-Control: max-age=0');
 
 $writer->save('php://output');
 exit;
-?>

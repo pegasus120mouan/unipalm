@@ -1,9 +1,9 @@
 <?php
 require_once '../inc/functions/connexion.php';
-require '../vendor/autoload.php';  // Assurez-vous que PhpSpreadsheet est correctement chargé
+require '../vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
 
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
@@ -52,21 +52,18 @@ foreach ($point_commandes as $point_commande) {
     $sheet->setCellValue('E' . $row, $point_commande['nom_boutique']);
     $sheet->setCellValue('F' . $row, $point_commande['fullname']);
     $sheet->setCellValue('G' . $row, $point_commande['commande_statut']);
+    $sheet->setCellValue('H' . $row, $point_commande['commande_date_commande']);  // Direct string format for CSV
 
-    // Convertir la date PHP en format Excel et formater en français (jj/mm/aaaa)
-    $excelDate = \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($point_commande['commande_date_commande']);
-    $sheet->setCellValue('H' . $row, $excelDate);
-    $sheet->getStyle('H' . $row)->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-    
     $row++;
 }
 
 // Définir le nom du fichier et les en-têtes pour le téléchargement
-$filename = 'commandes_' . date('Y-m-d') . '.xlsx';
-header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+$filename = 'commandes_' . date('Y-m-d') . '.csv';
+header('Content-Type: text/csv');
 header("Content-Disposition: attachment; filename=\"$filename\"");
+header('Cache-Control: max-age=0');
 
-// Créer le fichier et le télécharger
-$writer = new Xlsx($spreadsheet);
+// Créer le fichier CSV et le télécharger
+$writer = new Csv($spreadsheet);
 $writer->save('php://output');
 exit;
