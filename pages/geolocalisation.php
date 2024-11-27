@@ -41,7 +41,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 if (empty($positions)) {
     echo "Aucune position trouvée";
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -86,6 +85,14 @@ if (empty($positions)) {
     // Tableau PHP avec les positions
     var positions = <?php echo json_encode($positions); ?>;
 
+    // Fonction pour récupérer le nom de l'endroit via géocodage inverse (Nominatim)
+    function getLocationName(lat, lon, callback) {
+      var url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lon + '&addressdetails=1';
+      fetch(url)
+        .then(response => response.json())
+        .then(data => callback(data));
+    }
+
     // Ajouter un marqueur pour chaque position récupérée depuis la base de données
     positions.forEach(function(position) {
       var lat = position.latitude;
@@ -94,7 +101,7 @@ if (empty($positions)) {
       var utilisateur = position.utilisateur_nom_complet;
       var plaque = position.plaque_immatriculation;
 
-      // Créer un icône par défaut si aucun icône personnalisé n'est trouvé
+      // Créer un icône par défaut
       var customIcon = L.icon({
         iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png',  // Icône par défaut de Leaflet
         iconSize: [32, 32],  // Taille de l'icône
@@ -102,14 +109,20 @@ if (empty($positions)) {
         popupAnchor: [0, -32] // Ancrage du popup
       });
 
-      // Ajouter le marqueur au groupe avec un popup détaillé
-      var marker = L.marker([lat, lon], { icon: customIcon })
-        .bindPopup('<div style="font-size:16px;"><strong>' + utilisateur + '</strong><br>' +
-                   'État: ' + etat + '<br>' +
-                   'Plaque: ' + plaque + '<br>' +
-                   '<a href="détails/' + position.engin_id + '">Voir plus</a></div>');
+      // Utiliser le géocodage inverse pour récupérer le nom de l'endroit
+      getLocationName(lat, lon, function(data) {
+        var ville = data.address.city || data.address.town || 'Inconnu';
 
-      markers.addLayer(marker);
+        // Ajouter le marqueur au groupe avec un popup détaillé
+        var marker = L.marker([lat, lon], { icon: customIcon })
+          .bindPopup('<div style="font-size:16px;"><strong>' + utilisateur + '</strong><br>' +
+                     'État: ' + etat + '<br>' +
+                     'Plaque: ' + plaque + '<br>' +
+                     'Position: ' + ville + '<br>' + 
+                     '<a href="détails/' + position.engin_id + '">Voir plus</a></div>');
+
+        markers.addLayer(marker);
+      });
     });
 
     // Ajouter les marqueurs au cluster
