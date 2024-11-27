@@ -117,6 +117,8 @@ if (!isset($_SESSION['user_id'])) {
   <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
   <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -573,6 +575,16 @@ if (!isset($_SESSION['user_id'])) {
                 </li>
               </ul>
             </li>
+            
+              <li class="nav-item">
+              <a href="geolocalisation.php" class="nav-link">
+              <i class="fa fa-arrow-right"></i>
+
+                <p>
+                  Geolocalisation
+                </p>
+              </a>
+           </li>
 
             <li class="nav-item">
               <a href="../logout.php" class="nav-link">
