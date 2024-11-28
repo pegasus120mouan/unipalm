@@ -1,5 +1,5 @@
 <?php
-include('header.php'); // Inclure l'en-tête, qui contient la connexion à la base de données
+include('header.php'); // Inclure l'en-tête contenant la connexion à la base de données
 
 // Récupérer les positions de la base de données avec PDO
 $sql = "SELECT 
@@ -26,111 +26,70 @@ WHERE p.date_enregistrement = (
 $stmt = $conn->prepare($sql);
 $stmt->execute();
 
-// Vérifier s'il y a des résultats
+// Récupérer les résultats
 $positions = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $positions[] = [
-        'latitude' => $row['latitude'],
-        'longitude' => $row['longitude'],
+        'latitude' => (float)$row['latitude'],
+        'longitude' => (float)$row['longitude'],
         'etat_mouvement' => $row['etat_mouvement'],
         'utilisateur_nom_complet' => $row['utilisateur_nom_complet'],
         'plaque_immatriculation' => $row['plaque_immatriculation']
     ];
 }
-
-if (empty($positions)) {
-    echo "Aucune position trouvée";
-}
 ?>
 
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carte Professionnelle - Positions</title>
-
-  <!-- Inclure le CSS de Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.1/leaflet.markercluster.min.css" />
-
-  <style>
-    /* Style pour le conteneur de la carte */
-    #map {
-      height: 100vh; /* La carte occupe toute la hauteur de la fenêtre */
-      width: 100%;   /* La carte occupe toute la largeur de la fenêtre */
-    }
-  </style>
+<meta charset="utf-8">
+<title>Carte avec positions</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
 </head>
 <body>
-
-  <!-- Conteneur de la carte -->
-  <div id="map"></div>
-
-  <!-- Inclure le JavaScript de Leaflet et du clustering -->
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.1/leaflet.markercluster.min.js"></script>
-  <script>
-    // Initialiser la carte Leaflet avec les coordonnées d'Abidjan
-    var map = L.map('map').setView([5.3453, -4.0244], 12); // Abidjan (coordonnées : [latitude, longitude])
-
-    // Ajouter la couche de tuiles OpenStreetMap avec un fond plus sombre
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    // Créer un groupe pour le clustering des marqueurs
-    var markers = L.markerClusterGroup();
-
-    // Tableau PHP avec les positions
-    var positions = <?php echo json_encode($positions); ?>;
-
-    // Fonction pour récupérer le nom de l'endroit via géocodage inverse (Nominatim)
-    function getLocationName(lat, lon, callback) {
-      var url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lon + '&addressdetails=1';
-      fetch(url)
-        .then(response => response.json())
-        .then(data => callback(data));
-    }
-
-    // Ajouter un marqueur pour chaque position récupérée depuis la base de données
-    positions.forEach(function(position) {
-      var lat = position.latitude;
-      var lon = position.longitude;
-      var etat = position.etat_mouvement;
-      var utilisateur = position.utilisateur_nom_complet;
-      var plaque = position.plaque_immatriculation;
-
-      // Créer un icône par défaut
-      var customIcon = L.icon({
-        iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png',  // Icône par défaut de Leaflet
-        iconSize: [32, 32],  // Taille de l'icône
-        iconAnchor: [16, 32], // Ancrage de l'icône
-        popupAnchor: [0, -32] // Ancrage du popup
-      });
-
-      // Utiliser le géocodage inverse pour récupérer le nom de l'endroit
-      getLocationName(lat, lon, function(data) {
-        var ville = data.address.city || data.address.town || 'Inconnu';
-
-        // Ajouter le marqueur au groupe avec un popup détaillé
-        var marker = L.marker([lat, lon], { icon: customIcon })
-          .bindPopup('<div style="font-size:16px;"><strong>' + utilisateur + '</strong><br>' +
-                     'État: ' + etat + '<br>' +
-                     'Plaque: ' + plaque + '<br>' +
-                     'Position: ' + ville + '<br>' + 
-                     '<a href="détails/' + position.engin_id + '">Voir plus</a></div>');
-
-        markers.addLayer(marker);
-      });
+<div id="map"></div>
+<script>
+    // Ajouter votre clé API Mapbox
+    mapboxgl.accessToken = 'pk.eyJ1IjoicGVnYXN1czEyMG1vdWFuIiwiYSI6ImNtNDFpOGR0bDExYncyanM1dTlneXN2angifQ.8aXSgctKqtdljXgahLakIA';
+    
+    // Initialiser la carte
+    const map = new mapboxgl.Map({
+        container: 'map', // ID du conteneur
+        style: 'mapbox://styles/mapbox/streets-v12', // Style de la carte
+        center: [-4.0083, 5.3097], // Coordonnées d'Abidjan [longitude, latitude]
+        zoom: 12 // Niveau de zoom initial
     });
 
-    // Ajouter les marqueurs au cluster
-    map.addLayer(markers);
+    // Ajouter des contrôles de navigation (zoom et rotation)
+    map.addControl(new mapboxgl.NavigationControl());
 
-    // Ajouter le contrôle de l'échelle de la carte
-    L.control.scale().addTo(map);
-  </script>
+    // Récupérer les données de positions en JSON depuis PHP
+    const positions = <?php echo json_encode($positions); ?>;
 
+    // Vérifier si les données sont bien reçues
+    console.log(positions); // Afficher dans la console pour déboguer
+
+    // Ajouter des marqueurs pour chaque position
+    positions.forEach(position => {
+        const { latitude, longitude, etat_mouvement, utilisateur_nom_complet, plaque_immatriculation } = position;
+
+        // Créer un marqueur avec un popup
+        new mapboxgl.Marker()
+            .setLngLat([longitude, latitude]) // Coordonnées du marqueur
+            .setPopup(new mapboxgl.Popup({ offset: 25 }) // Ajouter un popup
+                .setHTML(`
+                    <strong>${utilisateur_nom_complet}</strong><br>
+                    Mouvement: ${etat_mouvement}<br>
+                    Plaque: ${plaque_immatriculation}
+                `)
+            )
+            .addTo(map); // Ajouter le marqueur à la carte
+    });
+</script>
 </body>
 </html>

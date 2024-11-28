@@ -118,6 +118,7 @@ if (!isset($_SESSION['user_id'])) {
   <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
 
 </head>
 
@@ -578,10 +579,10 @@ if (!isset($_SESSION['user_id'])) {
             
               <li class="nav-item">
               <a href="geolocalisation.php" class="nav-link">
-              <i class="fa fa-arrow-right"></i>
+              <i class="fa fa-map-marker"></i>
 
                 <p>
-                  Geolocalisation
+                  Géolocalisation
                 </p>
               </a>
            </li>
