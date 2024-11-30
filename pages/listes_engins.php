@@ -24,7 +24,6 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
     <th>Année Fabrication</th>
     <th>Numero Chassis</th>
     <th>Plaque d'Immatriculation</th>
-    <th>Couleur</th>
     <th>Marque</th>
     <th>Date d'ajout</th>
     <th>Statut</th>
@@ -32,6 +31,7 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
     <th>Attribuer à</th>
     <th>Changer le livreur</th>
     <th>Changer le statut</th>
+    <th>Géolocalisation</th>
 </thead>
     <tbody>
       <?php foreach ($engins as $engin) : ?>
@@ -57,7 +57,6 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
 </td>
 
           <td><?= $engin['plaque_immatriculation'] ?></td>
-          <td><?= $engin['couleur'] ?></td>  
           <td><?= $engin['marque'] ?></td>  
           <td><?= $engin['date_ajout'] ?></td>
           <td>
@@ -81,6 +80,10 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
           </td>
           <td>
               <button class="btn btn-info" data-toggle="modal" data-target="#update_statut-<?= $engin['engin_id'] ?>">Changer le statut</button>
+          </td>
+
+          <td>
+              <button class="btn btn-dark" data-toggle="modal" data-target="#add_position-<?= $engin['engin_id'] ?>">Ajouter Position</button>
           </td>
         </tr>
         
@@ -106,6 +109,35 @@ $rows = $getLivreurs->fetchAll(PDO::FETCH_ASSOC);
             </div>
           </div>
         </div>
+
+
+        <!-- Modal pour ajouter la position -->
+<div class="modal" id="add_position-<?= $engin['engin_id'] ?>">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Ajouter une Position</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="geocalisation_enregistrement.php">
+          <input type="hidden" name="id_engin" value="<?= $engin['engin_id'] ?>">
+          <div class="form-group">
+            <label>Selectionner le livreur</label>
+            <select name="utilisateur_id" class="form-control" required>
+              <?php foreach ($rows as $row) {
+                echo '<option value="' . $row['id'] . '">' . $row['nom_livreur'] . '</option>';
+              } ?>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Soumettre</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
         <!-- Modal pour changer le livreur -->
         <div class="modal" id="update_livreur-<?= $engin['engin_id'] ?>">

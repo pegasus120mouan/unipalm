@@ -1,5 +1,6 @@
 <?php
 include('header.php'); // Inclure l'en-tête contenant la connexion à la base de données
+require_once '../inc/functions/connexion.php';
 
 // Récupérer les positions de la base de données avec PDO
 $sql = "SELECT 
@@ -47,12 +48,42 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
 <style>
-body { margin: 0; padding: 0; }
-#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+#map-container {
+    position: relative;
+    top: 10px; /* Ajustez cette valeur pour déplacer la carte */
+    width: 100%;
+    height: calc(100vh - 50px); /* Compense la marge supérieure */
+}
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%; /* Remplit tout le conteneur */
+}
 </style>
 </head>
 <body>
-<div id="map"></div>
+
+<div class="row">
+
+    <div class="block-container">
+    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#add-commande">
+      <i class="fa fa-car"></i>Les Engins en Arrêt
+    </button>
+
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add-point">
+      <i class="fa fa-car"></i> Les Engins en Mouvement
+    </button>
+
+
+
+   
+</div>
+
+<div id="map-container">
+    <div id="map"></div>
+</div>
 <script>
     // Ajouter votre clé API Mapbox
     mapboxgl.accessToken = 'pk.eyJ1IjoicGVnYXN1czEyMG1vdWFuIiwiYSI6ImNtNDFpOGR0bDExYncyanM1dTlneXN2angifQ.8aXSgctKqtdljXgahLakIA';
@@ -62,7 +93,7 @@ body { margin: 0; padding: 0; }
         container: 'map', // ID du conteneur
         style: 'mapbox://styles/mapbox/streets-v12', // Style de la carte
         center: [-4.0083, 5.3097], // Coordonnées d'Abidjan [longitude, latitude]
-        zoom: 12 // Niveau de zoom initial
+        zoom: 10 // Niveau de zoom initial
     });
 
     // Ajouter des contrôles de navigation (zoom et rotation)
