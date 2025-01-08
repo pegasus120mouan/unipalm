@@ -1,86 +1,114 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Édition du client</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-  <!-- Tempusdominus Bootstrap 4 -->
-  <link rel="stylesheet" href="../../plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-  <!-- iCheck -->
-  <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- JQVMap -->
-  <link rel="stylesheet" href="../../plugins/jqvmap/jqvmap.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
-  <!-- overlayScrollbars -->
-  <link rel="stylesheet" href="../../plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
-  <!-- Daterange picker -->
-  <link rel="stylesheet" href="../../plugins/daterangepicker/daterangepicker.css">
-  <!-- summernote -->
-  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
-  <link rel="stylesheet" href="../../plugins/summernote/summernote-bs4.min.css">
-</head>
-<body>
+<?php
+require_once '../inc/functions/connexion.php';
+
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
     
-    <?php
-    // Connexion à la base de données (à adapter avec vos informations)
-    require_once '../inc/functions/connexion.php';
-    include('header.php');
+    // Récupérer les informations de l'utilisateur
+    $stmt = $conn->prepare("SELECT * FROM utilisateurs WHERE id = ?");
+    $stmt->execute([$id]);
+    $utilisateur = $stmt->fetch();
+    
+    if (!$utilisateur) {
+        $_SESSION['popup'] = true;
+        $_SESSION['message'] = "Utilisateur non trouvé !";
+        $_SESSION['status'] = "error";
+        header('Location: utilisateurs.php');
+        exit;
+    }
+} else {
+    header('Location: utilisateurs.php');
+    exit;
+}
 
-    // Récupération de l'ID de la commande depuis l'URL (par exemple, edit_commande.php?id=1)
-    $id_utilisateur = $_GET['id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nom = $_POST['nom'];
+    $prenoms = $_POST['prenoms'];
+    $contact = $_POST['contact'];
+    $login = $_POST['login'];
+    $role = $_POST['role'];
+    
+    try {
+        $stmt = $conn->prepare("UPDATE utilisateurs SET nom = ?, prenoms = ?, contact = ?, login = ?, role = ?, updated_at = NOW() WHERE id = ?");
+        $stmt->execute([$nom, $prenoms, $contact, $login, $role, $id]);
+        
+        $_SESSION['popup'] = true;
+        $_SESSION['message'] = "L'utilisateur a été mis à jour avec succès !";
+        $_SESSION['status'] = "success";
+        header('Location: utilisateurs.php');
+        exit;
+        
+    } catch(PDOException $e) {
+        $_SESSION['popup'] = true;
+        $_SESSION['message'] = "Erreur lors de la mise à jour : " . $e->getMessage();
+        $_SESSION['status'] = "error";
+    }
+}
 
-    // Requête pour récupérer les anciennes valeurs de la commande
-    $sql = "SELECT * FROM utilisateurs WHERE utilisateur_id = :id_utilisateur";
-    $requete = $conn->prepare($sql);
-    $requete->bindParam(':id_utilisateur', $id_utilisateur, PDO::PARAM_INT);
-    $requete->execute();
-    $utilisateurs_modif = $requete->fetch(PDO::FETCH_ASSOC);
-    ?>
-  <form class="forms-sample" method="post" action="traitement_update_utilisateur.php">
-<div class="form-group">
-                                                <label for="exampleInputName1"></label>
-                                                <input type="hidden" class="form-control" id="exampleInputName1"
-                                                    placeholder="id" name="id" value="<?php echo $utilisateurs_modif['utilisateur_id']; ?>">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="exampleInputName1">Nom </label>
-                                                <input type="text" class="form-control" id="exampleInputName1"
-                                                    placeholder="Nom " name="nom" value="<?php echo $utilisateurs_modif['nom']; ?>">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="exampleInputEmail3">Prenom</label>
-                                                <input type="text" class="form-control" id="exampleInputEmail3"
-                                                    placeholder="Prenom" name="prenoms" value="<?php echo $utilisateurs_modif['prenom']; ?>">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="exampleInputPassword4">Email</label>
-                                                <input type="text" class="form-control" id="exampleInputPassword4"
-                                                    placeholder="Email" name="email" value="<?php echo $utilisateurs_modif['email']; ?>">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="exampleInputCity1">Contact</label>
-                                                <input type="text" class="form-control" id="exampleInputCity1"
-                                                    placeholder="Contact" name="contact" value="<?php echo $utilisateurs_modif['contact']; ?>">
-                                            </div>
-                                           
-                                            
-                                            
-                
-                                            <button type="submit" class="btn btn-success mr-2" name="updateClient">Enregister</button>
-                                            <button class="btn btn-light">Annuler</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                </div>
-                </form>
-                <script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
+// Inclure le header après toutes les redirections potentielles
+include('header.php');
+?>
 
+<div class="container mt-4">
+    <h2>Modifier l'utilisateur</h2>
+    <form action="" method="POST">
+        <div class="form-group">
+            <label for="nom">Nom</label>
+            <input type="text" class="form-control" id="nom" name="nom" value="<?= htmlspecialchars($utilisateur['nom']) ?>" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="prenoms">Prénoms</label>
+            <input type="text" class="form-control" id="prenoms" name="prenoms" value="<?= htmlspecialchars($utilisateur['prenoms']) ?>" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="contact">Contact</label>
+            <input type="text" class="form-control" id="contact" name="contact" value="<?= htmlspecialchars($utilisateur['contact']) ?>" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Login</label>
+            <input type="text" name="login" class="form-control" value="<?= htmlspecialchars($utilisateur['login']) ?>" readonly style="background-color: #e9ecef;">
+        </div>
+        
+        <div class="form-group">
+            <label for="role">Rôle</label>
+            <select class="form-control" id="role" name="role" required>
+                <option value="admin" <?= $utilisateur['role'] == 'admin' ? 'selected' : '' ?>>Administrateur</option>
+                <option value="operateur" <?= $utilisateur['role'] == 'operateur' ? 'selected' : '' ?>>Opérateur</option>
+                <option value="validateur" <?= $utilisateur['role'] == 'validateur' ? 'selected' : '' ?>>Validateur</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Date de création: <?= date('d/m/Y', strtotime($utilisateur['created_at'])) ?></label>
+        </div>
+        
+        <?php if ($utilisateur['updated_at']): ?>
+        <div class="form-group">
+            <label>Dernière modification: <?= date('d/m/Y', strtotime($utilisateur['updated_at'])) ?></label>
+        </div>
+        <?php endif; ?>
+        
+        <button type="submit" class="btn btn-primary">Mettre à jour</button>
+        <a href="utilisateurs.php" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+
+<!-- ./wrapper -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<!-- jQuery -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="../../plugins/jquery-ui/jquery-ui.min.js"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<!-- <script>
+  $.widget.bridge('uibutton', $.ui.button)
+</script>-->
+<!-- Bootstrap 4 -->
 <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- ChartJS -->
 <script src="../../plugins/chart.js/Chart.min.js"></script>
@@ -102,6 +130,7 @@
 <script src="../../plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 <!-- AdminLTE App -->
 <script src="../../dist/js/adminlte.js"></script>
+<!-- JavaScript -->
 <?php 
 
 if(isset($_SESSION['popup']) && $_SESSION['popup'] ==  true) {
@@ -116,7 +145,7 @@ if(isset($_SESSION['popup']) && $_SESSION['popup'] ==  true) {
 
   Toast.fire({
         icon: 'success',
-        title: 'Action effectuée avec succès.'
+        title: 'Utilisateur crée.'
       })
 </script>
 
@@ -124,5 +153,66 @@ if(isset($_SESSION['popup']) && $_SESSION['popup'] ==  true) {
   $_SESSION['popup'] = false;
 }
   ?>
+
+
+<!------- Delete Pop--->
+<?php 
+
+if(isset($_SESSION['delete_pop']) && $_SESSION['delete_pop'] ==  true) {
+  ?>
+<script>
+  var Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      });
+
+  Toast.fire({
+        icon: 'error',
+        title: 'Utilisateur non crée.'
+      })
+</script>
+
+<?php 
+  $_SESSION['delete_pop'] = false;
+}
+  ?>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<!--<script src="dist/js/pages/dashboard.js"></script>-->
+<script>
+    $(document).ready(function() {
+        // Pour l'ajout d'utilisateur
+        $('#add-client form').on('submit', function() {
+            $('#loadingModal').modal('show');
+        });
+
+        // Pour la suppression
+        $('.trash').on('click', function(e) {
+            e.preventDefault();
+            var deleteUrl = $(this).attr('href');
+            
+            if(confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+                $('#loadingModal').modal('show');
+                setTimeout(function() {
+                    window.location.href = deleteUrl;
+                }, 1000);
+            }
+        });
+    });
+</script>
+<script>
+  function showLoading() {
+    $('#loadingModal').modal('show');
+  }
+</script>
+<script>
+function confirmDelete(id) {
+    if(confirm('Voulez-vous vraiment supprimer cet utilisateur ?')) {
+        window.location.href = 'delete_utilisateurs.php?id=' + id;
+    }
+    return false;
+}
+</script>
 </body>
 </html>

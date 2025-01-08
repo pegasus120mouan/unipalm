@@ -35,13 +35,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           
               switch ($user['role']) {
                   case 'admin':
-                    header("location: ../pages/commandes.php");
+                    header("location: ../pages/tickets.php");
                       break;
-                  case 'livreur':
-                    header("location: ../livreurs_dashboard/livreur_dashboard.php");
+                  case 'operateur':
+                    header("location: ../operateurs/tickets.php");
+                      break;
+                  case 'validateur':
+                    header("location: ../validateur/tickets.php");
                       break;
                   default:
-                      header('Location: ../dashboard/clients_dashboard.php');
+                      header('Location: ../caisse/tickets.php');
                       break;
               }
               exit(0);

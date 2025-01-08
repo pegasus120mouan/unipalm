@@ -5,47 +5,33 @@ setlocale(LC_TIME, 'fr_FR.utf8', 'fra');  // Force la configuration en français
 
 require_once '../inc/functions/connexion.php';
 
-
-$sql_cg = "SELECT SUM(cout_global) AS total_cout_global
-        FROM commandes
-        WHERE statut = 'Livré' AND date_commande >= DATE_FORMAT(NOW(), '%Y-%m-01')";
-$requAdmin = $conn->prepare($sql_cg);
-$requAdmin->execute();
-$header_calcul = $requAdmin->fetch(PDO::FETCH_ASSOC);
+// Nombre de ticket Total
+$sql_ticket_total = "SELECT COUNT(id_ticket) AS nb_ticket_tt FROM tickets";
+$requete_tt = $conn->prepare($sql_ticket_total);
+$requete_tt->execute();
+$ticket_total = $requete_tt->fetch(PDO::FETCH_ASSOC);
 
 
-// Coût réel livraisons
-$sql_cr = "SELECT SUM(cout_reel) AS total_cout_reel
-        FROM commandes
-        WHERE statut = 'Livré' AND date_commande >= DATE_FORMAT(NOW(), '%Y-%m-01')";
-
-$requete_cr = $conn->prepare($sql_cr);
-$requete_cr->execute();
-$header_calcul_cr = $requete_cr->fetch(PDO::FETCH_ASSOC);
+// Nombre de ticket en attente
+$sql_ticket_nv = "SELECT COUNT(id_ticket) AS nb_ticket_nv FROM tickets WHERE prix_unitaire =0.0";
+$requete_tnv = $conn->prepare($sql_ticket_nv);
+$requete_tnv->execute();
+$ticket_non_valide = $requete_tnv->fetch(PDO::FETCH_ASSOC);
 
 
-// Coût livraisons
-/*$sql_cl = "SELECT SUM(cout_livraison) AS total_cout_livraison
-        FROM commandes
-        WHERE statut = 'Livré' AND date_commande >= DATE_FORMAT(NOW(), '%Y-%m-01')";*/
-
-$sql_cl = "SELECT SUM(gain_jour) AS total_cout_livraison
-        FROM points_livreurs
-        WHERE date_commande >= DATE_FORMAT(NOW(), '%Y-%m-01')";
-
-$requete_cl = $conn->prepare($sql_cl);
-$requete_cl->execute();
-$header_calcul_cl = $requete_cl->fetch(PDO::FETCH_ASSOC);
+// Nombre de tickets validés
+$sql_ticket_v = "SELECT COUNT(id_ticket) AS nb_ticket_nv FROM tickets
+WHERE prix_unitaire IS NOT NULL AND prix_unitaire != 0.00";
+$requete_tv = $conn->prepare($sql_ticket_v);
+$requete_tv->execute();
+$ticket_valide = $requete_tv->fetch(PDO::FETCH_ASSOC);
 
 
-// Nombre de colis livrés
-$sql_colis = "SELECT COUNT(*) AS total_delivered_packages
-FROM commandes
-WHERE statut = 'Livré' AND date_commande >= DATE_FORMAT(NOW(), '%Y-%m-01')";
-
-$requete_colis = $conn->prepare($sql_colis);
-$requete_colis->execute();
-$header_calcul_nb = $requete_colis->fetch(PDO::FETCH_ASSOC);
+// Nombre de colis tickés payes
+$sql_ticket_paye = "SELECT COUNT(id_ticket) AS nb_ticket_paye FROM tickets WHERE date_paie IS NULL AND prix_unitaire !=0.0";
+$requete_tpaye = $conn->prepare($sql_ticket_paye);
+$requete_tpaye->execute();
+$ticket_paye = $requete_tpaye->fetch(PDO::FETCH_ASSOC);
 
 
 
@@ -141,7 +127,7 @@ if (!isset($_SESSION['user_id'])) {
           <a href="dashboard.php" class="nav-link">Acceuil</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-          <a href="commandes.php" class="nav-link">Les commandes</a>
+          <a href="tickets.php" class="nav-link">Les Tickets</a>
         </li>
       </ul>
 
@@ -202,8 +188,8 @@ if (!isset($_SESSION['user_id'])) {
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" data-widget="control-sidebar" data-controlsidebar-slide="true" href="#" role="button">
-            <i class="fas fa-th-large"></i>
+          <a class="nav-link text-danger" href="../logout.php" role="button">
+            <i class="fas fa-power-off fa-lg"></i> <!-- Ajout de fa-lg pour une taille plus grande -->
           </a>
         </li>
       </ul>
@@ -213,10 +199,10 @@ if (!isset($_SESSION['user_id'])) {
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
-      <a href="commandes.php" class="brand-link">
-        <img src="../../dist/img/logo.png" alt="OVL Delivery Services" class="brand-image img-circle elevation-3"
+      <a href="tickets.php" class="brand-link">
+        <img src="../../dist/img/logo.png" alt="Unipalm" class="brand-image img-circle elevation-3"
           style="opacity: .8">
-        <span class="brand-text font-weight-light">OVL Delivery Services</span>
+        <span class="brand-text font-weight-light">Unipalm</span>
       </a>
 
       <!-- Sidebar -->
@@ -253,131 +239,55 @@ if (!isset($_SESSION['user_id'])) {
               <a href="#" class="nav-link active">
                 <i class="nav-icon fas fa-tachometer-alt"></i>
                 <p>
-                  Mes tableaux de bords
+                  Mes tickets
                   <i class="right fas fa-angle-left"></i>
                 </p>
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="dashboard.php" class="nav-link active">
-                    <i class="fas fa-motorcycle"></i>
-                    <p>Bilan aujourd'hui</p>
+                  <a href="tickets.php" class="nav-link active">
+                  <i class="fas fa-ticket-alt"></i>
+                    <p>Liste des tickets</p>
                   </a>
                 </li>
+
+
                 <li class="nav-item">
-                  <a href="vuegeneral.php" class="nav-link">
-                    <i class="fas fa-bicycle"></i>
-                    <p>Bilan Hier</p>
+                  <a href="tickets_jour.php" class="nav-link">
+                  <i class="fas fa-calendar-day"></i>
+                    <p>Tickets du jour</p>
                   </a>
                 </li>
-              </ul>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fas fa-money-bill-wave-alt"></i>
-                <p>
-                  Points de livraisons
-                  <i class="fas fa-angle-left right"></i>
-                  <span class="badge badge-info right">6</span>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
+
                 <li class="nav-item">
-                  <a href="point_client.php" class="nav-link">
-                    <i class="fas fa-balance-scale"></i>
-                    <p>Points par clients</p>
+                  <a href="tickets_attente.php" class="nav-link">
+                  <i class="fas fa-clock"></i>
+                    <p>Tickets en Attente</p>
                   </a>
                 </li>
-                <li class="nav-item">
-                  <a href="point_livraison.php" class="nav-link">
-                    <i class="fas fa-wallet"></i>
-                    <p>Points des Livreurs</p>
-                  </a>
-                </li>
+
+
                  <li class="nav-item">
-                  <a href="liste_montants.php" class="nav-link">
-                    <i class="fas fa-list"></i>
-                    <p>Liste des montants</p>
+                  <a href="tickets_valides.php" class="nav-link">
+                  <i class="fas fa-check-circle"></i>
+                    <p>Tickets en Validés</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="tickets_payes.php" class="nav-link">
+                  <i class="fas fa-money-bill-wave"></i>
+                    <p>Tickets Payés</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="tickets_modifications.php" class="nav-link">
+                  <i class="fas fa-edit"></i>
+                    <p>Modifications de tickets</p>
                   </a>
                 </li>
               </ul>
             </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-chart-pie"></i>
-                <p>
-                  Commandes
-                  <i class="right fas fa-angle-left"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="commandes.php" class="nav-link">
-                    <i class="fas fa-clone"></i>
-                    <p>Liste des commandes</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="commandes_livrees.php" class="nav-link">
-                    <i class="far fa-clone"></i>
-                    <p>Commandes Livrées</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="commandes_non_livrees.php" class="nav-link">
-                    <i class="fas fa-file"></i>
-                    <p>Commandes non livrées</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fas fa-male"></i>
-                <p>
-                  Clients
-                  <i class="fas fa-angle-left right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="clients.php" class="nav-link">
-                    <i class="fas fa-user-alt"></i>
-                    <p>Liste des clients</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="pages/UI/general.html" class="nav-link">
-                    <i class="fas fa-user-tie"></i>
-                    <p>Particulier</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fas fa-taxi"></i>
-              
-                <p>
-                  Engins
-                  <i class="fas fa-angle-left right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="listes_engins.php" class="nav-link">
-                    <i class="fas fa-bicycle"></i>
-                    <p>Listes des engins</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="contrats.php" class="nav-link">
-                    <i class="fas fa-folder-open"></i>
-                    <p>Contrats</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
+
             <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-table"></i>
@@ -388,9 +298,9 @@ if (!isset($_SESSION['user_id'])) {
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="liste_livreurs.php" class="nav-link">
+                  <a href="utilisateurs.php" class="nav-link">
                     <i class="fas fa-male	"></i>
-                    <p>Listes des livreurs</p>
+                    <p>Listes des utilisateurs</p>
                   </a>
                 </li>
                 <li class="nav-item">
@@ -407,14 +317,45 @@ if (!isset($_SESSION['user_id'])) {
                   </a>
                 </li>
 
+                <li class="nav-item">
+                  <a href="gestion_access.php" class="nav-link">
+                  <i class="fas fa-car"></i>
+                    <p>Gestion des véhicules</p>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="gestion_access.php" class="nav-link">
+                  <i class="fas fa-industry"></i>
+                    <p>Gestion des usines</p>
+                  </a>
+                </li>
+
 
               </ul>
             </li>
              <li class="nav-item">
-              <a href="cout_livraison.php" class="nav-link">
-                <i class="nav-icon far fa-calendar-alt"></i>
+              <a href="chef_equipe.php" class="nav-link">
+              <i class="fas fa-users"></i>
                 <p>
-                  Coût Livraison
+                  Gestions chef equipe
+                </p>
+              </a>
+             </li>
+              <li class="nav-item">
+              <a href="agents.php" class="nav-link">
+              <i class="fas fa-users"></i>
+                <p>
+                  Gestions des agents
+                </p>
+              </a>
+             </li>
+
+             <li class="nav-item">
+              <a href="usines.php" class="nav-link">
+              <i class="fas fa-industry"></i>
+                <p>
+                  Gestions des usines
                 </p>
               </a>
              </li>
@@ -423,179 +364,24 @@ if (!isset($_SESSION['user_id'])) {
 
 
 
-          <li class="nav-header"><strong>GESTION CAISSE</strong></li>
+          <li class="nav-header"><strong>APPROVISIONNEMENT</strong></li>
              <li class="nav-item">
-              <a href="analytics/vuegenerale_soldes.php" class="nav-link">
-                <i class="nav-icon far fa-calendar-alt"></i>
+              <a href="approvisionnement.php" class="nav-link">
+              <i class="fas fa-truck-loading"></i>
                 <p>
-                  Soldes
+                  Approvisionnement
                   <span class="badge badge-info right">2</span>
                 </p>
               </a>
              </li>
             <li class="nav-item">
-              <a href="analytics/vue_gestion_caisse.php" class="nav-link">
-                <i class="nav-icon far fa-image"></i>
+              <a href="paiements.php" class="nav-link">
+              <i class="fas fa-cash-register"></i>
                 <p>
-                  Caisse
+                  Paiements
                 </p>
               </a>
             </li>
-
-
-                        <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-chart-pie"></i>
-                <p>
-                  Points des dépots
-                  <i class="right fas fa-angle-left"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="listes_des_depots.php" class="nav-link">
-                    <i class="fas fa-clone"></i>
-                    <p>Liste des dépots</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="commandes_livrees.php" class="nav-link">
-                    <i class="far fa-clone"></i>
-                    <p>Commandes Livrées</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="commandes_non_livrees.php" class="nav-link">
-                    <i class="fas fa-file"></i>
-                    <p>Commandes non livrées</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-
-            <li class="nav-item">
-              <a href="analytics/vue_gestion_caisse.php" class="nav-link">
-                <i class="nav-icon far fa-image"></i>
-                <p>
-                  Caisse
-                </p>
-              </a>
-            </li>
-
-              <li class="nav-item">
-              <a href="analytics/vue_ovl_statisques.php" class="nav-link">
-                <i class="nav-icon fas fa-balance-scale"></i>
-                <p>
-                 <strong>Mes statisques</strong>
-                </p>
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a href="dettes.php" class="nav-link">
-                <i class='fas fa-coins'></i>
-                <p>
-                  Dettes
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="imprevus.php" class="nav-link">
-                <i class='fas fa-question-circle'></i>
-                <p>
-                  Imprevus
-                </p>
-              </a>
-           </li>
-
-           <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fa fa-camera-retro"></i>
-                <p>
-                  Banners
-                  <i class="fas fa-angle-left right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="banner_admin.php" class="nav-link">
-                   <i class="fa fa-solid fa-camera"></i>
-                    <p>Banner Administrateur</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="livreurs_analytics.php" class="nav-link">
-                    <i class="fa fa-solid fa-image"></i>
-                    <p>Livreurs</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="gestion_caisse.php" class="nav-link">
-                    <i class="fa fa-pie-chart"></i>
-                    <p>Caisse</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-
-
-
-
-
-
-
-
-           <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fa fa-area-chart"></i>
-                <p>
-                  Analytics
-                  <i class="fas fa-angle-left right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="clients_analytics.php" class="nav-link">
-                    <i class="fa fa-bar-chart"></i>
-                    <p>Clients</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="livreurs_analytics.php" class="nav-link">
-                    <i class="fa fa-line-chart"></i>
-                    <p>Livreurs</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="gestion_caisse.php" class="nav-link">
-                    <i class="fa fa-pie-chart"></i>
-                    <p>OVL</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-            
-              <li class="nav-item">
-              <a href="geolocalisation.php" class="nav-link">
-              <i class="fa fa-map-marker"></i>
-
-                <p>
-                  Géolocalisation
-                </p>
-              </a>
-           </li>
-
-            <li class="nav-item">
-              <a href="../logout.php" class="nav-link">
-              <i class="fa fa-arrow-right"></i>
-
-                <p>
-                  Déconnexion
-                </p>
-              </a>
-           </li>
 
           </ul>
         </nav>
@@ -633,10 +419,9 @@ if (!isset($_SESSION['user_id'])) {
               <!-- small box -->
               <div class="small-box bg-info">
                 <div class="inner">
-                  <h3><?php echo $header_calcul['total_cout_global'];   ?>
-                  <span class="right badge badge-dark">CFA</span>
+                  <h3><?php echo $ticket_total['nb_ticket_tt'];   ?>
                 </h3>
-                <p>Montant Global de <strong><?php echo ucfirst(strftime('%B')); ?></strong></p>
+                <p>Nombre ticket Total</strong></p>
 
                 </div>
               </div>
@@ -645,12 +430,12 @@ if (!isset($_SESSION['user_id'])) {
             <!-- ./col -->
             <div class="col-lg-3 col-6">
               <!-- small box -->
-              <div class="small-box bg-success">
+              <div class="small-box bg-danger">
                 <div class="inner">
-                <h3><?php echo $header_calcul_cr['total_cout_reel'];?>
-                <span class="right badge badge-dark">CFA</span>
+                <h3><?php echo $ticket_non_valide['nb_ticket_nv'];?>
+
                </h3>
-               <p>Montant clients de <strong><?php echo ucfirst(strftime('%B')); ?></strong></p>
+               <p>Nombre de tickets en <strong>attente</strong></p>
                 </div>
               </div>
             </div>
@@ -659,10 +444,9 @@ if (!isset($_SESSION['user_id'])) {
               <!-- small box -->
               <div class="small-box bg-warning">
                 <div class="inner">
-                <h3><?php echo $header_calcul_cl['total_cout_livraison'];?>
-                <span class="right badge badge-dark">CFA</span>
+                <h3><?php echo $ticket_valide['nb_ticket_nv'];?>
                 </h3>
-                <p>Gain <strong><?php echo ucfirst(strftime('%B')); ?></strong></p>
+                <p>Total tickets <strong>validés</strong></p>
 
                 </div>
                  </div>
@@ -672,9 +456,9 @@ if (!isset($_SESSION['user_id'])) {
               <!-- small box -->
               <div class="small-box bg-danger">
                 <div class="inner">
-                 <h3><?php echo $header_calcul_nb['total_delivered_packages'];?>
+                 <h3><?php echo $ticket_paye['nb_ticket_paye'];?>
                 </h3>
-                <p>Nbre de colis livrés en <strong><?php echo ucfirst(strftime('%B')); ?></strong></p>
+                <p>Nombre de ticket <strong>VALIDES et non payés</strong></p>
                 </div>
               </div>
             </div>
