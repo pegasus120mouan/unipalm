@@ -56,7 +56,7 @@ if (!isset($_SESSION['user_id'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tableau de bord</title>
+  <title>Tableau de bord1</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="icon" href="../dist/img/logo.png" type="image/x-icon">
@@ -397,7 +397,7 @@ if (!isset($_SESSION['user_id'])) {
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <h1 class="m-0">Tableau de bord</h1>
+              <h1 class="m-0">Tableau de bord1</h1>
             </div><!-- /.col -->
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-right">
