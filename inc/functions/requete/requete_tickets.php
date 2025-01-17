@@ -390,4 +390,37 @@ function searchTickets($conn, $usine = null, $date = null, $chauffeur = null, $a
     
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+function searchTicketsByDateRange($conn, $date_debut, $date_fin) {
+    $stmt = $conn->prepare(
+        "SELECT 
+            t.*,
+            CONCAT(u.nom, ' ', u.prenoms) AS utilisateur_nom_complet,
+            u.contact AS utilisateur_contact,
+            u.role AS utilisateur_role,
+            v.matricule_vehicule,
+            CONCAT(a.nom, ' ', a.prenom) AS agent_nom_complet,
+            us.nom_usine
+        FROM 
+            tickets t
+        INNER JOIN 
+            utilisateurs u ON t.id_utilisateur = u.id
+        INNER JOIN 
+            vehicules v ON t.vehicule_id = v.vehicules_id
+        INNER JOIN 
+            agents a ON t.id_agent = a.id_agent
+        INNER JOIN 
+            usines us ON t.id_usine = us.id_usine
+        WHERE 
+            DATE(t.date_ticket) BETWEEN :date_debut AND :date_fin
+        ORDER BY 
+            t.date_ticket DESC"
+    );
+    
+    $stmt->bindParam(':date_debut', $date_debut);
+    $stmt->bindParam(':date_fin', $date_fin);
+    $stmt->execute();
+    
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>

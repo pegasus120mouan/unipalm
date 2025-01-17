@@ -158,7 +158,7 @@ label {
     </button>
 
     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#search_ticket">
-      <i class="fa fa-search"></i> Recherche un ticket
+      <i class="fa fa-search"></i> Rechercher un ticket
     </button>
 
     <button type="button" class="btn btn-dark" onclick="window.location.href='export_tickets.php'">
@@ -553,7 +553,7 @@ label {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fas fa-search mr-2"></i>Rechercher des tickets
+                    <i class="fas fa-search mr-2"></i>Rechercher un ticket
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -571,6 +571,10 @@ label {
                     
                     <button type="button" class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#searchByDateModal" data-dismiss="modal">
                         <i class="fas fa-calendar-alt mr-2"></i>Recherche par Date
+                    </button>
+
+                    <button type="button" class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#searchByBetweendateModal" data-dismiss="modal">
+                        <i class="fas fa-calendar-alt mr-2"></i>Recherche entre 2 dates
                     </button>
                     
                     <button type="button" class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#searchByVehiculeModal" data-dismiss="modal">
@@ -683,6 +687,37 @@ label {
     </div>
 </div>
 
+<div class="modal fade" id="searchByBetweendateModal" tabindex="-1" role="dialog" aria-labelledby="searchByDateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="searchByBetweendateModalLabel">
+                    <i class="fas fa-calendar-alt mr-2"></i>Recherche entre 2 dates
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="searchByBetweendateForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="date_debut">Sélectionner date Début</label>
+                        <input type="date" class="form-control" id="date_debut" name="date_debut" placeholder="date debut" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date_fin">Sélectionner date de Fin</label>
+                        <input type="date" class="form-control" id="date_fin" name="date_fin" placeholder="date fin" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Rechercher</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Recherche par Véhicule -->
 <div class="modal fade" id="searchByVehiculeModal" tabindex="-1" role="dialog" aria-labelledby="searchByVehiculeModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -743,6 +778,16 @@ document.getElementById('searchByVehiculeForm').addEventListener('submit', funct
     const vehiculeId = document.getElementById('chauffeur').value;
     if (vehiculeId) {
         window.location.href = 'tickets.php?chauffeur=' + vehiculeId;
+    }
+});
+
+// Gestionnaire pour le formulaire de recherche entre deux dates
+document.getElementById('searchByBetweendateForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const date_debut = document.getElementById('date_debut').value;
+    const date_fin = document.getElementById('date_fin').value;
+    if (date_debut && date_fin) {
+        window.location.href = 'tickets.php?date_debut=' + date_debut + '&date_fin=' + date_fin;
     }
 });
 </script>
