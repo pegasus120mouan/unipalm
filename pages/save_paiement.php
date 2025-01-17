@@ -54,75 +54,27 @@ if (isset($_POST['save_paiement'])) {
             if ($stmtUpdate->execute()) {
                 // Validation de la transaction
                 $conn->commit();
-                $_SESSION['success'] = true;
-                ?>
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Mise à jour des données</title>
-                    <style>
-                        .table-loader {
-                            position: fixed;
-                            top: 0;
-                            left: 0;
-                            width: 100%;
-                            height: 100%;
-                            background: rgba(255, 255, 255, 0.8);
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            flex-direction: column;
-                        }
-                        .spinner {
-                            border: 4px solid #f3f3f3;
-                            border-radius: 50%;
-                            border-top: 4px solid #3498db;
-                            width: 40px;
-                            height: 40px;
-                            animation: spin 1s linear infinite;
-                            margin-bottom: 10px;
-                        }
-                        @keyframes spin {
-                            0% { transform: rotate(0deg); }
-                            100% { transform: rotate(360deg); }
-                        }
-                        .update-text {
-                            font-size: 18px;
-                            color: #333;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="table-loader">
-                        <div class="spinner"></div>
-                        <div class="update-text">Mise à jour des données...</div>
-                    </div>
-                    <script>
-                        setTimeout(function() {
-                            window.location.href = 'paiements.php';
-                        }, 3000);
-                    </script>
-                </body>
-                </html>
-                <?php
+                $_SESSION['popup'] = true;
+                $filter = isset($_POST['filter']) ? '?filter=' . $_POST['filter'] : '';
+                header('Location: paiements.php' . $filter);
                 exit();
             } else {
-                $conn->rollBack();
-                $_SESSION['error'] = "Erreur : la mise à jour du ticket a échoué.";
-                header('Location: paiements.php');
-                exit();
+                throw new PDOException("Erreur lors de la mise à jour du ticket");
             }
         } else {
-            $conn->rollBack();
-            $_SESSION['error'] = "Erreur : l'insertion dans les transactions a échoué.";
-            header('Location: paiements.php');
-            exit();
+            throw new PDOException("Erreur lors de l'enregistrement de la transaction");
         }
     } catch (PDOException $e) {
         $conn->rollBack();
         $_SESSION['error'] = "Erreur : " . $e->getMessage();
-        header('Location: paiements.php');
+        $filter = isset($_POST['filter']) ? '?filter=' . $_POST['filter'] : '';
+        header('Location: paiements.php' . $filter);
         exit();
     }
 }
+
+// Redirection par défaut si aucune action n'est effectuée
+$filter = isset($_POST['filter']) ? '?filter=' . $_POST['filter'] : '';
+header('Location: paiements.php' . $filter);
+exit();
 ?>

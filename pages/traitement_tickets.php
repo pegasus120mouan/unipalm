@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Validation des données
         if (!$id_usine || !$date_ticket || !$id_agent || !$numero_ticket || !$vehicule_id || !$poids || !$id_utilisateur) {
             $_SESSION['delete_pop'] = true; // Message d'erreur
-            header('Location: tickets.php');
+            header('Location: ' . ($_POST['redirect'] ?? 'tickets.php'));
             exit;
         }
 
@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             error_log("Erreur lors de l'enregistrement du ticket : " . $e->getMessage());
             $_SESSION['delete_pop'] = true; // Message d'erreur
         }
-        header('Location: tickets.php');
+        header('Location: ' . ($_POST['redirect'] ?? 'tickets.php'));
         exit;
     } elseif (isset($_POST["id_ticket"]) && isset($_POST["prix_unitaire"])) {
         // Traitement des données supplémentaires
@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Validation des données
         if (!$id_ticket || !$prix_unitaire) {
             $_SESSION['delete_pop'] = true; // Message d'erreur
-            header('Location: tickets.php');
+            header('Location: ' . ($_POST['redirect'] ?? 'tickets.php'));
             exit;
         }
 
@@ -65,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Redirection
-        header('Location: tickets.php');
+        header('Location: ' . ($_POST['redirect'] ?? 'tickets.php'));
         exit;
     }
 
@@ -77,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($ticket['date_paie'] !== null) {
             $_SESSION['delete_pop'] = true;
-            header('Location: tickets_modifications.php');
+            header('Location: ' . ($_POST['redirect'] ?? 'tickets_modifications.php'));
             exit;
         }
     }
@@ -94,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } catch (PDOException $e) {
             $_SESSION['delete_pop'] = true;
         }
-        header('Location: tickets_modifications.php');
+        header('Location: ' . ($_POST['redirect'] ?? 'tickets_modifications.php'));
         exit;
     }
 
@@ -110,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } catch (PDOException $e) {
             $_SESSION['delete_pop'] = true;
         }
-        header('Location: tickets_modifications.php');
+        header('Location: ' . ($_POST['redirect'] ?? 'tickets_modifications.php'));
         exit;
     }
 
@@ -123,16 +123,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = $conn->prepare("UPDATE tickets SET vehicule_id = ? WHERE id_ticket = ?");
             $stmt->execute([$id_vehicule, $id_ticket]);
             $_SESSION['popup'] = true;
-            header('Location: tickets_modifications.php');
+            header('Location: ' . ($_POST['redirect'] ?? 'tickets_modifications.php'));
         } catch (PDOException $e) {
             $_SESSION['delete_pop'] = true;
             error_log("Erreur lors de la mise à jour du véhicule : " . $e->getMessage());
-            header('Location: tickets_modifications.php');
+            header('Location: ' . ($_POST['redirect'] ?? 'tickets_modifications.php'));
         }
         exit;
     }
 }
 
-header('Location: tickets_modifications.php');
+header('Location: ' . ($_POST['redirect'] ?? 'tickets_modifications.php'));
 exit;
 ?>

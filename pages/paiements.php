@@ -3,21 +3,82 @@ require_once '../inc/functions/connexion.php';
 require_once '../inc/functions/requete/requete_tickets.php';
 include('header.php');
 
-
-$id_user=$_SESSION['user_id'];
+// Récupérer l'ID de l'utilisateur
+$id_user = $_SESSION['user_id'];
 
 // Déterminer quels tickets afficher en fonction du filtre
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 
+// Pagination pour les tickets
+$limit = $_GET['limit'] ?? 15;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+// Récupérer tous les tickets validés (prix_unitaire != 0)
+$stmt = $conn->prepare(
+    "SELECT 
+        t.id_ticket,
+        t.date_ticket,
+        t.numero_ticket,
+        t.poids,
+        t.prix_unitaire,
+        t.date_validation_boss,
+        t.montant_paie,
+        t.montant_payer,
+        t.montant_reste,
+        t.date_paie,
+        CONCAT(u.nom, ' ', u.prenoms) AS utilisateur_nom_complet,
+        u.contact AS utilisateur_contact,
+        u.role AS utilisateur_role,
+        v.matricule_vehicule,
+        CONCAT(a.nom, ' ', a.prenom) AS agent_nom_complet,
+        us.nom_usine
+    FROM 
+        tickets t
+    INNER JOIN 
+        utilisateurs u ON t.id_utilisateur = u.id
+    INNER JOIN 
+        vehicules v ON t.vehicule_id = v.vehicules_id
+    INNER JOIN 
+        agents a ON t.id_agent = a.id_agent
+    INNER JOIN 
+        usines us ON t.id_usine = us.id_usine
+    WHERE 
+        t.prix_unitaire != 0.00
+    ORDER BY 
+        CASE 
+            WHEN t.montant_payer IS NULL OR t.montant_reste > 0 THEN 1
+            ELSE 2
+        END,
+        t.date_validation_boss DESC"
+);
+
+$stmt->execute();
+$all_tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Filtrer les tickets selon le filtre sélectionné
 if ($filter === 'non_soldes') {
-    $tickets = getTicketsNonSoldes($conn);
+    $all_tickets = array_filter($all_tickets, function($ticket) {
+        return !isset($ticket['montant_payer']) || 
+               $ticket['montant_payer'] === null || 
+               ($ticket['montant_paie'] - $ticket['montant_payer']) > 0;
+    });
 } elseif ($filter === 'soldes') {
-    $tickets = getTicketsSoldes($conn);
-} else {
-    $tickets = getTicketsValides($conn);
+    $all_tickets = array_filter($all_tickets, function($ticket) {
+        return isset($ticket['montant_payer']) && 
+               $ticket['montant_payer'] !== null && 
+               ($ticket['montant_paie'] - $ticket['montant_payer']) <= 0;
+    });
 }
 
-//echo $id_user;
+// Calculer la pagination
+$total_tickets = count($all_tickets);
+$total_pages = ceil($total_tickets / $limit);
+$page = max(1, min($page, $total_pages));
+$offset = ($page - 1) * $limit;
+
+// Extraire les tickets pour la page courante
+$tickets = array_slice($all_tickets, $offset, $limit);
+
 // Get total cash balance
 $getSommeCaisseQuery = "SELECT
     SUM(CASE WHEN type_transaction = 'approvisionnement' THEN montant
@@ -28,9 +89,6 @@ $getSommeCaisseQueryStmt = $conn->query($getSommeCaisseQuery);
 $somme_caisse = $getSommeCaisseQueryStmt->fetch(PDO::FETCH_ASSOC);
 
 // Get all transactions with pagination
-$limit = $_GET['limit'] ?? 15;
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-
 $getTransactionsQuery = "SELECT t.*, 
        CONCAT(u.nom, ' ', u.prenoms) AS nom_utilisateur
 FROM transactions t
@@ -143,45 +201,57 @@ label {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($tickets as $ticket) : ?>
+                        <?php if (!empty($tickets)) : ?>
+                            <?php foreach ($tickets as $ticket) : ?>
+                                <tr>
+                                    <td><?= date('d/m/Y', strtotime($ticket['date_ticket'])) ?></td>
+                                    <td><?= $ticket['numero_ticket'] ?></td>
+                                    <td><?= $ticket['nom_usine'] ?></td>
+                                    <td><?= $ticket['agent_nom_complet'] ?></td>
+                                    <td><?= $ticket['matricule_vehicule'] ?></td>
+                                    <td><?= number_format($ticket['poids'], 0, ',', ' ') ?></td>
+                                    <td><?= number_format($ticket['montant_paie'], 0, ',', ' ') ?> FCFA</td>
+                                    <td><?= !isset($ticket['montant_payer']) || $ticket['montant_payer'] === null ? '0 FCFA' : number_format($ticket['montant_payer'], 0, ',', ' ') . ' FCFA' ?></td>
+                                    <td><?= number_format($ticket['montant_paie'] - (!isset($ticket['montant_payer']) || $ticket['montant_payer'] === null ? 0 : $ticket['montant_payer']), 0, ',', ' ') ?> FCFA</td>
+                                    <td><?= $ticket['date_validation_boss'] ? date('d/m/Y', strtotime($ticket['date_validation_boss'])) : '-' ?></td>
+                                    <td>                
+                                        <?php 
+                                        $montant_reste = $ticket['montant_paie'] - (!isset($ticket['montant_payer']) || $ticket['montant_payer'] === null ? 0 : $ticket['montant_payer']);
+                                        if ($ticket['montant_paie'] <= 0): ?>
+                                            <button type="button" class="btn btn-warning" disabled>
+                                                <i class="fas fa-exclamation-circle"></i> En attente de validation
+                                            </button>
+                                        <?php elseif ($montant_reste <= 0): ?>
+                                            <button type="button" class="btn btn-success" disabled>
+                                                <i class="fas fa-check-circle"></i> Ticket soldé
+                                            </button>
+                                        <?php else: ?>
+                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#payer_ticket<?= $ticket['id_ticket'] ?>">
+                                                <i class="fas fa-money-bill-wave"></i> Effectuer le paiement
+                                            </button>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
                             <tr>
-                            <td><?= $ticket['date_ticket'] ?></td>
-                    <td><?= $ticket['numero_ticket'] ?></td>
-                    <td><?= $ticket['nom_usine'] ?></td>
-                    <td><?= $ticket['agent_nom_complet'] ?></td>
-                    <td><?= $ticket['matricule_vehicule'] ?></td>
-                    <td><?= $ticket['poids'] ?></td>
-                    <td><?= $ticket['montant_paie'] ?></td>
-                    <td><?= $ticket['montant_payer'] ?? '0' ?></td>
-                    <td><?= $ticket['montant_reste'] ?? $ticket['montant_paie'] ?></td>
-                    <td><?= $ticket['date_validation_boss'] ?></td>
-                    <td>                
-                    <?php if ($ticket['montant_reste'] == 0): ?>
-                        <button type="button" class="btn btn-secondary" disabled>
-                            <i class="fas fa-check"></i> Ticket soldé
-                        </button>
-                    <?php else: ?>
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#payer_ticket<?= $ticket['id_ticket'] ?>" 
-                                onclick="setTicketDetails('<?= $ticket['id_ticket'] ?>', '<?= $ticket['montant_paie'] ?>')">
-                            <i class="fas fa-plus"></i> Paiement
-                        </button>
-                    <?php endif; ?>
-                    </td>
+                                <td colspan="11" class="text-center">Aucun ticket trouvé</td>
                             </tr>
-                        <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
 
                 <div class="pagination-container bg-secondary d-flex justify-content-center w-100 text-white p-3">
                     <?php if($page > 1): ?>
-                        <a href="?page=<?= $page - 1 ?>" class="btn btn-primary"><</a>
+                        <a href="?page=<?= $page - 1 ?>&limit=<?= $limit ?>&filter=<?= $filter ?>" class="btn btn-primary"><</a>
                     <?php endif; ?>
-                    <span class="mx-2"><?= $page . '/' . count($transaction_pages) ?></span>
+                    <span class="mx-2"><?= $page . '/' . $total_pages ?></span>
 
-                    <?php if($page < count($transaction_pages)): ?>
-                        <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">></a>
+                    <?php if($page < $total_pages): ?>
+                        <a href="?page=<?= $page + 1 ?>&limit=<?= $limit ?>&filter=<?= $filter ?>" class="btn btn-primary">></a>
                     <?php endif; ?>
                     <form action="" method="get" class="items-per-page-form">
+                        <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
                         <label for="limit">Afficher :</label>
                         <select name="limit" id="limit" class="items-per-page-select">
                             <option value="5" <?= $limit == 5 ? 'selected' : '' ?>>5</option>
@@ -218,20 +288,22 @@ label {
                 <form class="forms-sample" method="post" action="save_paiement.php">
                     <input type="hidden" name="id_ticket" value="<?= $ticket['id_ticket'] ?>">
                     <input type="hidden" name="numero_ticket" value="<?= $ticket['numero_ticket'] ?>">
+                    <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
                     
                     <div class="form-group">
                         <label>Montant total à payer</label>
-                        <input type="text" class="form-control" value="<?= $ticket['montant_paie'] ?>" readonly>
+                        <input type="text" class="form-control" value="<?= number_format($ticket['montant_paie'], 0, ',', ' ') ?> FCFA" readonly>
                     </div>
                     
                     <div class="form-group">
                         <label>Montant déjà payé</label>
-                        <input type="text" class="form-control" value="<?= $ticket['montant_payer'] ?? '0' ?>" readonly>
+                        <input type="text" class="form-control" value="<?= !isset($ticket['montant_payer']) || $ticket['montant_payer'] === null ? '0 FCFA' : number_format($ticket['montant_payer'], 0, ',', ' ') . ' FCFA' ?>" readonly>
                     </div>
                     
                     <div class="form-group">
                         <label>Reste à payer</label>
-                        <input type="text" class="form-control" value="<?= $ticket['montant_reste'] ?? $ticket['montant_paie'] ?>" readonly>
+                        <input type="text" class="form-control" value="<?= number_format($ticket['montant_paie'] - (!isset($ticket['montant_payer']) || $ticket['montant_payer'] === null ? 0 : $ticket['montant_payer']), 0, ',', ' ') ?> FCFA" readonly>
+                        <input type="hidden" name="montant_reste" value="<?= $ticket['montant_paie'] - (!isset($ticket['montant_payer']) || $ticket['montant_payer'] === null ? 0 : $ticket['montant_payer']) ?>">
                     </div>
 
                     <div class="form-group">
@@ -244,7 +316,7 @@ label {
                     <div class="form-group">
                         <label>Montant à payer</label>
                         <input type="number" step="0.01" class="form-control" name="montant" required 
-                               max="<?= $ticket['montant_reste'] ?? $ticket['montant_paie'] ?>"
+                               max="<?= $ticket['montant_paie'] - (!isset($ticket['montant_payer']) || $ticket['montant_payer'] === null ? 0 : $ticket['montant_payer']) ?>"
                                placeholder="Entrez le montant à payer">
                     </div>
 

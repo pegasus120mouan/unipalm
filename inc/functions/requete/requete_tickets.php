@@ -86,6 +86,7 @@ function getTicketsAttente($conn) {
         t.date_validation_boss,
         t.montant_paie,
         t.date_paie,
+        t.created_at,
         CONCAT(u.nom, ' ', u.prenoms) AS utilisateur_nom_complet,
         u.contact AS utilisateur_contact,
         u.role AS utilisateur_role,
