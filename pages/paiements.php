@@ -13,7 +13,7 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $limit = $_GET['limit'] ?? 15;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
-// Récupérer tous les tickets validés (prix_unitaire != 0)
+// Récupérer tous les tickets validés avec leur statut de paiement
 $stmt = $conn->prepare(
     "SELECT 
         t.id_ticket,
@@ -43,7 +43,8 @@ $stmt = $conn->prepare(
     INNER JOIN 
         usines us ON t.id_usine = us.id_usine
     WHERE 
-        t.prix_unitaire != 0.00
+        t.prix_unitaire != 0.00 AND
+        t.date_validation_boss IS NOT NULL
     ORDER BY 
         CASE 
             WHEN t.montant_payer IS NULL OR t.montant_reste > 0 THEN 1
@@ -170,16 +171,16 @@ label {
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Listes des Paiements à effectuer</h3>
+                <h3 class="card-title">Gestion des Paiements</h3>
                 <div class="float-right">
                     <a href="paiements.php" class="btn <?= $filter === 'all' ? 'btn-primary' : 'btn-outline-primary' ?>">
-                        <i class="fas fa-list"></i> Tous les tickets
+                        <i class="fas fa-list"></i> Tous les paiements
                     </a>
                     <a href="paiements.php?filter=non_soldes" class="btn <?= $filter === 'non_soldes' ? 'btn-warning' : 'btn-outline-warning' ?>">
-                        <i class="fas fa-exclamation-triangle"></i> Tickets non soldés
+                        <i class="fas fa-exclamation-triangle"></i> Paiements en attente
                     </a>
                     <a href="paiements.php?filter=soldes" class="btn <?= $filter === 'soldes' ? 'btn-success' : 'btn-outline-success' ?>">
-                        <i class="fas fa-check-circle"></i> Tickets soldés
+                        <i class="fas fa-check-circle"></i> Paiements effectués
                     </a>
                 </div>
             </div>
@@ -187,24 +188,24 @@ label {
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                        <th>Date ticket</th>
-                <th>Numéro Ticket</th>
-                <th>Usine</th>
-                <th>Chargé de Mission</th>
-                <th>Véhicule</th>
-                <th>Poids</th>
-                <th>Montant à payer</th>
-                <th>Montant payé</th>
-                <th>Reste à payer</th>
-                <th>Date validation</th>
-                <th>Actions</th>
+                            <th>Date ticket</th>
+                            <th>Numéro Ticket</th>
+                            <th>Usine</th>
+                            <th>Chargé de Mission</th>
+                            <th>Véhicule</th>
+                            <th>Poids</th>
+                            <th>Montant total</th>
+                            <th>Montant payé</th>
+                            <th>Reste à payer</th>
+                            <th>Dernier paiement</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (!empty($tickets)) : ?>
                             <?php foreach ($tickets as $ticket) : ?>
                                 <tr>
-                                    <td><?= date('d/m/Y', strtotime($ticket['date_ticket'])) ?></td>
+                                    <td><?= date('Y-m-d', strtotime($ticket['date_ticket'])) ?></td>
                                     <td><?= $ticket['numero_ticket'] ?></td>
                                     <td><?= $ticket['nom_usine'] ?></td>
                                     <td><?= $ticket['agent_nom_complet'] ?></td>
@@ -213,7 +214,7 @@ label {
                                     <td><?= number_format($ticket['montant_paie'], 0, ',', ' ') ?> FCFA</td>
                                     <td><?= !isset($ticket['montant_payer']) || $ticket['montant_payer'] === null ? '0 FCFA' : number_format($ticket['montant_payer'], 0, ',', ' ') . ' FCFA' ?></td>
                                     <td><?= number_format($ticket['montant_paie'] - (!isset($ticket['montant_payer']) || $ticket['montant_payer'] === null ? 0 : $ticket['montant_payer']), 0, ',', ' ') ?> FCFA</td>
-                                    <td><?= $ticket['date_validation_boss'] ? date('d/m/Y', strtotime($ticket['date_validation_boss'])) : '-' ?></td>
+                                    <td><?= $ticket['date_paie'] ? date('Y-m-d', strtotime($ticket['date_paie'])) : '-' ?></td>
                                     <td>                
                                         <?php 
                                         $montant_reste = $ticket['montant_paie'] - (!isset($ticket['montant_payer']) || $ticket['montant_payer'] === null ? 0 : $ticket['montant_payer']);

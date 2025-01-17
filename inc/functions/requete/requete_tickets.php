@@ -139,7 +139,7 @@ INNER JOIN
 INNER JOIN 
     usines us ON t.id_usine = us.id_usine
 WHERE 
-    t.prix_unitaire != 0.00  AND t.date_paie IS NULL"
+    t.prix_unitaire != 0.00  AND t.date_paie IS NOT NULL ORDER BY t.date_paie DESC"
     );
     
     $stmt->execute();
