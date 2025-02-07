@@ -2,7 +2,55 @@
 
 require_once '../inc/functions/connexion.php';
 require_once '../inc/functions/requete/requete_tickets.php';
+require_once '../inc/functions/requete/requete_prix_unitaires.php';
 
+session_start();
+
+// Traitement de la suppression
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
+    $id_ticket = $_GET['id'];
+    
+    try {
+        // Vérifier si le ticket existe et n'est pas déjà payé
+        $sql = "SELECT date_paie FROM tickets WHERE id_ticket = :id_ticket";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id_ticket', $id_ticket, PDO::PARAM_INT);
+        $stmt->execute();
+        $ticket = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$ticket) {
+            $_SESSION['delete_pop'] = true;
+            header('Location: tickets.php');
+            exit();
+        }
+
+        if ($ticket['date_paie'] !== null) {
+            $_SESSION['warning'] = "Impossible de supprimer un ticket déjà payé.";
+            header('Location: tickets.php');
+            exit();
+        }
+
+        // Supprimer le ticket
+        $sql = "DELETE FROM tickets WHERE id_ticket = :id_ticket";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id_ticket', $id_ticket, PDO::PARAM_INT);
+        
+        if ($stmt->execute()) {
+            $_SESSION['success_modal'] = true;
+            $_SESSION['message'] = "Ticket supprimé avec succès.";
+        } else {
+            $_SESSION['delete_pop'] = true;
+        }
+    } catch (PDOException $e) {
+        error_log("Erreur lors de la suppression du ticket: " . $e->getMessage());
+        $_SESSION['delete_pop'] = true;
+    }
+    
+    header('Location: tickets.php');
+    exit();
+}
+
+// Traitement de l'ajout de ticket
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Vérifiez si l'action concerne l'insertion ou autre chose
@@ -23,10 +71,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
 
+        // Récupérer le prix unitaire
+        $prix_info = getPrixUnitaireByDateAndUsine($conn, $date_ticket, $id_usine);
+        $prix_unitaire = $prix_info['prix'];
+        
         // Appel de la fonction pour insérer le ticket
         try {
-            if (insertTicket($conn, $id_usine, $date_ticket, $id_agent, $numero_ticket, $vehicule_id, $poids, $id_utilisateur)) {
-                $_SESSION['popup'] = true; // Message de succès
+            if (insertTicket($conn, $id_usine, $date_ticket, $id_agent, $numero_ticket, $vehicule_id, $poids, $id_utilisateur, $prix_unitaire)) {
+                if ($prix_info['is_default']) {
+                    $_SESSION['warning'] = "Aucun prix unitaire n'est défini pour cette période. La valeur par défaut (0,00 FCFA) a été utilisée.";
+                } else {
+                    $_SESSION['success_modal'] = true;
+                    $_SESSION['prix_unitaire'] = $prix_unitaire;
+                }
             } else {
                 $_SESSION['delete_pop'] = true; // Message d'erreur
             }

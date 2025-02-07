@@ -18,8 +18,31 @@ include('header.php');
 //$users = $stmt->fetchAll();
 //foreach($users as $user)
 
-$limit = $_GET['limit'] ?? 15; // Nombre de tickets par page
+$limit = $_GET['limit'] ?? 15; // Nombre d'éléments par page
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Page actuelle
+
+// Requête SQL pour récupérer les prix unitaires
+$sql = "SELECT
+    usines.nom_usine,
+    prix_unitaires.prix,
+    prix_unitaires.date_debut,
+    prix_unitaires.date_fin,
+    prix_unitaires.id
+FROM
+    prix_unitaires
+INNER JOIN
+    usines ON prix_unitaires.id_usine = usines.id_usine";
+    
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+$prix_unitaires = $stmt->fetchAll();
+
+// Pagination
+$total_items = count($prix_unitaires);
+$total_pages = ceil($total_items / $limit);
+$page = max(1, min($page, $total_pages));
+$offset = ($page - 1) * $limit;
+$prix_unitaires_list = array_slice($prix_unitaires, $offset, $limit);
 
 // Récupérer les paramètres de recherche
 $search_usine = $_GET['usine'] ?? null;
@@ -147,58 +170,15 @@ label {
 
 
 <div class="row">
-    <?php if (isset($_SESSION['warning'])): ?>
-        <div class="col-12">
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <?= $_SESSION['warning'] ?>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
-        <?php unset($_SESSION['warning']); ?>
-    <?php endif; ?>
-
-    <?php if (isset($_SESSION['popup'])): ?>
-        <div class="col-12">
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                Ticket enregistré avec succès
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
-        <?php unset($_SESSION['popup']); ?>
-    <?php endif; ?>
-
-    <?php if (isset($_SESSION['delete_pop'])): ?>
-        <div class="col-12">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                Une erreur s'est produite
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
-        <?php unset($_SESSION['delete_pop']); ?>
-    <?php endif; ?>
 
     <div class="block-container">
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-ticket">
-      <i class="fa fa-edit"></i>Enregistrer un ticket
+      <i class="fa fa-edit"></i>Enregistrer un Prix Unitaire
     </button>
 
     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#print-bordereau">
-      <i class="fa fa-print"></i> Imprimer un bordereau
+      <i class="fa fa-print"></i> Imprimer la liste des prix unitaires
     </button>
-
-    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#search_ticket">
-      <i class="fa fa-search"></i> Rechercher un ticket
-    </button>
-
-    <button type="button" class="btn btn-dark" onclick="window.location.href='export_tickets.php'">
-              <i class="fa fa-print"></i> Exporter la liste les tickets
-             </button>
 </div>
 
 
@@ -234,183 +214,107 @@ label {
     <thead>
       <tr>
         
-        <th>Date ticket</th>
-        <th>Numero Ticket</th>
-        <th>usine</th>
-        <th>Chargé de mission</th>
-        <th>Vehicule</th>
-        <th>Poids</th>
-        <th>Ticket crée par</th>
-        <th>Date Ajout</th>
+        <th>Nom Usine</th>
         <th>Prix Unitaire</th>
-        <th>Date validation</th>
-        <th>Montant</th>
-        <th>Date Paie</th>
+        <th>Date Début</th>
+        <th>Date Fin</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <?php foreach ($tickets_list as $ticket) : ?>
+      <?php foreach ($prix_unitaires_list as $prix) : ?>
         <tr>
-          
-          <td><?= date('d/m/Y', strtotime($ticket['date_ticket'])) ?></td>
-          <td><a href="#" data-toggle="modal" data-target="#ticketModal<?= $ticket['id_ticket'] ?>"><?= $ticket['numero_ticket'] ?></a></td>
-          <td><?= $ticket['nom_usine'] ?></td>
-          <td><?= $ticket['agent_nom_complet'] ?></td>
-          <td><?= $ticket['matricule_vehicule'] ?></td>
-          <td><?= $ticket['poids'] ?></td>
-
-          <td><?= $ticket['utilisateur_nom_complet'] ?></td>
-          <td><?= date('d/m/Y', strtotime($ticket['created_at'])) ?></td>
-
-         <td>
-            <?php if ($ticket['prix_unitaire'] === null || $ticket['prix_unitaire'] == 0.00): ?>
-                <!-- Affichage d'un bouton rouge désactivé avec message -->
-                <button class="btn btn-danger btn-block" disabled>
-                    En Attente de validation
-                </button>
-            <?php else: ?>
-                <!-- Affichage du prix unitaire dans un bouton noir -->
-                <button class="btn btn-dark btn-block" disabled>
-                    <?= $ticket['prix_unitaire'] ?>
-                </button>
-            <?php endif; ?>
-        </td>
-
-
-
-
-       <td>
-            <?php if ($ticket['date_validation_boss'] === null): ?>
-        <button class="btn btn-warning btn-block" disabled>
-            En cours
-        </button>
-    <?php else: ?>
-        <?= date('d/m/Y', strtotime($ticket['date_validation_boss'])) ?>
-        <?php endif; ?>
-       </td>
-
-
-    <td>
-                <?php if ($ticket['montant_paie'] === null): ?>
-            <button class="btn btn-primary btn-block" disabled>
-                En attente de PU
-            </button>
-        <?php else: ?>
-        <button class="btn btn-info btn-block" disabled>
-            <?= $ticket['montant_paie'] ?>
-            <?php endif; ?>
-            </button>
-          </td>
-
-
-              <td>
-                <?php if ($ticket['date_paie'] === null): ?>
-            <button class="btn btn-dark btn-block" disabled>
-                Paie non encore effectuée
-            </button>
-        <?php else: ?>
-            <?= date('d/m/Y', strtotime($ticket['date_paie'])) ?>
-            <?php endif; ?>
-          </td>
-          
-  
+          <td><?= htmlspecialchars($prix['nom_usine']) ?></td>
+          <td><?= htmlspecialchars($prix['prix']) ?></td>
+          <td><?= date('d/m/Y', strtotime($prix['date_debut'])) ?></td>
+          <td><?= $prix['date_fin'] ? date('d/m/Y', strtotime($prix['date_fin'])) : 'En cours' ?></td>
           <td class="actions">
-         <?php if ($ticket['date_paie'] === null): ?>
-            <a class="edit" data-toggle="modal" data-target="#editModalTicket<?= $ticket['id_ticket'] ?>">
-            <i class="fas fa-pen fa-xs" style="font-size:24px;color:blue"></i>
+            <a href="#" class="edit" data-toggle="modal" data-target="#editModal<?= $prix['id'] ?>">
+              <i class="fas fa-pen fa-xs" style="font-size:24px;color:blue"></i>
             </a>
-            <a href="#" class="trash" data-toggle="modal" data-target="#confirmDeleteModal" data-id="<?= $ticket['id_ticket'] ?>">
-                <i class="fas fa-trash fa-xs" style="font-size:24px;color:red"></i>
+            <a href="#" class="trash" data-toggle="modal" data-target="#deleteModal<?= $prix['id'] ?>">
+              <i class="fas fa-trash fa-xs" style="font-size:24px;color:red"></i>
             </a>
-            <?php else: ?>
-            <i class="fas fa-pen fa-xs" style="font-size:24px;color:gray" title="Ticket déjà payé"></i>
-            <i class="fas fa-trash fa-xs" style="font-size:24px;color:gray" title="Ticket déjà payé"></i>
-            <?php endif; ?>
           </td>
-           <!-- Lien pour déclencher la modale -->
-<!--a href="#" class="trash" data-toggle="modal" data-target="#confirmDeleteModal" data-id="<?= $ticket['id_ticket'] ?>">
-    <i class="fas fa-trash fa-xs" style="font-size:24px;color:red"></i>
-</a-->
+        </tr>
 
-<!-- Modale de confirmation -->
-<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmer la suppression</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Êtes-vous sûr de vouloir supprimer ce ticket ?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                <a href="#" id="confirmDeleteBtn" class="btn btn-danger">Supprimer</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-          </td>
-
-          <div class="modal fade" id="editModalTicket<?= $ticket['id_ticket'] ?>" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">Modification Ticket <?= $ticket['id_ticket'] ?></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Formulaire de modification du ticket -->
-                <form action="tickets_update.php?id=<?= $ticket['id_ticket'] ?>" method="post">
-                <div class="form-group">
-                <label for="exampleInputEmail1">Date ticket</label>
-                <input type="date" class="form-control" id="exampleInputEmail1" placeholder="date ticket" name="date_ticket" value="<?= $ticket['date_ticket'] ?>"> 
-              </div> 
-                <div class="form-group">
-                        <label for="prix_unitaire">Numéro du ticket</label>
-                        <input type="text" class="form-control" id="numero_ticket" name="numero_ticket" value="<?= $ticket['numero_ticket'] ?>" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Sauvegarder les modifications</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-          
-
-
-         <div class="modal" id="valider_ticket<?= $ticket['id_ticket'] ?>">
-          <div class="modal-dialog">
+        <!-- Modal Modification -->
+        <div class="modal fade" id="editModal<?= $prix['id'] ?>" tabindex="-1" role="dialog" aria-labelledby="editModalLabel<?= $prix['id'] ?>" aria-hidden="true">
+          <div class="modal-dialog" role="document">
             <div class="modal-content">
-              <div class="modal-body">
-                <form action="traitement_tickets.php" method="post">
-                  <input type="hidden" name="id_ticket" value="<?= $ticket['id_ticket'] ?>">
-                  <div class="form-group">
-                    <label>Ajouter le prix unitaire</label>
-                  </div>
-                  <div class="form-group">
-                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Prix unitaire" name="prix_unitaire">
+              <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel<?= $prix['id'] ?>">Modifier le Prix Unitaire</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
               </div>
-                  <button type="submit" class="btn btn-primary mr-2" name="saveCommande">Ajouter</button>
-                  <button class="btn btn-light">Annuler</button>
+              <div class="modal-body">
+                <form action="traitement_prix_unitaires.php" method="post">
+                  <input type="hidden" name="id" value="<?= $prix['id'] ?>">
+                  
+                  <div class="form-group">
+                    <label>Sélection Usine</label>
+                    <select name="id_usine" class="form-control" required>
+                      <?php foreach ($usines as $usine) : ?>
+                        <option value="<?= $usine['id_usine'] ?>" <?= $usine['id_usine'] == $prix['id_usine'] ? 'selected' : '' ?>>
+                          <?= htmlspecialchars($usine['nom_usine']) ?>
+                        </option>
+                      <?php endforeach; ?>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Prix Unitaire</label>
+                    <input type="number" step="0.01" class="form-control" name="prix" value="<?= $prix['prix'] ?>" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Date de début</label>
+                    <input type="date" class="form-control" name="date_debut" value="<?= $prix['date_debut'] ?>" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Date de fin</label>
+                    <input type="date" class="form-control" name="date_fin" value="<?= $prix['date_fin'] ?>">
+                    <small class="form-text text-muted">Laissez vide si le prix unitaire est toujours en cours</small>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary" name="updatePrixUnitaire">Enregistrer les modifications</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
                 </form>
               </div>
             </div>
           </div>
         </div>
 
-
+        <!-- Modal Suppression -->
+        <div class="modal fade" id="deleteModal<?= $prix['id'] ?>" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel<?= $prix['id'] ?>" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel<?= $prix['id'] ?>">Confirmer la suppression</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer ce prix unitaire ?</p>
+                <p>Usine: <?= htmlspecialchars($prix['nom_usine']) ?></p>
+                <p>Prix: <?= htmlspecialchars($prix['prix']) ?></p>
+              </div>
+              <div class="modal-footer">
+                <form action="traitement_prix_unitaires.php" method="post">
+                  <input type="hidden" name="id" value="<?= $prix['id'] ?>">
+                  <button type="submit" class="btn btn-danger" name="deletePrixUnitaire">Supprimer</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
       <?php endforeach; ?>
     </tbody>
-  </table>
-
+    </table>
 </div>
 
   <div class="pagination-container bg-secondary d-flex justify-content-center w-100 text-white p-3">
@@ -453,29 +357,19 @@ label {
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title" id="addTicketModalLabel">Enregistrer un ticket</h4>
+          <h4 class="modal-title" id="addTicketModalLabel">Enregistrer un Prix Unitaire</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <form class="forms-sample" method="post" action="traitement_tickets.php">
+          <form class="forms-sample" method="post" action="traitement_prix_unitaires.php">
             <div class="card-body">
-            <div class="form-group">
-                <label for="exampleInputEmail1">Date ticket</label>
-                <input type="date" class="form-control" id="exampleInputEmail1" placeholder="date ticket" name="date_ticket">
-              </div> 
               <div class="form-group">
-                <label for="exampleInputEmail1">Numéro du Ticket</label>
-                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Numero du ticket" name="numero_ticket">
-              </div>
-               <div class="form-group">
-                  <label>Selection Usine</label>
-                  <select id="select" name="usine" class="form-control">
+                  <label>Sélection Usine</label>
+                  <select id="select" name="id_usine" class="form-control" required>
                       <?php
-                      // Vérifier si des usines existent
                       if (!empty($usines)) {
-
                           foreach ($usines as $usine) {
                               echo '<option value="' . htmlspecialchars($usine['id_usine']) . '">' . htmlspecialchars($usine['nom_usine']) . '</option>';
                           }
@@ -487,53 +381,28 @@ label {
               </div>
 
               <div class="form-group">
-                  <label>Chargé de Mission</label>
-                  <select id="select" name="id_agent" class="form-control">
-                      <?php
-                      // Vérifier si des usines existent
-                      if (!empty($agents)) {
-                          foreach ($agents as $agent) {
-                              echo '<option value="' . htmlspecialchars($agent['id_agent']) . '">' . htmlspecialchars($agent['nom_complet_agent']) . '</option>';
-                          }
-                      } else {
-                          echo '<option value="">Aucune chef eéuipe disponible</option>';
-                      }
-                      ?>
-                  </select>
+                <label>Prix Unitaire</label>
+                <input type="number" step="0.01" class="form-control" placeholder="Prix unitaire" name="prix" required>
               </div>
 
               <div class="form-group">
-                  <label>Selection véhicules</label>
-                  <select id="select" name="vehicule" class="form-control">
-                      <?php
-                      // Vérifier si des usines existent
-                      if (!empty($vehicules)) {
-                          foreach ($vehicules as $vehicule) {
-                              echo '<option value="' . htmlspecialchars($vehicule['vehicules_id']) . '">' . htmlspecialchars($vehicule['matricule_vehicule']) . '</option>';
-                          }
-                      } else {
-                          echo '<option value="">Aucun vehicule disponible</option>';
-                      }
-                      ?>
-                  </select>
+                <label>Date de début</label>
+                <input type="date" class="form-control" name="date_debut" required>
               </div>
 
               <div class="form-group">
-                <label for="exampleInputPassword1">Poids</label>
-                <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Poids" name="poids">
+                <label>Date de fin</label>
+                <input type="date" class="form-control" name="date_fin">
+                <small class="form-text text-muted">Laissez vide si le prix unitaire est toujours en cours</small>
               </div>
 
-              <button type="submit" class="btn btn-primary mr-2" name="saveCommande">Enregister</button>
-              <button class="btn btn-light">Annuler</button>
+              <button type="submit" class="btn btn-primary mr-2" name="savePrixUnitaire">Enregistrer</button>
+              <button type="button" class="btn btn-light" data-dismiss="modal">Annuler</button>
             </div>
           </form>
         </div>
       </div>
-      <!-- /.modal-content -->
     </div>
-
-
-    <!-- /.modal-dialog -->
   </div>
 
   <div class="modal fade" id="print-bordereau">
@@ -925,66 +794,6 @@ document.getElementById('searchByBetweendateForm').addEventListener('submit', fu
 
 </html>
 
-<!-- Success Modal -->
-<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content" style="border-radius: 15px;">
-            <div class="modal-body text-center p-4">
-                <div class="mb-4">
-                    <div style="width: 70px; height: 70px; background-color: #4CAF50; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 20px;">
-                        <i class="fas fa-check" style="font-size: 35px; color: white;"></i>
-                    </div>
-                    <h4 class="mb-3" style="font-weight: 600;">SUCCESS</h4>
-                    <?php if (isset($_SESSION['message'])): ?>
-                        <p class="mb-4"><?= $_SESSION['message'] ?></p>
-                        <?php unset($_SESSION['message']); ?>
-                    <?php else: ?>
-                        <p class="mb-4">Ticket ajouté avec succès!</p>
-                        <p style="color: #666;">Le prix unitaire pour cette période est : <strong><?= isset($_SESSION['prix_unitaire']) ? number_format($_SESSION['prix_unitaire'], 2, ',', ' ') : '0,00' ?> FCFA</strong></p>
-                    <?php endif; ?>
-                </div>
-                <button type="button" class="btn btn-success px-4 py-2" data-dismiss="modal" style="min-width: 120px; border-radius: 25px;">CONTINUE</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Warning Modal -->
-<div class="modal fade" id="warningModal" tabindex="-1" role="dialog" aria-labelledby="warningModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content" style="border-radius: 15px;">
-            <div class="modal-body text-center p-4">
-                <div class="mb-4">
-                    <div style="width: 70px; height: 70px; background-color: #FFC107; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 20px;">
-                        <i class="fas fa-exclamation" style="font-size: 35px; color: white;"></i>
-                    </div>
-                    <h4 class="mb-3" style="font-weight: 600;">ATTENTION</h4>
-                    <p style="color: #666;"><?= isset($_SESSION['warning']) ? $_SESSION['warning'] : '' ?></p>
-                </div>
-                <button type="button" class="btn btn-warning px-4 py-2" data-dismiss="modal" style="min-width: 120px; border-radius: 25px;">CONTINUE</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Error Modal -->
-<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content" style="border-radius: 15px;">
-            <div class="modal-body text-center p-4">
-                <div class="mb-4">
-                    <div style="width: 70px; height: 70px; background-color: #dc3545; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 20px;">
-                        <i class="fas fa-times" style="font-size: 35px; color: white;"></i>
-                    </div>
-                    <h4 class="mb-3" style="font-weight: 600;">ERROR</h4>
-                    <p style="color: #666;">Une erreur s'est produite lors de l'opération.</p>
-                </div>
-                <button type="button" class="btn btn-danger px-4 py-2" data-dismiss="modal" style="min-width: 120px; border-radius: 25px;">AGAIN</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Initialisation de tous les modals
@@ -994,50 +803,12 @@ document.addEventListener('DOMContentLoaded', function() {
         show: false
     });
 
-    // Gestion de la suppression
-    $('.trash').click(function(e) {
-        e.preventDefault();
-        var ticketId = $(this).data('id');
-        $('#confirmDeleteBtn').attr('href', 'traitement_tickets.php?action=delete&id=' + ticketId);
+    // Gestionnaire spécifique pour le modal d'ajout
+    $('#add-ticket').on('show.bs.modal', function (e) {
+        console.log('Modal add-ticket en cours d\'ouverture');
     });
 });
 </script>
-
-<?php if (isset($_SESSION['success_modal'])): ?>
-<script>
-    $(document).ready(function() {
-        $('#successModal').modal('show');
-        var audio = new Audio("../inc/sons/notification.mp3");
-        audio.volume = 1.0;
-        audio.play().catch((error) => {
-            console.error('Erreur de lecture audio :', error);
-        });
-    });
-</script>
-<?php 
-    unset($_SESSION['success_modal']);
-    unset($_SESSION['prix_unitaire']);
-endif; ?>
-
-<?php if (isset($_SESSION['warning'])): ?>
-<script>
-    $(document).ready(function() {
-        $('#warningModal').modal('show');
-    });
-</script>
-<?php 
-    unset($_SESSION['warning']);
-endif; ?>
-
-<?php if (isset($_SESSION['delete_pop'])): ?>
-<script>
-    $(document).ready(function() {
-        $('#errorModal').modal('show');
-    });
-</script>
-<?php 
-    unset($_SESSION['delete_pop']);
-endif; ?>
 <script src="../../plugins/jquery/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
 <script src="../../plugins/jquery-ui/jquery-ui.min.js"></script>
@@ -1134,4 +905,3 @@ function showSearchModal(modalId) {
   $('#' + modalId).modal('show');
 }
 </script>
-```

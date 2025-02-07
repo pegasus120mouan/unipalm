@@ -31,7 +31,8 @@ $stmt = $conn->prepare(
         u.role AS utilisateur_role,
         v.matricule_vehicule,
         CONCAT(a.nom, ' ', a.prenom) AS agent_nom_complet,
-        us.nom_usine
+        us.nom_usine,
+        (t.poids * t.prix_unitaire) AS montant_calcule
     FROM 
         tickets t
     INNER JOIN 
@@ -43,8 +44,7 @@ $stmt = $conn->prepare(
     INNER JOIN 
         usines us ON t.id_usine = us.id_usine
     WHERE 
-        t.prix_unitaire != 0.00 AND
-        t.date_validation_boss IS NOT NULL
+        t.prix_unitaire != 0.00 
     ORDER BY 
         CASE 
             WHEN t.montant_payer IS NULL OR t.montant_reste > 0 THEN 1
@@ -56,12 +56,35 @@ $stmt = $conn->prepare(
 $stmt->execute();
 $all_tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Mettre à jour le montant_paie si nécessaire
+foreach ($all_tickets as &$ticket) {
+    // Si le montant_paie est null ou 0 mais qu'on a un prix unitaire et un poids
+    if ((!isset($ticket['montant_paie']) || $ticket['montant_paie'] == 0) && 
+        $ticket['prix_unitaire'] > 0 && $ticket['poids'] > 0) {
+        // Calculer le montant
+        $montant = $ticket['poids'] * $ticket['prix_unitaire'];
+        
+        // Mettre à jour dans la base de données
+        $update = $conn->prepare("UPDATE tickets SET montant_paie = :montant WHERE id_ticket = :id");
+        $update->execute([
+            ':montant' => $montant,
+            ':id' => $ticket['id_ticket']
+        ]);
+        
+        // Mettre à jour dans le tableau
+        $ticket['montant_paie'] = $montant;
+    }
+}
+
 // Filtrer les tickets selon le filtre sélectionné
 if ($filter === 'non_soldes') {
     $all_tickets = array_filter($all_tickets, function($ticket) {
-        return !isset($ticket['montant_payer']) || 
-               $ticket['montant_payer'] === null || 
-               ($ticket['montant_paie'] - $ticket['montant_payer']) > 0;
+        $has_valid_price = $ticket['prix_unitaire'] > 0;
+        $not_fully_paid = !isset($ticket['montant_payer']) || 
+                         $ticket['montant_payer'] === null || 
+                         ($ticket['montant_paie'] - $ticket['montant_payer']) > 0;
+        
+        return $has_valid_price && $not_fully_paid;
     });
 } elseif ($filter === 'soldes') {
     $all_tickets = array_filter($all_tickets, function($ticket) {
@@ -69,6 +92,21 @@ if ($filter === 'non_soldes') {
                $ticket['montant_payer'] !== null && 
                ($ticket['montant_paie'] - $ticket['montant_payer']) <= 0;
     });
+}
+
+// Debug: Afficher les informations des tickets filtrés
+if ($filter === 'non_soldes') {
+    echo "<!-- Debug: Tickets filtrés -->";
+    foreach ($all_tickets as $ticket) {
+        echo "<!--\n";
+        echo "ID: " . $ticket['id_ticket'] . "\n";
+        echo "Prix unitaire: " . $ticket['prix_unitaire'] . "\n";
+        echo "Poids: " . $ticket['poids'] . "\n";
+        echo "Montant paie: " . $ticket['montant_paie'] . "\n";
+        echo "Montant payé: " . $ticket['montant_payer'] . "\n";
+        echo "Montant calculé: " . $ticket['montant_calcule'] . "\n";
+        echo "-->\n";
+    }
 }
 
 // Calculer la pagination
@@ -204,6 +242,11 @@ label {
                     <tbody>
                         <?php if (!empty($tickets)) : ?>
                             <?php foreach ($tickets as $ticket) : ?>
+                                <?php
+                                $montant_paye = !isset($ticket['montant_payer']) || $ticket['montant_payer'] === null ? 0 : $ticket['montant_payer'];
+                                $montant_total = $ticket['montant_paie'];
+                                $montant_reste = $montant_total - $montant_paye;
+                                ?>
                                 <tr>
                                     <td><?= date('Y-m-d', strtotime($ticket['date_ticket'])) ?></td>
                                     <td><?= $ticket['numero_ticket'] ?></td>
@@ -211,24 +254,22 @@ label {
                                     <td><?= $ticket['agent_nom_complet'] ?></td>
                                     <td><?= $ticket['matricule_vehicule'] ?></td>
                                     <td><?= number_format($ticket['poids'], 0, ',', ' ') ?></td>
-                                    <td><?= number_format($ticket['montant_paie'], 0, ',', ' ') ?> FCFA</td>
-                                    <td><?= !isset($ticket['montant_payer']) || $ticket['montant_payer'] === null ? '0 FCFA' : number_format($ticket['montant_payer'], 0, ',', ' ') . ' FCFA' ?></td>
-                                    <td><?= number_format($ticket['montant_paie'] - (!isset($ticket['montant_payer']) || $ticket['montant_payer'] === null ? 0 : $ticket['montant_payer']), 0, ',', ' ') ?> FCFA</td>
+                                    <td><?= number_format($montant_total, 0, ',', ' ') ?> FCFA</td>
+                                    <td><?= number_format($montant_paye, 0, ',', ' ') ?> FCFA</td>
+                                    <td><?= number_format($montant_reste, 0, ',', ' ') ?> FCFA</td>
                                     <td><?= $ticket['date_paie'] ? date('Y-m-d', strtotime($ticket['date_paie'])) : '-' ?></td>
                                     <td>                
-                                        <?php 
-                                        $montant_reste = $ticket['montant_paie'] - (!isset($ticket['montant_payer']) || $ticket['montant_payer'] === null ? 0 : $ticket['montant_payer']);
-                                        if ($ticket['montant_paie'] <= 0): ?>
-                                            <button type="button" class="btn btn-warning" disabled>
-                                                <i class="fas fa-exclamation-circle"></i> En attente de validation
-                                            </button>
-                                        <?php elseif ($montant_reste <= 0): ?>
+                                        <?php if ($montant_reste <= 0): ?>
                                             <button type="button" class="btn btn-success" disabled>
                                                 <i class="fas fa-check-circle"></i> Ticket soldé
                                             </button>
+                                        <?php elseif ($ticket['prix_unitaire'] <= 0): ?>
+                                            <button type="button" class="btn btn-warning" disabled>
+                                                <i class="fas fa-exclamation-circle"></i> Prix unitaire non défini
+                                            </button>
                                         <?php else: ?>
                                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#payer_ticket<?= $ticket['id_ticket'] ?>">
-                                                <i class="fas fa-money-bill-wave"></i> Effectuer le paiement
+                                                <i class="fas fa-money-bill-wave"></i> Effectuer un paiement
                                             </button>
                                         <?php endif; ?>
                                     </td>

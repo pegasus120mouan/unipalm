@@ -260,37 +260,25 @@ function getTicketsSoldes($conn) {
     return $stmt->fetchAll();
 }
 
-function insertTicket($conn, $id_usine, $date_ticket, $id_agent, $numero_ticket, $vehicule_id, $poids, $id_utilisateur)
-{
+function insertTicket($conn, $id_usine, $date_ticket, $id_agent, $numero_ticket, $vehicule_id, $poids, $id_utilisateur, $prix_unitaire = null) {
     try {
-        $query = "INSERT INTO tickets (id_usine, date_ticket, id_agent, numero_ticket, vehicule_id, poids, id_utilisateur, created_at) 
-                  VALUES (:id_usine, :date_ticket, :id_agent, :numero_ticket, :vehicule_id, :poids, :id_utilisateur, :created_at)";
-        $query_run = $conn->prepare($query);
-
-        $data = [
-            ':id_usine' => $id_usine,
-            ':date_ticket' => $date_ticket,
-            ':id_agent' => $id_agent,
-            ':numero_ticket' => $numero_ticket,
-            ':vehicule_id' => $vehicule_id,
-            ':poids' => $poids,
-            ':id_utilisateur' => $id_utilisateur,
-            ':created_at' => date("Y-m-d H:i"),
-        ];
-
-        // Exécuter la requête
-        if ($query_run->execute($data)) {
-            $_SESSION['popup'] = true; // Message de succès
-            header('Location: tickets.php');
-            exit;
-        } else {
-             $_SESSION['false'] = true; // Message de succès
-            header('Location: tickets.php');
-            exit;
-        }
-    } catch (Exception $e) {
-        error_log("Erreur lors de l'insertion du ticket : " . $e->getMessage());
-        return false;
+        $sql = "INSERT INTO tickets (id_usine, date_ticket, id_agent, numero_ticket, vehicule_id, poids, id_utilisateur, created_at, prix_unitaire) 
+                VALUES (:id_usine, :date_ticket, :id_agent, :numero_ticket, :vehicule_id, :poids, :id_utilisateur, NOW(), :prix_unitaire)";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id_usine', $id_usine);
+        $stmt->bindParam(':date_ticket', $date_ticket);
+        $stmt->bindParam(':id_agent', $id_agent);
+        $stmt->bindParam(':numero_ticket', $numero_ticket);
+        $stmt->bindParam(':vehicule_id', $vehicule_id);
+        $stmt->bindParam(':poids', $poids);
+        $stmt->bindParam(':id_utilisateur', $id_utilisateur);
+        $stmt->bindParam(':prix_unitaire', $prix_unitaire);
+        
+        return $stmt->execute();
+    } catch (PDOException $e) {
+        error_log("Erreur lors de l'insertion du ticket: " . $e->getMessage());
+        throw $e;
     }
 }
 

@@ -331,7 +331,6 @@ if (!isset($_SESSION['user_id'])) {
                   </a>
                 </li>
 
-
               </ul>
             </li>
              <li class="nav-item">
@@ -359,6 +358,14 @@ if (!isset($_SESSION['user_id'])) {
                 </p>
               </a>
              </li>
+
+
+             <li class="nav-item">
+                  <a href="prix_unitaires.php" class="nav-link">
+                  <i class="fas fa-industry"></i>
+                    <p>Gestion des prix unitaires</p>
+                  </a>
+                </li>
 
 
 
