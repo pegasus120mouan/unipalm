@@ -317,19 +317,9 @@ if (!isset($_SESSION['user_id'])) {
                   </a>
                 </li>
 
-                <li class="nav-item">
-                  <a href="gestion_access.php" class="nav-link">
-                  <i class="fas fa-car"></i>
-                    <p>Gestion des véhicules</p>
-                  </a>
-                </li>
+               
 
-                <li class="nav-item">
-                  <a href="gestion_access.php" class="nav-link">
-                  <i class="fas fa-industry"></i>
-                    <p>Gestion des usines</p>
-                  </a>
-                </li>
+                
 
               </ul>
             </li>
@@ -358,6 +348,13 @@ if (!isset($_SESSION['user_id'])) {
                 </p>
               </a>
              </li>
+
+                <li class="nav-item">
+                  <a href="vehicules.php" class="nav-link">
+                  <i class="fas fa-car"></i>
+                    <p>Gestion des véhicules</p>
+                  </a>
+                </li>
 
 
              <li class="nav-item">

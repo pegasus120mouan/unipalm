@@ -103,7 +103,7 @@ function getTicketsAttente($conn) {
         agents a ON t.id_agent = a.id_agent
     INNER JOIN 
         usines us ON t.id_usine = us.id_usine
-        WHERE t.prix_unitaire = 0.00 AND t.date_validation_boss IS NULL"
+      WHERE   t.date_validation_boss IS NULL"
     );
     
     $stmt->execute();

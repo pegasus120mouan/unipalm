@@ -371,7 +371,7 @@ label {
                     <label>Ajouter le prix unitaire</label>
                   </div>
                   <div class="form-group">
-                    <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Prix unitaire" name="prix_unitaire" required>
+                    <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Prix unitaire" name="prix_unitaire"  value="<?= $ticket['prix_unitaire'] ?>" required>
                   </div>
                   <div class="modal-footer">
                     <button type="submit" class="btn btn-primary" name="saveCommande">Valider</button>
