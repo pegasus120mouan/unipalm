@@ -6,67 +6,33 @@ require_once '../inc/functions/requete/requete_chef_equipes.php';
 require_once '../inc/functions/requete/requete_vehicules.php';
 require_once '../inc/functions/requete/requete_agents.php';
 
-//require_once '../inc/functions/requete/requetes_selection_boutique.php';
 include('header.php');
 
-//$_SESSION['user_id'] = $user['id'];
- //$id_user=$_SESSION['user_id'];
- //echo $id_user;
+$limit = $_GET['limit'] ?? 15;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
-////$stmt = $conn->prepare("SELECT * FROM users");
-//$stmt->execute();
-//$users = $stmt->fetchAll();
-//foreach($users as $user)
+// Récupérer les paramètres de filtrage
+$agent_id = $_GET['agent_id'] ?? null;
+$usine_id = $_GET['usine_id'] ?? null;
+$search_agent = $_GET['search_agent'] ?? '';
+$search_usine = $_GET['search_usine'] ?? '';
 
-/*$limit = $_GET['limit'] ?? 15; // Nombre de tickets par page
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Page actuelle
+// Récupérer les tickets en attente avec les filtres
+$tickets = getTicketsAttente($conn, $agent_id, $usine_id);
 
-// Récupérer les paramètres de recherche
-$search_usine = $_GET['usine'] ?? null;
-$search_date = $_GET['date_creation'] ?? null;
-$search_chauffeur = $_GET['chauffeur'] ?? null;
-$search_agent = $_GET['agent_id'] ?? null;
-
-// Récupérer les données (functions)
-if ($search_usine || $search_date || $search_chauffeur || $search_agent) {
-    $tickets = searchTickets($conn, $search_usine, $search_date, $search_chauffeur, $search_agent);
-} else {
-    $tickets = getTickets($conn);
+// Filtrer les tickets si un terme de recherche est présent
+if (!empty($search_agent) || !empty($search_usine)) {
+    $tickets = array_filter($tickets, function($ticket) use ($search_agent, $search_usine) {
+        $match = true;
+        if (!empty($search_agent)) {
+            $match = $match && stripos($ticket['agent_nom_complet'], $search_agent) !== false;
+        }
+        if (!empty($search_usine)) {
+            $match = $match && stripos($ticket['nom_usine'], $search_usine) !== false;
+        }
+        return $match;
+    });
 }
-
-// Vérifiez si des tickets existent avant de procéder
-if (!empty($tickets)) {
-    $total_tickets = count($tickets);
-    $total_pages = ceil($total_tickets / $limit);
-    $page = max(1, min($page, $total_pages));
-    $offset = ($page - 1) * $limit;
-    $tickets_list = array_slice($tickets, $offset, $limit);
-} else {
-    $tickets_list = [];
-    $total_pages = 1;
-}*/
-
-$usines = getUsines($conn);
-$chefs_equipes=getChefEquipes($conn);
-$vehicules=getVehicules($conn);
-$agents=getAgents($conn);
-$tickets = getTicketsAttente($conn); 
-
-
-
-// Vérifiez si des tickets existent avant de procéder
-//if (!empty($tickets)) {
-//    $ticket_pages = array_chunk($tickets, $limit); // Divise les tickets en pages
-//    $tickets_list = $ticket_pages[$page - 1] ?? []; // Tickets pour la page actuelle
-//} else {
-//    $tickets_list = []; // Aucun ticket à afficher
-//}
-
-$limit = $_GET['limit'] ?? 15; // Nombre de tickets par page
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Page actuelle
-
-// Récupérer les tickets en attente
-$tickets = getTicketsAttente($conn);
 
 // Calculer la pagination
 $total_tickets = count($tickets);
@@ -77,11 +43,254 @@ $offset = ($page - 1) * $limit;
 // Extraire les tickets pour la page courante
 $tickets_list = array_slice($tickets, $offset, $limit);
 
+// Récupérer les listes pour l'autocomplétion
+$agents = getAgents($conn);
+$usines = getUsines($conn);
 ?>
 
+<!-- Barre de recherche en haut -->
+<div class="search-container mb-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="row">
+                <!-- Recherche par agent -->
+                <div class="col-md-6 mb-3">
+                    <form action="" method="get" class="form-inline w-100">
+                        <div class="input-group w-100">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="search_agent" 
+                                   id="agent_search"
+                                   placeholder="Rechercher par nom d'agent" 
+                                   value="<?= htmlspecialchars($search_agent) ?>"
+                                   autocomplete="off">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Recherche par usine -->
+                <div class="col-md-6 mb-3">
+                    <form action="" method="get" class="form-inline w-100">
+                        <div class="input-group w-100">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="search_usine" 
+                                   id="usine_search"
+                                   placeholder="Rechercher par nom d'usine" 
+                                   value="<?= htmlspecialchars($search_usine) ?>"
+                                   autocomplete="off">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Filtres actifs -->
+            <?php if($agent_id || $usine_id): ?>
+            <div class="active-filters mt-3">
+                <div class="d-flex align-items-center flex-wrap">
+                    <strong class="text-muted mr-2">Filtres actifs :</strong>
+                    <?php if($agent_id): ?>
+                        <span class="badge badge-info mr-2 p-2">
+                            <i class="fa fa-user"></i> 
+                            Agent: <?= htmlspecialchars($search_agent) ?>
+                            <a href="?<?= http_build_query(array_merge($_GET, ['agent_id' => null])) ?>" class="text-white ml-2">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </span>
+                    <?php endif; ?>
+                    <?php if($usine_id): ?>
+                        <span class="badge badge-info mr-2 p-2">
+                            <i class="fa fa-building"></i>
+                            Usine: <?= htmlspecialchars($search_usine) ?>
+                            <a href="?<?= http_build_query(array_merge($_GET, ['usine_id' => null])) ?>" class="text-white ml-2">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </span>
+                    <?php endif; ?>
+                    <a href="tickets_attente.php" class="btn btn-outline-danger btn-sm ml-auto">
+                        <i class="fa fa-times"></i> Réinitialiser tous les filtres
+                    </a>
+                </div>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
 
-<!-- Main row -->
+<!-- Ajout du style pour l'autocomplétion -->
 <style>
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1000;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ui-menu-item {
+    padding: 8px 15px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.ui-menu-item:hover {
+    background-color: #f8f9fa;
+}
+
+.search-container {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.input-group .form-control {
+    height: 45px;
+    font-size: 16px;
+    border-radius: 4px;
+}
+
+.input-group .btn {
+    padding: 0 20px;
+}
+
+.active-filters {
+    background-color: #fff;
+    padding: 10px 15px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.badge {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    background-color: #17a2b8;
+    border: none;
+}
+
+.badge a {
+    text-decoration: none;
+}
+
+.badge a:hover {
+    opacity: 0.8;
+}
+
+.badge i {
+    margin-right: 5px;
+}
+
+.btn-outline-danger {
+    border-radius: 20px;
+    padding: 5px 15px;
+}
+
+.input-group .form-control {
+    height: 45px;
+    font-size: 16px;
+    border-radius: 4px;
+}
+
+.input-group-append .btn {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.spacing {
+    margin-right: 10px; 
+    margin-bottom: 20px;
+}
+</style>
+
+<!-- Ajout de jQuery UI pour l'autocomplétion -->
+<link rel="stylesheet" href="../../plugins/jquery-ui/jquery-ui.min.css">
+<script src="../../plugins/jquery-ui/jquery-ui.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Préparer les données des agents pour l'autocomplétion
+    var agents = <?= json_encode(array_map(function($agent) {
+        return [
+            'value' => $agent['id_agent'],
+            'label' => $agent['nom'] . ' ' . $agent['prenom']
+        ];
+    }, $agents)) ?>;
+
+    // Préparer les données des usines pour l'autocomplétion
+    var usines = <?= json_encode(array_map(function($usine) {
+        return [
+            'value' => $usine['id_usine'],
+            'label' => $usine['nom_usine']
+        ];
+    }, $usines)) ?>;
+
+    // Autocomplétion pour les agents
+    $("#agent_search").autocomplete({
+        source: function(request, response) {
+            var term = request.term.toLowerCase();
+            var matches = agents.filter(function(agent) {
+                return agent.label.toLowerCase().indexOf(term) !== -1;
+            });
+            response(matches);
+        },
+        select: function(event, ui) {
+            window.location.href = 'tickets_attente.php?' + $.param({
+                ...getUrlParams(),
+                'agent_id': ui.item.value,
+                'search_agent': ui.item.label
+            });
+            return false;
+        },
+        minLength: 1
+    });
+
+    // Autocomplétion pour les usines
+    $("#usine_search").autocomplete({
+        source: function(request, response) {
+            var term = request.term.toLowerCase();
+            var matches = usines.filter(function(usine) {
+                return usine.label.toLowerCase().indexOf(term) !== -1;
+            });
+            response(matches);
+        },
+        select: function(event, ui) {
+            window.location.href = 'tickets_attente.php?' + $.param({
+                ...getUrlParams(),
+                'usine_id': ui.item.value,
+                'search_usine': ui.item.label
+            });
+            return false;
+        },
+        minLength: 1
+    });
+
+    // Fonction utilitaire pour obtenir les paramètres d'URL actuels
+    function getUrlParams() {
+        var params = {};
+        window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(str, key, value) {
+            params[key] = value;
+        });
+        return params;
+    }
+});
+</script>
+
+  <style>
   .pagination-container {
     display: flex;
     align-items: center;
@@ -313,7 +522,7 @@ label {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmer la suppression</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -397,75 +606,70 @@ label {
 
   <div class="pagination-container bg-secondary d-flex justify-content-center w-100 text-white p-3">
     <?php if($page > 1): ?>
-        <a href="?page=<?= $page - 1 ?>&limit=<?= $limit ?>" class="btn btn-primary"><</a>
+        <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page - 1])) ?>" class="btn btn-primary"><</a>
     <?php endif; ?>
     
     <span class="mx-2"><?= $page . '/' . $total_pages ?></span>
-
+    
     <?php if($page < $total_pages): ?>
-        <a href="?page=<?= $page + 1 ?>&limit=<?= $limit ?>" class="btn btn-primary">></a>
+        <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page + 1])) ?>" class="btn btn-primary">></a>
     <?php endif; ?>
     
     <form action="" method="get" class="items-per-page-form ml-3">
+        <?php
+        // Conserver les paramètres de filtrage actuels
+        foreach (['agent_id', 'usine_id', 'search_agent', 'search_usine'] as $param) {
+            if (isset($_GET[$param])) {
+                echo '<input type="hidden" name="' . $param . '" value="' . htmlspecialchars($_GET[$param]) . '">';
+            }
+        }
+        ?>
         <label for="limit">Afficher :</label>
-        <select name="limit" id="limit" class="items-per-page-select">
-            <option value="5" <?= $limit == 5 ? 'selected' : '' ?>>5</option>
-            <option value="10" <?= $limit == 10 ? 'selected' : '' ?>>10</option>
+        <select name="limit" id="limit" class="items-per-page-select" onchange="this.form.submit()">
             <option value="15" <?= $limit == 15 ? 'selected' : '' ?>>15</option>
+            <option value="25" <?= $limit == 25 ? 'selected' : '' ?>>25</option>
+            <option value="50" <?= $limit == 50 ? 'selected' : '' ?>>50</option>
+            <option value="100" <?= $limit == 100 ? 'selected' : '' ?>>100</option>
         </select>
-        <button type="submit" class="submit-button">Valider</button>
     </form>
-</div>
-
-
-
-
-
-  <div class="modal fade" id="print-bordereau">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Impression bordereau</h4>
-        </div>
-        <div class="modal-body">
-          <form class="forms-sample" method="post" action="print_bordereau.php" target="_blank">
-            <div class="card-body">
-              <div class="form-group">
-                  <label>Chargé de Mission</label>
-                  <select id="select" name="id_agent" class="form-control">
-                      <?php
-                      // Vérifier si des usines existent
-                      if (!empty($agents)) {
-                          foreach ($agents as $agent) {
-                              echo '<option value="' . htmlspecialchars($agent['id_agent']) . '">' . htmlspecialchars($agent['nom_complet_agent']) . '</option>';
-                          }
-                      } else {
-                          echo '<option value="">Aucune chef eéuipe disponible</option>';
-                      }
-                      ?>
-                  </select>
-              </div>
-              <div class="form-group">
-                <label for="exampleInputPassword1">Date de debut</label>
-                <input type="date" class="form-control" id="exampleInputPassword1" placeholder="Poids" name="date_debut">
-              </div>
-              <div class="form-group">
-                <label for="exampleInputPassword1">Date Fin</label>
-                <input type="date" class="form-control" id="exampleInputPassword1" placeholder="Poids" name="date_fin">
-              </div>
-
-              <button type="submit" class="btn btn-primary mr-2" name="saveCommande">Imprimer</button>
-              <button type="button" class="btn btn-light" data-dismiss="modal">Annuler</button>
-            </div>
-          </form>
-        </div>
-      </div>
-      <!-- /.modal-content -->
-    </div>
-
-
-    <!-- /.modal-dialog -->
   </div>
+
+
+
+
+
+<!-- Modal de recherche par agent -->
+<div class="modal fade" id="searchByAgentModal" tabindex="-1" role="dialog" aria-labelledby="searchByAgentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="searchByAgentModalLabel">Filtrer par agent</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="" method="get">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="agent_id">Sélectionner un agent</label>
+                        <select class="form-control" name="agent_id" id="agent_id" required>
+                            <option value="">Choisir un agent</option>
+                            <?php foreach ($agents as $agent): ?>
+                                <option value="<?= $agent['id_agent'] ?>" <?= ($agent_id == $agent['id_agent'] ? 'selected' : '') ?>>
+                                    <?= htmlspecialchars($agent['nom'] . ' ' . $agent['prenom']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="submit" class="btn btn-primary">Filtrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <!-- Recherche par tickets-->
 <div class="modal fade" id="search_ticket">

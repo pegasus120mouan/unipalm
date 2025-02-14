@@ -14,8 +14,8 @@ if (isset($_POST['id_agent']) && isset($_POST['date_debut']) && isset($_POST['da
             INNER JOIN vehicules v ON t.vehicule_id = v.vehicules_id
             INNER JOIN agents a ON t.id_agent = a.id_agent
             WHERE t.id_agent = :id_agent
-            AND t.created_at BETWEEN :date_debut AND :date_fin
-            ORDER BY u.nom_usine, t.created_at;";
+            AND t.date_ticket BETWEEN :date_debut AND :date_fin
+            ORDER BY u.nom_usine, t.date_ticket;";
 
     $requete = $conn->prepare($sql);
     $requete->bindParam(':id_agent', $id_agent);
@@ -23,7 +23,15 @@ if (isset($_POST['id_agent']) && isset($_POST['date_debut']) && isset($_POST['da
     $requete->bindParam(':date_fin', $date_fin);
     $requete->execute();
     $resultat = $requete->fetchAll(PDO::FETCH_ASSOC);
-
+    $sql = "SELECT t.*, u.nom_usine, v.matricule_vehicule, 
+            CONCAT(COALESCE(a.nom, ''), ' ', COALESCE(a.prenom, '')) AS nom_complet_agent
+            FROM tickets t
+            INNER JOIN usines u ON t.id_usine = u.id_usine
+            INNER JOIN vehicules v ON t.vehicule_id = v.vehicules_id
+            INNER JOIN agents a ON t.id_agent = a.id_agent
+            WHERE t.id_agent = :id_agent
+            AND t.date_ticket BETWEEN :date_debut AND :date_fin
+            ORDER BY u.nom_usine, t.date_ticket;";
     class PDF extends FPDF {
         function Header() {
             if (file_exists('../dist/img/logo.png')) {
@@ -76,11 +84,11 @@ if (isset($_POST['id_agent']) && isset($_POST['date_debut']) && isset($_POST['da
     $pdf->Cell(0, 8, utf8_decode(strtoupper($resultat[0]['nom_complet_agent'])), 0, 1);
 
     // Période
-   /* $pdf->SetFont('Arial', 'B', 11);
+    $pdf->SetFont('Arial', 'B', 11);
     $pdf->Cell(50, 8, utf8_decode('Période du:'), 0, 0);
     $pdf->SetFont('Arial', '', 11);
     $pdf->Cell(0, 8, date('d/m/Y', strtotime($date_debut)) . ' au ' . date('d/m/Y', strtotime($date_fin)), 0, 1);
-    $pdf->Ln(5);*/
+    $pdf->Ln(5);
 
     // Regrouper les tickets par usine
     $tickets_par_usine = [];

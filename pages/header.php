@@ -124,10 +124,14 @@ if (!isset($_SESSION['user_id'])) {
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-          <a href="dashboard.php" class="nav-link">Acceuil</a>
+          <a href="tickets.php" class="nav-link">Acceuil</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
           <a href="tickets.php" class="nav-link">Les Tickets</a>
+        </li>
+
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="paiements.php" class="nav-link">Paiements</a>
         </li>
       </ul>
 
@@ -361,6 +365,13 @@ if (!isset($_SESSION['user_id'])) {
                   <a href="prix_unitaires.php" class="nav-link">
                   <i class="fas fa-industry"></i>
                     <p>Gestion des prix unitaires</p>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="bordereaux.php" class="nav-link">
+                  <i class="fas fa-industry"></i>
+                    <p>Gestion des bordereaux</p>
                   </a>
                 </li>
 
