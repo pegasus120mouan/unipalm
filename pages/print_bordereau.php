@@ -4,8 +4,8 @@ require_once '../inc/functions/connexion.php';
 
 if (isset($_POST['id_agent']) && isset($_POST['date_debut']) && isset($_POST['date_fin'])) {
     $id_agent = $_POST['id_agent'];
-    $date_debut = $_POST['date_debut'];
-    $date_fin = $_POST['date_fin'];
+    $date_debut = $_POST['date_debut'] . ' 00:00:00';
+    $date_fin = $_POST['date_fin'] . ' 23:59:59';
 
     $sql = "SELECT t.*, u.nom_usine, v.matricule_vehicule, 
             CONCAT(COALESCE(a.nom, ''), ' ', COALESCE(a.prenom, '')) AS nom_complet_agent
@@ -14,8 +14,8 @@ if (isset($_POST['id_agent']) && isset($_POST['date_debut']) && isset($_POST['da
             INNER JOIN vehicules v ON t.vehicule_id = v.vehicules_id
             INNER JOIN agents a ON t.id_agent = a.id_agent
             WHERE t.id_agent = :id_agent
-            AND t.date_ticket BETWEEN :date_debut AND :date_fin
-            ORDER BY u.nom_usine, t.date_ticket;";
+            AND t.created_at BETWEEN :date_debut AND :date_fin
+            ORDER BY u.nom_usine, t.created_at;";
 
     $requete = $conn->prepare($sql);
     $requete->bindParam(':id_agent', $id_agent);
@@ -30,8 +30,8 @@ if (isset($_POST['id_agent']) && isset($_POST['date_debut']) && isset($_POST['da
             INNER JOIN vehicules v ON t.vehicule_id = v.vehicules_id
             INNER JOIN agents a ON t.id_agent = a.id_agent
             WHERE t.id_agent = :id_agent
-            AND t.date_ticket BETWEEN :date_debut AND :date_fin
-            ORDER BY u.nom_usine, t.date_ticket;";
+            AND t.created_at BETWEEN :date_debut AND :date_fin
+            ORDER BY u.nom_usine, t.created_at;";
     class PDF extends FPDF {
         function Header() {
             if (file_exists('../dist/img/logo.png')) {
