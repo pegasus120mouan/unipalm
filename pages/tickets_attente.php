@@ -573,14 +573,21 @@ label {
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-body">
-                <form action="traitement_tickets.php" method="post">
+                <form action="traitement_tickets.php" method="post" onsubmit="return validatePrixUnitaire(this);">
                   <input type="hidden" name="id_ticket" value="<?= $ticket['id_ticket'] ?>">
                   <input type="hidden" name="redirect" value="tickets_attente.php">
                   <div class="form-group">
                     <label>Ajouter le prix unitaire</label>
                   </div>
                   <div class="form-group">
-                    <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Prix unitaire" name="prix_unitaire"  value="<?= $ticket['prix_unitaire'] ?>" required>
+                    <input type="number" 
+                           class="form-control" 
+                           name="prix_unitaire" 
+                           value="<?= $ticket['prix_unitaire'] ?>" 
+                           <?= ($ticket['prix_unitaire'] > 0) ? 'readonly' : '' ?> 
+                           min="0.01" 
+                           step="0.01" 
+                           required>
                   </div>
                   <div class="modal-footer">
                     <button type="submit" class="btn btn-primary" name="saveCommande">Valider</button>
@@ -592,6 +599,16 @@ label {
           </div>
         </div>
 
+<script>
+function validatePrixUnitaire(form) {
+    const prixUnitaire = parseFloat(form.querySelector('[name="prix_unitaire"]').value);
+    if (prixUnitaire <= 0) {
+        alert('Le prix unitaire doit être supérieur à 0');
+        return false;
+    }
+    return true;
+}
+</script>
 
       <?php endforeach; ?>
       <?php else: ?>

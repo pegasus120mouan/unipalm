@@ -35,31 +35,31 @@ if (isset($_POST['save_paiement'])) {
 
         if ($stmt->execute()) {
             if ($is_bordereau) {
-                // Mise à jour directe du bordereau
-                $stmtBordereau = $conn->prepare("
-                    SELECT montant_total, COALESCE(montant_payer, 0) as montant_payer 
-                    FROM bordereau 
-                    WHERE id_bordereau = :id_bordereau");
-                $stmtBordereau->bindParam(':id_bordereau', $id_bordereau);
-                $stmtBordereau->execute();
-                $bordereau = $stmtBordereau->fetch(PDO::FETCH_ASSOC);
-
-                // Calculer les nouveaux montants
-                $nouveau_montant_payer = $bordereau['montant_payer'] + $montant;
-                $nouveau_montant_reste = $bordereau['montant_total'] - $nouveau_montant_payer;
-                $statut_bordereau = $nouveau_montant_reste <= 0 ? 'soldé' : 'non soldé';
-
                 // Mise à jour du bordereau
-                $stmtUpdate = $conn->prepare("
-                    UPDATE bordereau 
-                    SET montant_payer = :montant_payer,
-                        montant_reste = :montant_reste,
-                        date_paie = :date_transaction,
-                        statut_bordereau = :statut_bordereau
-                    WHERE id_bordereau = :id_bordereau");
+                $stmtTotal = $conn->prepare("SELECT COALESCE(montant_payer, 0) as total_paye, montant_total 
+                                           FROM bordereau 
+                                           WHERE id_bordereau = :id_bordereau");
+                $stmtTotal->bindParam(':id_bordereau', $id_bordereau);
+                $stmtTotal->execute();
+                $result = $stmtTotal->fetch(PDO::FETCH_ASSOC);
                 
-                $stmtUpdate->bindParam(':montant_payer', $nouveau_montant_payer);
-                $stmtUpdate->bindParam(':montant_reste', $nouveau_montant_reste);
+                // Calculer le nouveau total payé et le reste
+                $nouveau_total_paye = $result['total_paye'] + $montant;
+                $montant_reste = $result['montant_total'] - $nouveau_total_paye;
+                
+                // Déterminer le statut
+                $statut_bordereau = $montant_reste <= 0 ? 'soldé' : 'non soldé';
+                
+                // Mise à jour du bordereau
+                $stmtUpdate = $conn->prepare("UPDATE bordereau 
+                                            SET montant_payer = :nouveau_total_paye,
+                                                montant_reste = :montant_reste,
+                                                date_paie = :date_transaction,
+                                                statut_bordereau = :statut_bordereau
+                                            WHERE id_bordereau = :id_bordereau");
+                
+                $stmtUpdate->bindParam(':nouveau_total_paye', $nouveau_total_paye);
+                $stmtUpdate->bindParam(':montant_reste', $montant_reste);
                 $stmtUpdate->bindParam(':date_transaction', $date_transaction);
                 $stmtUpdate->bindParam(':statut_bordereau', $statut_bordereau);
                 $stmtUpdate->bindParam(':id_bordereau', $id_bordereau);
@@ -67,77 +67,52 @@ if (isset($_POST['save_paiement'])) {
                 if (!$stmtUpdate->execute()) {
                     throw new PDOException("Erreur lors de la mise à jour du bordereau");
                 }
-
-                // Mise à jour des tickets du bordereau
-                $stmtUpdateTickets = $conn->prepare("
-                    UPDATE tickets 
-                    SET montant_payer = CASE
-                            WHEN montant_reste >= :montant THEN COALESCE(montant_payer, 0) + :montant
-                            ELSE montant_paie
-                        END,
-                        montant_reste = CASE
-                            WHEN montant_reste >= :montant THEN montant_reste - :montant
-                            ELSE 0
-                        END,
-                        date_paie = :date_transaction
-                    WHERE numero_bordereau = :numero_bordereau
-                    AND montant_reste > 0
-                    ORDER BY id_ticket ASC
-                    LIMIT 1");
-                
-                $stmtUpdateTickets->bindParam(':montant', $montant);
-                $stmtUpdateTickets->bindParam(':date_transaction', $date_transaction);
-                $stmtUpdateTickets->bindParam(':numero_bordereau', $numero_bordereau);
-                
-                if (!$stmtUpdateTickets->execute()) {
-                    throw new PDOException("Erreur lors de la mise à jour des tickets");
-                }
             } else {
                 // Mise à jour du ticket
-                $stmtTotal = $conn->prepare("
-                    SELECT COALESCE(montant_payer, 0) as total_paye, montant_paie 
-                    FROM tickets 
-                    WHERE id_ticket = :id_ticket");
+                $stmtTotal = $conn->prepare("SELECT COALESCE(SUM(montant_payer), 0) as total_paye, montant_paie 
+                                           FROM tickets 
+                                           WHERE id_ticket = :id_ticket");
                 $stmtTotal->bindParam(':id_ticket', $id_ticket);
                 $stmtTotal->execute();
                 $result = $stmtTotal->fetch(PDO::FETCH_ASSOC);
-
-                // Calculer le nouveau montant payé et le reste
-                $nouveau_montant_paye = $result['total_paye'] + $montant;
-                $nouveau_montant_reste = $result['montant_paie'] - $nouveau_montant_paye;
-
+                
+                // Calculer le nouveau total payé et le reste
+                $nouveau_total_paye = $result['total_paye'] + $montant;
+                $montant_reste = $result['montant_paie'] - $nouveau_total_paye;
+                
                 // Mise à jour du ticket
-                $stmtUpdate = $conn->prepare("
-                    UPDATE tickets 
-                    SET montant_payer = :nouveau_montant_paye,
-                        montant_reste = :nouveau_montant_reste,
-                        date_paie = :date_transaction
-                    WHERE id_ticket = :id_ticket");
-
-                $stmtUpdate->bindParam(':nouveau_montant_paye', $nouveau_montant_paye);
-                $stmtUpdate->bindParam(':nouveau_montant_reste', $nouveau_montant_reste);
+                $stmtUpdate = $conn->prepare("UPDATE tickets 
+                                            SET montant_payer = :nouveau_total_paye,
+                                                montant_reste = :montant_reste,
+                                                date_paie = :date_transaction 
+                                            WHERE id_ticket = :id_ticket");
+                
+                $stmtUpdate->bindParam(':nouveau_total_paye', $nouveau_total_paye);
+                $stmtUpdate->bindParam(':montant_reste', $montant_reste);
                 $stmtUpdate->bindParam(':date_transaction', $date_transaction);
                 $stmtUpdate->bindParam(':id_ticket', $id_ticket);
-
+                
                 if (!$stmtUpdate->execute()) {
                     throw new PDOException("Erreur lors de la mise à jour du ticket");
                 }
             }
-
-            // Si tout s'est bien passé, on valide la transaction
+            
+            // Validation de la transaction
             $conn->commit();
-            $_SESSION['success'] = "Paiement enregistré avec succès";
+            $_SESSION['popup'] = true;
+            $filter = isset($_POST['filter']) ? '?filter=' . $_POST['filter'] : '';
+            header('Location: paiements.php' . $filter);
+            exit();
         } else {
-            throw new PDOException("Erreur lors de l'enregistrement du paiement");
+            throw new PDOException("Erreur lors de l'enregistrement de la transaction");
         }
     } catch (PDOException $e) {
         $conn->rollBack();
         $_SESSION['error'] = "Erreur : " . $e->getMessage();
+        $filter = isset($_POST['filter']) ? '?filter=' . $_POST['filter'] : '';
+        header('Location: paiements.php' . $filter);
+        exit();
     }
-    
-    // Redirection
-    header('Location: paiements.php');
-    exit();
 }
 
 // Redirection par défaut si aucune action n'est effectuée
