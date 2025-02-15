@@ -7,12 +7,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $date_debut=$_POST['date_debut'];
     $date_fin=$_POST['date_fin'];
 
-    echo $id_agent;
-    echo "<br>";
-    echo $date_debut;
-    echo "<br>";
-    echo $date_fin;
-    echo "<br>";
 
     try {
         $sql = "INSERT INTO bordereau (numero_bordereau, id_agent, date_debut, date_fin, poids_total, montant_total)
@@ -25,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     COALESCE(SUM(t.prix_unitaire * t.poids), 0)
                 FROM tickets t 
                 WHERE t.id_agent = :id_agent 
-                AND t.created_at BETWEEN :date_debut AND :date_fin";
+                AND t.created_at BETWEEN CONCAT(:date_debut, ' 00:00:00') AND CONCAT(:date_fin, ' 23:59:59')";
     
         $stmt = $conn->prepare($sql);
         $stmt->execute([

@@ -529,4 +529,31 @@ function updateTicketsBordereau($conn, $ticket_ids, $numero_bordereau) {
     }
 }
 
+function getTicketsByBordereau($conn, $id_bordereau) {
+    try {
+        $sql = "SELECT 
+            t.id_ticket,
+            t.numero_ticket,
+            t.date_ticket,
+            t.poids,
+            t.prix_unitaire,
+            (t.poids * t.prix_unitaire) as montant_total,
+            v.matricule_vehicule,
+            us.nom_usine
+        FROM tickets t
+        INNER JOIN vehicules v ON t.vehicule_id = v.vehicules_id
+        INNER JOIN usines us ON t.id_usine = us.id_usine
+        INNER JOIN bordereau b ON t.id_agent = b.id_agent
+        WHERE b.id_bordereau = :id_bordereau
+        AND t.created_at BETWEEN CONCAT(b.date_debut, ' 00:00:00') AND CONCAT(b.date_fin, ' 23:59:59')
+        ORDER BY t.date_ticket ASC";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([':id_bordereau' => $id_bordereau]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
 ?>

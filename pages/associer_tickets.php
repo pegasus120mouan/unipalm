@@ -1,40 +1,43 @@
 <?php
 require_once '../inc/functions/connexion.php';
+require_once '../inc/functions/requete/requete_tickets.php';
 
-// Récupérer le numéro du bordereau depuis l'URL
-$numero_bordereau = isset($_GET['bordereau']) ? $_GET['bordereau'] : '';
-
-// Récupérer les IDs des tickets sélectionnés
-$selected_tickets = isset($_GET['tickets']) ? (array)$_GET['tickets'] : [];
-
-// Traiter la mise à jour si le formulaire est soumis
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['tickets']) && !empty($_POST['bordereau'])) {
-    $conn = getConnexion();
-    $tickets = $_POST['tickets'];
-    $numero_bordereau = $_POST['bordereau'];
-    
-    try {
-        $conn->beginTransaction();
-        
-        foreach ($tickets as $id_ticket) {
-            $stmt = $conn->prepare("UPDATE tickets SET numero_bordereau = ? WHERE id_ticket = ?");
-            $stmt->execute([$numero_bordereau, $id_ticket]);
-        }
-        
-        $conn->commit();
-        header("Location: bordereaux.php?success=1");
-        exit;
-    } catch (Exception $e) {
-        $conn->rollBack();
-        $error = "Erreur lors de la mise à jour : " . $e->getMessage();
-    }
+// Vérifier si la connexion est établie
+$conn = getConnexion();
+if (!$conn) {
+    header("Location: bordereaux.php?error=db_connection");
+    exit;
 }
 
-// Debug - Afficher les données reçues
-echo "<!-- Debug: ";
-var_dump($_GET);
-echo " -->";
+// Récupérer le numéro du bordereau et les tickets
+$numero_bordereau = isset($_POST['bordereau']) ? $_POST['bordereau'] : '';
+$selected_tickets = isset($_POST['tickets']) ? (array)$_POST['tickets'] : [];
 
+// Vérifier si les données nécessaires sont présentes
+if (empty($numero_bordereau) || empty($selected_tickets)) {
+    header("Location: bordereaux.php?error=missing_data");
+    exit;
+}
+
+try {
+    $conn->beginTransaction();
+    
+    // Mise à jour des tickets
+    foreach ($selected_tickets as $id_ticket) {
+        $stmt = $conn->prepare("UPDATE tickets SET numero_bordereau = ? WHERE id_ticket = ?");
+        $stmt->execute([$numero_bordereau, $id_ticket]);
+    }
+    
+    $conn->commit();
+    header("Location: bordereaux.php?success=tickets_associated");
+    exit;
+} catch (Exception $e) {
+    if ($conn) {
+        $conn->rollBack();
+    }
+    header("Location: bordereaux.php?error=update_failed");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">

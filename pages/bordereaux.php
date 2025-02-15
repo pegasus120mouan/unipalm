@@ -2,11 +2,11 @@
 //session_start();
 require_once '../inc/functions/connexion.php';
 require_once '../inc/functions/requete/requete_tickets.php';
+require_once '../inc/functions/requete/requete_bordereaux.php';
 require_once '../inc/functions/requete/requete_usines.php';
 require_once '../inc/functions/requete/requete_chef_equipes.php';
 require_once '../inc/functions/requete/requete_vehicules.php';
 require_once '../inc/functions/requete/requete_agents.php';
-require_once '../inc/functions/requete/requete_bordereaux.php';
 
 // Traitement du formulaire avant tout affichage HTML
 if (isset($_POST['saveBordereau'])) {
@@ -24,6 +24,36 @@ if (isset($_POST['saveBordereau'])) {
     } else {
         $_SESSION['error'] = $result['message'];
     }
+    header('Location: bordereaux.php');
+    exit();
+}
+
+// Traitement de la suppression du bordereau
+if (isset($_POST['delete_bordereau'])) {
+    $id_bordereau = $_POST['id_bordereau'];
+    
+    try {
+        // Vérifier si le bordereau existe
+        $check_sql = "SELECT id_bordereau FROM bordereau WHERE id_bordereau = :id_bordereau";
+        $check_stmt = $conn->prepare($check_sql);
+        $check_stmt->bindParam(':id_bordereau', $id_bordereau);
+        $check_stmt->execute();
+        
+        if ($check_stmt->rowCount() > 0) {
+            // Supprimer le bordereau
+            $delete_sql = "DELETE FROM bordereau WHERE id_bordereau = :id_bordereau";
+            $delete_stmt = $conn->prepare($delete_sql);
+            $delete_stmt->bindParam(':id_bordereau', $id_bordereau);
+            $delete_stmt->execute();
+            
+            $_SESSION['success'] = "Bordereau supprimé avec succès";
+        } else {
+            $_SESSION['error'] = "Bordereau introuvable";
+        }
+    } catch (PDOException $e) {
+        $_SESSION['error'] = "Erreur lors de la suppression du bordereau: " . $e->getMessage();
+    }
+    
     header('Location: bordereaux.php');
     exit();
 }
@@ -374,6 +404,12 @@ label {
               <button class="btn btn-sm btn-primary validate-btn" data-id="<?= $bordereau['id_bordereau'] ?>">
                 <i class="fas fa-check"></i> Valider
               </button>
+              <form method="post" action="" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce bordereau ?');">
+                <input type="hidden" name="id_bordereau" value="<?= $bordereau['id_bordereau'] ?>">
+                <button type="submit" name="delete_bordereau" class="btn btn-sm btn-danger">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
             <?php endif; ?>
           </td>
           <td>
@@ -577,7 +613,7 @@ label {
                               echo '<option value="' . htmlspecialchars($agent['id_agent']) . '">' . htmlspecialchars($agent['nom_complet_agent']) . '</option>';
                           }
                       } else {
-                          echo '<option value="">Aucune chef eéuipe disponible</option>';
+                          echo '<option value="">Aucune chef equipe disponible</option>';
                       }
                       ?>
                   </select>
@@ -864,51 +900,64 @@ label {
       </div>
       <div class="modal-body">
         <?php 
-        $tickets = getTicketsForBordereau($conn, $bordereau['id_agent'], $bordereau['date_debut'], $bordereau['date_fin']);
+        $tickets = getTicketsByBordereau($conn, $bordereau['id_bordereau']);
         if (!empty($tickets)) : 
         ?>
-        <form id="ticketsForm" action="associer_tickets.php" method="get">
+        <form id="ticketsForm<?= $bordereau['id_bordereau'] ?>" action="associer_tickets.php" method="post">
           <input type="hidden" name="bordereau" value="<?= $bordereau['numero_bordereau'] ?>">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th style="width: 40px">
-                  <input type="checkbox" id="select-all">
-                </th>
-                <th>Date</th>
-                <th>Numéro</th>
-                <th>Véhicule</th>
-                <th>Usine</th>
-                <th>Poids</th>
-                <th>Prix unitaire</th>
-                <th>Statut</th>
-              </tr>
-            </thead>
-            <tbody id="ticketsTableBody">
-              <?php foreach ($tickets as $ticket) : ?>
-              <tr>
-                <td>
-                  <input type="checkbox" name="tickets[]" value="<?= $ticket['id_ticket'] ?>" <?= $ticket['numero_bordereau'] === $bordereau['numero_bordereau'] ? 'checked disabled' : '' ?>>
-                </td>
-                <td><?= date('d/m/Y', strtotime($ticket['date_ticket'])) ?></td>
-                <td><?= $ticket['numero_ticket'] ?></td>
-                <td><?= $ticket['matricule_vehicule'] ?></td>
-                <td><?= $ticket['nom_usine'] ?></td>
-                <td><?= number_format($ticket['poids'], 2, ',', ' ') ?> kg</td>
-                <td><?= number_format($ticket['prix_unitaire'], 0, ',', ' ') ?> FCFA</td>
-                <td>
-                  <?php if (isset($ticket['numero_bordereau']) && $ticket['numero_bordereau'] == $bordereau['numero_bordereau']) : ?>
-                    <span class="badge badge-success">Associé</span>
-                  <?php elseif (isset($ticket['numero_bordereau'])) : ?>
-                    <span class="badge badge-warning">Autre bordereau</span>
-                  <?php else : ?>
-                    <span class="badge badge-info">Disponible</span>
-                  <?php endif; ?>
-                </td>
-              </tr>
-              <?php endforeach; ?>
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th style="width: 40px">
+                    <input type="checkbox" id="select-all-<?= $bordereau['id_bordereau'] ?>" class="select-all">
+                  </th>
+                  <th>Date</th>
+                  <th>N° Ticket</th>
+                  <th>Usine</th>
+                  <th>Véhicule</th>
+                  <th>Poids (T)</th>
+                  <th>Prix Unit.</th>
+                  <th>Montant</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($tickets as $ticket) : ?>
+                  <tr>
+                    <td>
+                      <input type="checkbox" name="tickets[]" value="<?= $ticket['id_ticket'] ?>" <?= isset($ticket['numero_bordereau']) && $ticket['numero_bordereau'] === $bordereau['numero_bordereau'] ? 'checked disabled' : '' ?>>
+                    </td>
+                    <td><?= date('d/m/Y', strtotime($ticket['date_ticket'])) ?></td>
+                    <td><?= $ticket['numero_ticket'] ?></td>
+                    <td><?= $ticket['nom_usine'] ?></td>
+                    <td><?= $ticket['matricule_vehicule'] ?></td>
+                    <td class="text-right"><?= number_format($ticket['poids'], 2, ',', ' ') ?></td>
+                    <td class="text-right"><?= number_format($ticket['prix_unitaire'], 0, ',', ' ') ?></td>
+                    <td class="text-right"><?= number_format($ticket['montant_total'], 0, ',', ' ') ?></td>
+                    <td>
+                      <?php if (isset($ticket['numero_bordereau']) && $ticket['numero_bordereau'] == $bordereau['numero_bordereau']) : ?>
+                        <span class="badge badge-success">Associé</span>
+                      <?php elseif (isset($ticket['numero_bordereau'])) : ?>
+                        <span class="badge badge-warning">Autre bordereau</span>
+                      <?php else : ?>
+                        <span class="badge badge-info">Disponible</span>
+                      <?php endif; ?>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="5" class="text-right">Total</th>
+                  <th class="text-right"><?= number_format(array_sum(array_column($tickets, 'poids')), 2, ',', ' ') ?></th>
+                  <th></th>
+                  <th class="text-right"><?= number_format(array_sum(array_column($tickets, 'montant_total')), 0, ',', ' ') ?></th>
+                  <th></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
             <button type="submit" class="btn btn-primary">Associer les tickets</button>
@@ -1304,6 +1353,88 @@ $(document).ready(function() {
                     alert('Erreur lors de la communication avec le serveur');
                 }
             });
+        }
+    });
+});
+</script>
+<script>
+  // Gestion de la sélection de tous les tickets pour chaque modal
+  document.addEventListener('DOMContentLoaded', function() {
+    // Pour chaque checkbox "select-all"
+    document.querySelectorAll('.select-all').forEach(function(checkbox) {
+      checkbox.addEventListener('change', function() {
+        // Trouver le formulaire parent
+        const form = this.closest('form');
+        // Sélectionner toutes les checkboxes non désactivées dans ce formulaire
+        const checkboxes = form.querySelectorAll('input[type="checkbox"]:not([disabled])');
+        // Appliquer l'état de la checkbox "select-all" à toutes les autres
+        checkboxes.forEach(function(cb) {
+          if (cb !== checkbox) { // Ne pas modifier la checkbox "select-all" elle-même
+            cb.checked = checkbox.checked;
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title text-white" id="errorModalLabel">Erreur</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Gestion des erreurs et succès via URL
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    const success = urlParams.get('success');
+
+    if (error) {
+        let message = '';
+        switch(error) {
+            case 'missing_data':
+                message = 'Veuillez sélectionner au moins un ticket.';
+                break;
+            case 'update_failed':
+                message = 'Une erreur est survenue lors de la mise à jour des tickets.';
+                break;
+            default:
+                message = 'Une erreur est survenue.';
+        }
+        $('#errorMessage').text(message);
+        $('#errorModal').modal('show');
+    }
+
+    if (success === 'tickets_associated') {
+        $('#successMessage').text('Les tickets ont été associés avec succès.');
+        $('#successModal').modal('show');
+    }
+});
+
+// Validation du formulaire avant soumission
+document.querySelectorAll('form[id^="ticketsForm"]').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+        const checkboxes = form.querySelectorAll('input[type="checkbox"]:checked:not(.select-all)');
+        if (checkboxes.length === 0) {
+            e.preventDefault();
+            $('#errorMessage').text('Veuillez sélectionner au moins un ticket.');
+            $('#errorModal').modal('show');
         }
     });
 });

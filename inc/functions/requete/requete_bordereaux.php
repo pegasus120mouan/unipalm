@@ -30,7 +30,7 @@ function getBordereaux($conn, $page = 1, $limit = 15, $filters = []) {
             a.id_agent,
             CONCAT(COALESCE(a.nom, ''), ' ', COALESCE(a.prenom, '')) AS nom_complet_agent,
             a.contact,
-            (SELECT COUNT(*) FROM tickets t WHERE t.date_ticket BETWEEN b.date_debut AND b.date_fin AND t.id_agent = b.id_agent) as nombre_tickets
+            (SELECT COUNT(*) FROM tickets t WHERE t.created_at BETWEEN CONCAT(b.date_debut, ' 00:00:00') AND CONCAT(b.date_fin, ' 23:59:59') AND t.id_agent = b.id_agent) as nombre_tickets
         FROM bordereau b
         INNER JOIN agents a ON b.id_agent = a.id_agent";
 
